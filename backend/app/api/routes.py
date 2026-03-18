@@ -8,6 +8,14 @@ from app.services.document_ai import DocumentProcessor
 from app.services.financial_extractor import FinancialExtractor
 from app.services.explainability import explain_prediction
 from app.services.ai_analyst import generate_credit_analysis
+from app.services.simulation import apply_scenario
+from app.services.fraud_detection import detect_fraud
+from app.services.decision_engine import make_decision
+from app.services.decision_engine import generate_loan_terms
+from app.services.risk_history import save_risk
+from app.services.drift_detection import detect_drift
+from app.services.audit_logger import log_decision
+
 
 router = APIRouter()
 
@@ -97,7 +105,60 @@ async def ai_credit_analysis(file: UploadFile = File(...)):
     # Step 7: AI Analysis
     analysis = generate_credit_analysis(financials, risk_score, explanation)
 
+    # Create ratios
+    ratios = {
+    "debt_ratio": data["debt_ratio"],
+    "current_ratio": data["current_ratio"],
+    "roe": data["roe"]
+}
+
+    # Fraud detection
+    fraud_flags = detect_fraud(financials, ratios)
+
+    #fraud score
+    fraud_score = min(len(fraud_flags) * 20, 100)
+
+    #decision making
+    decision = make_decision(risk_score, fraud_score)
+    
+    #loan terms
+    loan_terms = generate_loan_terms(risk_score)
+
+    save_risk("company_x", risk_score)
+
+    drift_status = detect_drift(data)
+
+    log_decision({
+    "input": data,
+    "risk_score": risk_score,
+    "decision": decision
+    })
+
     return {
+        
         "risk_score": risk_score,
+        "fraud_score": fraud_score,
+        "decision": decision,
+        "loan_terms": loan_terms,
+        "drift_status": drift_status,
         "analysis": analysis
+    }
+
+@router.post("/simulate-risk")
+def simulate_risk(input_data: dict):
+
+    base_data = input_data["base_data"]
+    scenario = input_data["scenario"]
+
+    # Apply scenario
+    new_data = apply_scenario(base_data, scenario)
+
+    # Recalculate
+    risk_score = calculate_risk(new_data)
+    explanation = explain_prediction(type("obj", (object,), new_data))
+
+    return {
+        "new_data": new_data,
+        "risk_score": risk_score,
+        "explanation": explanation
     }
