@@ -1,12 +1,20 @@
-export default function FraudAlert({ risk }: { risk: any }) {
+"use client";
+
+import AnimatedCard from "./AnimatedCard";
+
+export default function FraudAlert({ risk }: any) {
 
   return (
-    <div className="bg-red-900 p-4 rounded-2xl">
-      <h2 className="text-xl mb-4">Fraud Alert</h2>
+    <AnimatedCard>
+      <div className="bg-red-900 p-4 rounded-2xl">
 
-      <div className="text-red-300 font-bold">
-        {JSON.stringify(risk)}
+        <h2 className="text-xl mb-4">Fraud Alert</h2>
+
+        <div className="text-red-300 font-bold">
+          {JSON.stringify(risk)}
+        </div>
+
       </div>
-    </div>
+    </AnimatedCard>
   );
 }

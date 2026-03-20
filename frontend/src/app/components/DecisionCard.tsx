@@ -1,3 +1,7 @@
+"use client";
+
+import AnimatedCard from "./AnimatedCard";
+
 export default function DecisionCard({ decision }: { decision: string }) {
 
   const color =
@@ -8,12 +12,16 @@ export default function DecisionCard({ decision }: { decision: string }) {
       : "text-yellow-400";
 
   return (
-    <div className="bg-gray-900 p-4 rounded-2xl">
-      <h2 className="text-xl mb-4">Decision</h2>
+    <AnimatedCard>
+      <div className="bg-gray-900 p-4 rounded-2xl">
 
-      <div className={`text-2xl font-bold ${color}`}>
-        {decision}
+        <h2 className="text-xl mb-4">Decision</h2>
+
+        <div className={`text-2xl font-bold ${color}`}>
+          {decision}
+        </div>
+
       </div>
-    </div>
+    </AnimatedCard>
   );
 }
