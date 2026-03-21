@@ -5,10 +5,13 @@ import UploadCard from "./components/UploadCard";
 import RiskGauge from "./components/RiskGauge";
 import DecisionCard from "./components/DecisionCard";
 import FraudAlert from "./components/FraudAlert";
-import AnalysisPanel from "./components/AnalysisPanel";
-import RiskChart from "./components/RiskChart";
 import TrendChart from "./components/TrendChart";
+import ShapChart from "./components/ShapChart";
+import AIReport from "./components/AIReport";
 import { motion } from "framer-motion";
+import AIChat from "./components/AIChat";
+import AlertPanel from "./components/AlertPanel";
+import SimulationPanel from "./components/SimulationPanel";
 
 export default function Home() {
 
@@ -54,8 +57,15 @@ export default function Home() {
           {/* 📊 MIDDLE ROW */}
           <div className="grid grid-cols-2 gap-6">
 
-            <RiskChart
-              data={result.shap_values}
+            <ShapChart data={result.shap_values} />
+            <AlertPanel alerts={result.alerts} />
+            <SimulationPanel
+               baseData={{
+                revenue_growth: 0.1,
+                debt_ratio: result.risk_score / 100,
+                current_ratio: 1.2,
+                roe: 0.15
+              }}
             />
 
             <TrendChart
@@ -69,7 +79,8 @@ export default function Home() {
           </div>
 
           {/* 🤖 BOTTOM PANEL */}
-          <AnalysisPanel analysis={result.analysis} />
+          <AIReport data={result.analysis} />
+          <AIChat context={result} />
 
         </motion.div>
       )}

@@ -1,14 +1,19 @@
+import os
+from dotenv import load_dotenv
 from openai import OpenAI
+import json
 
-client = OpenAI(api_key="YOUR_API_KEY")
+load_dotenv()
+
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 
-def generate_credit_analysis(financials, risk_score, explanation):
+def generate_credit_analysis(financials, risk_score, shap_values):
 
     prompt = f"""
-Act as a senior credit risk analyst at a top investment bank.
+You are a senior credit risk analyst.
 
-Analyze the company:
+Analyze the following company data.
 
 Financials:
 {financials}
@@ -17,23 +22,39 @@ Risk Score:
 {risk_score}
 
 SHAP Factors:
-{explanation}
+{shap_values}
 
-Give:
-• Risk Summary
-• Strengths
-• Weaknesses
-• Lending Decision
-• Confidence Level (%)
+Return ONLY a valid JSON (no text outside JSON):
 
-Be precise and professional.
+{{
+  "risk_summary": "...",
+  "strengths": ["...", "..."],
+  "weaknesses": ["...", "..."],
+  "fraud_flags": ["...", "..."],
+  "decision": "Approve / Conditional / Reject",
+  "confidence": 0-100
+}}
 """
 
     response = client.chat.completions.create(
         model="gpt-4o-mini",
         messages=[
+            {"role": "system", "content": "You are a financial risk expert. Always return JSON only."},
             {"role": "user", "content": prompt}
-        ]
+        ],
+        temperature=0.2
     )
 
-    return response.choices[0].message.content
+    raw_output = response.choices[0].message.content
+
+    try:
+        return json.loads(raw_output)
+    except:
+        return {
+            "risk_summary": raw_output,
+            "strengths": [],
+            "weaknesses": [],
+            "fraud_flags": [],
+            "decision": "Unknown",
+            "confidence": 0
+        }

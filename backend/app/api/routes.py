@@ -15,6 +15,9 @@ from app.services.decision_engine import generate_loan_terms
 from app.services.risk_history import save_risk
 from app.services.drift_detection import detect_drift
 from app.services.audit_logger import log_decision
+from app.services.ai_chat import credit_chat
+from app.services.portfolio import analyze_portfolio
+from app.services.alert_engine import generate_alerts
 
 
 router = APIRouter()
@@ -103,7 +106,17 @@ async def ai_credit_analysis(file: UploadFile = File(...)):
     explanation = explain_prediction(type("obj", (object,), data))
 
     # Step 7: AI Analysis
-    analysis = generate_credit_analysis(financials, risk_score, explanation)
+    # Convert explanation to better format for AI
+    if isinstance(explanation, list):
+        shap_values = {item["feature"]: item["value"] for item in explanation}
+    else:
+        shap_values = explanation
+
+    analysis = generate_credit_analysis(
+    financials=financials,
+    risk_score=risk_score,
+    shap_values=shap_values
+)
 
     # Create ratios
     ratios = {
@@ -133,16 +146,24 @@ async def ai_credit_analysis(file: UploadFile = File(...)):
     "risk_score": risk_score,
     "decision": decision
     })
+    
+    alerts = generate_alerts(risk_score, fraud_score, drift_status)
 
     return {
-        
-        "risk_score": risk_score,
-        "fraud_score": fraud_score,
-        "decision": decision,
-        "loan_terms": loan_terms,
-        "drift_status": drift_status,
-        "analysis": analysis
-    }
+    "risk_score": risk_score,
+    "fraud_score": fraud_score,
+    "alerts": alerts,
+    "decision": decision,
+    "loan_terms": loan_terms,
+    "drift_status": drift_status,
+
+    "analysis": analysis,  # AI output
+
+    # 🔥 NEW (for frontend power)
+    "financials": financials,
+    "shap_values": shap_values,
+    "fraud_flags": fraud_flags
+}
 
 @router.post("/simulate-risk")
 def simulate_risk(input_data: dict):
@@ -162,3 +183,24 @@ def simulate_risk(input_data: dict):
         "risk_score": risk_score,
         "explanation": explanation
     }
+
+@router.post("/chat")
+def chat_endpoint(payload: dict):
+
+    messages = payload["messages"]
+    context = payload["context"]
+
+    reply = credit_chat(messages, context)
+
+    return {
+        "reply": reply
+    }
+
+@router.post("/portfolio-analysis")
+def portfolio_analysis(data: dict):
+
+    companies = data["companies"]
+
+    result = analyze_portfolio(companies)
+
+    return result
