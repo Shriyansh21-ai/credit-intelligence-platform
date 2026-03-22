@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import AnimatedCard from "./AnimatedCard";
-import { uploadFileWithProgress } from "@/app/api/client";
+import axios from "axios";
 
 export default function UploadCard({ setResult }: any) {
 
@@ -14,7 +14,6 @@ export default function UploadCard({ setResult }: any) {
   const [dragActive, setDragActive] = useState(false);
   const [progress, setProgress] = useState(0);
 
-  // 📁 Handle file selection
   const handleFile = (selectedFile: File) => {
     setFile(selectedFile);
     setError(null);
@@ -22,7 +21,6 @@ export default function UploadCard({ setResult }: any) {
     setProgress(0);
   };
 
-  // 🖱️ Drag events
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
     setDragActive(true);
@@ -41,11 +39,19 @@ export default function UploadCard({ setResult }: any) {
     }
   };
 
-  // 🚀 Upload with progress
+  // 🚀 JWT SECURED UPLOAD
   const handleUpload = async () => {
 
     if (!file) {
       setError("Please upload a file first");
+      return;
+    }
+
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      setError("Please login first");
+      window.location.href = "/auth";
       return;
     }
 
@@ -54,12 +60,40 @@ export default function UploadCard({ setResult }: any) {
     setSuccess(false);
     setProgress(0);
 
+    const formData = new FormData();
+    formData.append("file", file);
+
     try {
-      const res = await uploadFileWithProgress(file, setProgress);
-      setResult(res);
+      const res = await axios.post(
+        "http://127.0.0.1:8000/ai-credit-analysis",
+        formData,
+        {
+          headers: {
+            "Authorization": `Bearer ${token}`,
+          },
+          onUploadProgress: (progressEvent) => {
+            const percent = Math.round(
+              (progressEvent.loaded * 100) /
+              (progressEvent.total || 1)
+            );
+            setProgress(percent);
+          }
+        }
+      );
+
+      setResult(res.data);
       setSuccess(true);
-    } catch (err) {
-      setError("Upload failed. Try again.");
+
+    } catch (err: any) {
+      console.error(err);
+
+      if (err.response?.status === 401) {
+        setError("Session expired. Please login again.");
+        localStorage.removeItem("token");
+        window.location.href = "/auth";
+      } else {
+        setError("Upload failed. Try again.");
+      }
     }
 
     setLoading(false);
@@ -71,7 +105,7 @@ export default function UploadCard({ setResult }: any) {
 
         <h2 className="text-xl mb-4">Upload Financial Document</h2>
 
-        {/* 🔥 DRAG & DROP ZONE */}
+        {/* DRAG ZONE */}
         <div
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
@@ -100,7 +134,7 @@ export default function UploadCard({ setResult }: any) {
           )}
         </div>
 
-        {/* 📊 PROGRESS BAR */}
+        {/* PROGRESS */}
         {loading && (
           <div className="mt-4">
             <div className="w-full bg-gray-700 rounded-full h-3 overflow-hidden">
@@ -115,19 +149,19 @@ export default function UploadCard({ setResult }: any) {
           </div>
         )}
 
-        {/* ❌ ERROR */}
+        {/* ERROR */}
         {error && (
           <p className="text-red-400 mt-2 text-sm">{error}</p>
         )}
 
-        {/* ✅ SUCCESS */}
+        {/* SUCCESS */}
         {success && (
           <p className="text-green-400 mt-2 text-sm">
             Analysis completed successfully!
           </p>
         )}
 
-        {/* 🚀 BUTTON */}
+        {/* BUTTON */}
         <motion.button
           whileTap={{ scale: 0.9 }}
           whileHover={{ scale: loading ? 1 : 1.05 }}

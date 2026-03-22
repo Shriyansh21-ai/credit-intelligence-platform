@@ -12,10 +12,41 @@ import { motion } from "framer-motion";
 import AIChat from "./components/AIChat";
 import AlertPanel from "./components/AlertPanel";
 import SimulationPanel from "./components/SimulationPanel";
+import { useEffect } from "react";
+import DownloadReport from "./components/DownloadReport";
 
 export default function Home() {
 
   const [result, setResult] = useState<any>(null);
+
+  const downloadPDF = async () => {
+  try {
+    const res = await fetch("http://127.0.0.1:8000/download-report", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(result)
+    });
+    useEffect(() => {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      window.location.href = "/auth";
+    }
+  }, []);
+
+    const blob = await res.blob();
+    const url = window.URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "credit_report.pdf";
+    a.click();
+  } catch (err) {
+    console.error("Download failed", err);
+  }
+};
 
   return (
     <main className="min-h-screen bg-gray-950 text-white p-6">
@@ -53,6 +84,15 @@ export default function Home() {
             <FraudAlert risk={result.fraud_score} />
 
           </div>
+          <button
+            onClick={() => {
+              localStorage.removeItem("token");
+              window.location.href = "/auth";
+            }}
+            className="bg-red-600 px-4 py-2 rounded"
+          >
+            Logout
+          </button>
 
           {/* 📊 MIDDLE ROW */}
           <div className="grid grid-cols-2 gap-6">
@@ -80,8 +120,18 @@ export default function Home() {
 
           {/* 🤖 BOTTOM PANEL */}
           <AIReport data={result.analysis} />
-          <AIChat context={result} />
 
+          <div className="flex justify-end">
+            <button
+              onClick={downloadPDF}
+              className="bg-green-600 hover:bg-green-700 px-6 py-3 rounded-xl font-semibold transition"
+            >
+              Download Credit Report
+            </button>
+          </div>
+
+          <AIChat context={result} />
+          <DownloadReport data={result} />
         </motion.div>
       )}
 

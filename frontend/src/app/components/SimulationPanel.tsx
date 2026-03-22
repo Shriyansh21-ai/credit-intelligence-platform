@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { apiFetch } from "../../../utils/api";
 
 export default function SimulationPanel({ baseData }: any) {
 
@@ -22,7 +23,7 @@ export default function SimulationPanel({ baseData }: any) {
     setLoading(true);
 
     try {
-      const res = await fetch("http://127.0.0.1:8000/simulate-risk", {
+      const res = await apiFetch("http://127.0.0.1:8000/simulate-risk", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
