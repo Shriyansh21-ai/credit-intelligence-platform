@@ -1,5 +1,6 @@
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
+from fastapi import APIRouter, Depends, UploadFile, File, HTTPException
 from fastapi.responses import FileResponse
+from sqlalchemy.orm import Session
 
 from app.schemas.company import CompanyInput
 from app.schemas.financials import FinancialInput
@@ -13,88 +14,83 @@ from app.services.ai_analyst import generate_credit_analysis
 from app.services.simulation import apply_scenario
 from app.services.fraud_detection import detect_fraud
 from app.services.decision_engine import make_decision, generate_loan_terms
-from app.services.risk_history import save_risk
 from app.services.drift_detection import detect_drift
 from app.services.audit_logger import log_decision
 from app.services.ai_chat import credit_chat
 from app.services.portfolio import analyze_portfolio
 from app.services.alert_engine import generate_alerts
 from app.services.pdf_generator import generate_pdf
+from app.services.risk_history import save_risk_db, get_risk_history
 
 from app.services.auth_service import hash_password, verify_password, create_access_token
-from app.db.fake_users import users_db
 from app.core.security import get_current_user
+
+from app.models.user import User
+from app.db.database import get_db
 
 
 router = APIRouter()
 
-# ---------------- AUTH ROUTES ---------------- #
+# ================= AUTH ================= #
 
 @router.post("/signup")
-def signup(data: dict):
-    email = data["email"]
-    password = data["password"]
+def signup(data: dict, db: Session = Depends(get_db)):
 
-    if email in users_db:
+    existing = db.query(User).filter(User.email == data.get("email")).first()
+
+    if existing:
         raise HTTPException(status_code=400, detail="User already exists")
 
-    users_db[email] = hash_password(password)
+    new_user = User(
+        email=data.get("email"),
+        password=hash_password(data.get("password"))
+    )
+
+    db.add(new_user)
+    db.commit()
 
     return {"message": "User created successfully"}
 
 
 @router.post("/login")
-def login(data: dict):
-    email = data["email"]
-    password = data["password"]
+def login(data: dict, db: Session = Depends(get_db)):
 
-    user = users_db.get(email)
+    user = db.query(User).filter(User.email == data.get("email")).first()
 
-    if not user or not verify_password(password, user):
+    if not user or not verify_password(data.get("password"), user.password):
         raise HTTPException(status_code=401, detail="Invalid credentials")
 
-    token = create_access_token({"sub": email})
+    token = create_access_token({"sub": user.email})
 
-    return {
-        "access_token": token,
-        "token_type": "bearer"
-    }
+    return {"access_token": token}
 
 
-# ---------------- PROTECTED ROUTES ---------------- #
+# ================= CORE APIs ================= #
 
 @router.post("/risk-score")
 def get_risk_score(
     data: CompanyInput,
-    user = Depends(get_current_user)
+    user=Depends(get_current_user)
 ):
-    score = calculate_risk(data)
-    return {"risk_score": score}
+    return {"risk_score": calculate_risk(data)}
 
 
 @router.post("/financial-analysis")
 def financial_analysis(
     data: FinancialInput,
-    user = Depends(get_current_user)
+    user=Depends(get_current_user)
 ):
-    analyzer = FinancialAnalyzer(
-        revenue=data.revenue,
-        expenses=data.expenses,
-        total_assets=data.total_assets,
-        total_liabilities=data.total_liabilities,
-        equity=data.equity,
-        current_assets=data.current_assets,
-        current_liabilities=data.current_liabilities
-    )
 
+    analyzer = FinancialAnalyzer(**data.dict())
     return analyzer.analyze()
 
 
 @router.post("/upload-financial-document")
 async def upload_document(
     file: UploadFile = File(...),
-    user = Depends(get_current_user)
+    user=Depends(get_current_user)
 ):
+
     file_location = f"data/uploads/{file.filename}"
 
     with open(file_location, "wb") as f:
@@ -104,18 +100,20 @@ async def upload_document(
     text = processor.process_document()
 
     extractor = FinancialExtractor(text)
-    financial_data = extractor.extract_financials()
 
     return {
         "extracted_text": text[:500],
-        "financial_data": financial_data
+        "financial_data": extractor.extract_financials()
     }
 
+
+# ================= MAIN AI PIPELINE ================= #
 
 @router.post("/ai-credit-analysis")
 async def ai_credit_analysis(
     file: UploadFile = File(...),
-    user = Depends(get_current_user)
+    user=Depends(get_current_user),
+    db: Session = Depends(get_db)
 ):
 
     file_path = f"data/uploads/{file.filename}"
@@ -123,35 +121,35 @@ async def ai_credit_analysis(
     with open(file_path, "wb") as f:
         f.write(await file.read())
 
+    # OCR + Extraction
     processor = DocumentProcessor(file_path)
     text = processor.process_document()
 
     extractor = FinancialExtractor(text)
     financials = extractor.extract_financials()
 
+    # Feature engineering
     data = {
         "revenue_growth": 0.1,
-        "debt_ratio": (financials["liabilities"] or 1) / (financials["assets"] or 1),
+        "debt_ratio": (financials.get("liabilities") or 1) / (financials.get("assets") or 1),
         "current_ratio": 1.2,
         "roe": 0.15
     }
 
+    # Risk
     risk_score = calculate_risk(data)
 
     explanation = explain_prediction(type("obj", (object,), data))
-
     shap_values = (
-        {item["feature"]: item["value"] for item in explanation}
+        {i["feature"]: i["value"] for i in explanation}
         if isinstance(explanation, list)
         else explanation
     )
 
-    analysis = generate_credit_analysis(
-        financials=financials,
-        risk_score=risk_score,
-        shap_values=shap_values
-    )
+    # AI analysis
+    analysis = generate_credit_analysis(financials, risk_score, shap_values)
 
+    # Fraud
     ratios = {
         "debt_ratio": data["debt_ratio"],
         "current_ratio": data["current_ratio"],
@@ -161,16 +159,18 @@ async def ai_credit_analysis(
     fraud_flags = detect_fraud(financials, ratios)
     fraud_score = min(len(fraud_flags) * 20, 100)
 
+    # Decision
     decision = make_decision(risk_score, fraud_score)
     loan_terms = generate_loan_terms(risk_score)
 
-    save_risk(user["sub"], risk_score)
+    # Save history
+    save_risk_db(user["sub"], risk_score, db)
 
+    # Drift + logging
     drift_status = detect_drift(data)
 
     log_decision({
         "user": user["sub"],
-        "input": data,
         "risk_score": risk_score,
         "decision": decision
     })
@@ -191,36 +191,55 @@ async def ai_credit_analysis(
     }
 
 
+# ================= CHAT ================= #
+
 @router.post("/chat")
 def chat_endpoint(
     payload: dict,
-    user = Depends(get_current_user)
+    user=Depends(get_current_user)
 ):
-    messages = payload["messages"]
-    context = payload["context"]
 
-    reply = credit_chat(messages, context)
+    messages = payload.get("messages", [])
+    context = payload.get("context", {})
 
-    return {"reply": reply}
+    return {"reply": credit_chat(messages, context)}
 
+
+# ================= PORTFOLIO ================= #
 
 @router.post("/portfolio-analysis")
 def portfolio_analysis(
     data: dict,
-    user = Depends(get_current_user)
+    user=Depends(get_current_user)
 ):
-    return analyze_portfolio(data["companies"])
+    return analyze_portfolio(data.get("companies", []))
 
+
+# ================= PDF ================= #
 
 @router.post("/download-report")
 def download_report(
     data: dict,
-    user = Depends(get_current_user)
+    user=Depends(get_current_user)
 ):
+
     file_path = generate_pdf(data)
 
     return FileResponse(
         path=file_path,
         filename="credit_report.pdf",
-        media_type='application/pdf'
+        media_type="application/pdf"
     )
+
+
+# ================= HISTORY ================= #
+
+@router.get("/risk-history")
+def get_history(
+    user=Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+
+    history = get_risk_history(user["sub"], db)
+
+    return {"history": history}

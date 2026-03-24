@@ -14,6 +14,7 @@ import AlertPanel from "./components/AlertPanel";
 import SimulationPanel from "./components/SimulationPanel";
 import { useEffect } from "react";
 import DownloadReport from "./components/DownloadReport";
+import RiskHistoryChart from "./components/RiskHistoryChart";
 
 export default function Home() {
 
@@ -82,6 +83,7 @@ export default function Home() {
             <DecisionCard decision={result.decision} />
 
             <FraudAlert risk={result.fraud_score} />
+            <RiskHistoryChart />
 
           </div>
           <button

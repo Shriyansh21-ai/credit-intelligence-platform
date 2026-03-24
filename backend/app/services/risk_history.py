@@ -1,32 +1,14 @@
-import json
-import os
+from sqlalchemy.orm import Session
+from datetime import datetime
+from app.models.risk_history import RiskHistory
 
-FILE_PATH = "data/risk_history.json"
+def save_risk_db(user_email, risk_score, db: Session):
 
+    record = RiskHistory(
+        user_email=user_email,
+        risk_score=risk_score,
+        timestamp=str(datetime.utcnow())
+    )
 
-def save_risk(company_name, risk_score):
-
-    if not os.path.exists(FILE_PATH):
-        data = {}
-    else:
-        with open(FILE_PATH, "r") as f:
-            data = json.load(f)
-
-    if company_name not in data:
-        data[company_name] = []
-
-    data[company_name].append(risk_score)
-
-    with open(FILE_PATH, "w") as f:
-        json.dump(data, f)
-
-
-def get_risk_history(company_name):
-
-    if not os.path.exists(FILE_PATH):
-        return []
-
-    with open(FILE_PATH, "r") as f:
-        data = json.load(f)
-
-    return data.get(company_name, [])
+    db.add(record)
+    db.commit()
