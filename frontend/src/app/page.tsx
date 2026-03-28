@@ -15,6 +15,7 @@ import SimulationPanel from "./components/SimulationPanel";
 import { useEffect } from "react";
 import DownloadReport from "./components/DownloadReport";
 import RiskHistoryChart from "./components/RiskHistoryChart";
+import { apiFetch } from "@/app/lib/apiFetch";
 
 export default function Home() {
 
@@ -134,6 +135,7 @@ export default function Home() {
 
           <AIChat context={result} />
           <DownloadReport data={result} />
+
         </motion.div>
       )}
 

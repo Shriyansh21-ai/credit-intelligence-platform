@@ -17,16 +17,18 @@ from app.services.decision_engine import make_decision, generate_loan_terms
 from app.services.drift_detection import detect_drift
 from app.services.audit_logger import log_decision
 from app.services.ai_chat import credit_chat
+from app.services.auth_service import ALGORITHM, SECRET_KEY, create_refresh_token,create_access_token
 from app.services.portfolio import analyze_portfolio
 from app.services.alert_engine import generate_alerts
 from app.services.pdf_generator import generate_pdf
 from app.services.risk_history import save_risk_db, get_risk_history
 
 from app.services.auth_service import hash_password, verify_password, create_access_token
-from app.core.security import get_current_user
+from app.core.security import get_current_user, require_admin
 
 from app.models.user import User
 from app.db.database import get_db
+from jose import jwt, JWTError
 
 
 router = APIRouter()
@@ -55,14 +57,18 @@ def signup(data: dict, db: Session = Depends(get_db)):
 @router.post("/login")
 def login(data: dict, db: Session = Depends(get_db)):
 
-    user = db.query(User).filter(User.email == data.get("email")).first()
+    user = db.query(User).filter(User.email == data["email"]).first()
 
-    if not user or not verify_password(data.get("password"), user.password):
+    if not user or not verify_password(data["password"], user.password):
         raise HTTPException(status_code=401, detail="Invalid credentials")
 
-    token = create_access_token({"sub": user.email})
+    access_token = create_access_token({"sub": user.email})
+    refresh_token = create_refresh_token({"sub": user.email})
 
-    return {"access_token": token}
+    return {
+        "access_token": access_token,
+        "refresh_token": refresh_token
+    }
 
 
 # ================= CORE APIs ================= #
@@ -243,3 +249,22 @@ def get_history(
     history = get_risk_history(user["sub"], db)
 
     return {"history": history}
+
+@router.post("/refresh")
+def refresh_token(token: dict):
+
+    try:
+        payload = jwt.decode(token["refresh_token"], SECRET_KEY, algorithm=[ALGORITHM])
+        email = payload.get("sub")
+
+        new_access = create_access_token({"sub": email})
+
+        return {"access_token": new_access}
+
+    except JWTError:
+        raise HTTPException(status_code=401, detail="Invalid refresh token")
+    
+
+@router.post("/admin-only")
+def admin_api(user=Depends(require_admin)):
+    return {"message": "Admin access granted"}
