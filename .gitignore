@@ -1,0 +1,68 @@
+# ======================
+# Python
+# ======================
+
+.venv/
+venv/
+
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Database
+*.db
+*.sqlite3
+
+# Environment Variables
+.env
+.env.*
+
+# ======================
+# Frontend
+# ======================
+
+node_modules/
+dist/
+dist-ssr/
+
+.output/
+.vinxi/
+.tanstack/
+.nitro/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ======================
+# IDE
+# ======================
+
+.vscode/
+.idea/
+
+# ======================
+# OS Files
+# ======================
+
+.DS_Store
+Thumbs.db
+
+# ======================
+# Build Files
+# ======================
+
+coverage/
+build/
+
+# ======================
+# Temporary
+# ======================
+
+*.tmp
+*.temp
