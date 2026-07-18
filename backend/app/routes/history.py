@@ -3,18 +3,17 @@ from fastapi import Depends
 
 from sqlalchemy.orm import Session
 
-from app.db.database import get_db
+from backend.app.db.database import get_db
 
-from app.models.prediction import Prediction
+from backend.app.models.prediction import Prediction
 
-from app.models.user import User
+from backend.app.models.user import User
 
-from app.core.dependencies import (
+from backend.app.core.dependencies import (
     get_current_user
 )
 
 router = APIRouter(
-    prefix="/history",
     tags=["History"]
 )
 

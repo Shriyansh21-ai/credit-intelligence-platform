@@ -1,21 +1,17 @@
-import joblib
-import pandas as pd
-import numpy as np
 import logging
+from pathlib import Path
 
-from app.ml.explain import generate_explanation
-from app.services.ai_analyst import generate_ai_analysis
+import numpy as np
+import pandas as pd
 
-MODEL_PATH = "app/ml/artifacts/model.pkl"
-SCALER_PATH = "app/ml/artifacts/scaler.pkl"
-ENCODER_PATH = "app/ml/artifacts/label_encoders.pkl"
-FEATURES_PATH = "app/ml/artifacts/feature_columns.pkl"
+from backend.app.ml.artifact_store import load_artifact
+from backend.app.ml.explain import generate_explanation
+from backend.app.services.ai_analyst import generate_ai_analysis
 
-# Load artifacts
-model = joblib.load(MODEL_PATH)
-scaler = joblib.load(SCALER_PATH)
-encoders = joblib.load(ENCODER_PATH)
-feature_columns = joblib.load(FEATURES_PATH)
+model = load_artifact("model.pkl")
+scaler = load_artifact("scaler.pkl")
+encoders = load_artifact("label_encoders.pkl")
+feature_columns = load_artifact("feature_columns.pkl")
 
 logger = logging.getLogger(__name__)
 

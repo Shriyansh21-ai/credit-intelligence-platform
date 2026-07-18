@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 
-from app.routes.user import get_user
-from app.ml.predict import predict_credit
+from backend.app.routes.user import get_user
+from backend.app.services.credit_analyst_report import build_credit_analyst_report
 
 router = APIRouter()
 
@@ -59,15 +59,11 @@ async def get_report(user_id: str):
         )
     }
 
-    # ----------------------------------------
-    # ML Prediction
-    # ----------------------------------------
-
-    result = predict_credit(prediction_data)
+    report = build_credit_analyst_report(prediction_data, report_type="personal")
 
     return {
         "success": True,
         "user_id": user_id,
         "user_profile": user,
-        "analysis": result
+        "analysis": report
     }

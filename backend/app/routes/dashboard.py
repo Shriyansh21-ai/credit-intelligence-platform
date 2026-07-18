@@ -3,13 +3,14 @@ from fastapi import Depends
 
 from sqlalchemy.orm import Session
 
-from app.db.database import get_db
+from backend.app.db.database import get_db
 
-from app.models.user import User
-from app.models.prediction import Prediction
-from app.models.fraud import FraudCheck
+from backend.app.models.user import User
+from backend.app.models.prediction import Prediction
+from backend.app.models.fraud import FraudCheck
+from backend.app.models.enterprise_assessment import EnterpriseAssessment
 
-from app.core.dependencies import (
+from backend.app.core.dependencies import (
     get_current_user
 )
 
@@ -147,6 +148,39 @@ def dashboard_overview(
     ]
 
     # -----------------------------------
+    # Enterprise Assessments
+    # -----------------------------------
+
+    enterprise_assessments = (
+
+        db.query(EnterpriseAssessment)
+        .filter(
+            EnterpriseAssessment.user_id == current_user.id
+        )
+        .all()
+    )
+
+    total_enterprise_assessments = len(enterprise_assessments)
+
+    average_enterprise_score = (
+
+        round(
+            sum(
+                e.enterprise_credit_score
+                for e in enterprise_assessments
+            )
+            / total_enterprise_assessments
+        )
+        if total_enterprise_assessments > 0
+        else 0
+    )
+
+    high_risk_accounts = sum(
+        1 for e in enterprise_assessments
+        if e.probability_of_default >= 0.25 or e.risk_rating in {"B", "BB", "CCC"}
+    )
+
+    # -----------------------------------
     # Recent Fraud Checks
     # -----------------------------------
 
@@ -204,6 +238,17 @@ def dashboard_overview(
 
             "fraud_rate":
                 fraud_rate
+        },
+
+        "enterprise_summary": {
+            "total_enterprise_assessments":
+                total_enterprise_assessments,
+
+            "average_enterprise_score":
+                average_enterprise_score,
+
+            "high_risk_accounts":
+                high_risk_accounts
         },
 
         "recent_predictions":

@@ -2,20 +2,21 @@ from fastapi import FastAPI
 
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.routes import user, loan, prediction
-from app.routes import transaction
-from app.routes.fraud import router as fraud_router
-from app.routes.portfolio import router as portfolio_router
-from app.db.database import Base, engine
-from app.models.prediction import Prediction
-from app.models.fraud import FraudCheck
-from app.models.portfolio import PortfolioAnalysis
-from app.routes import history
-from app.models.user import User
-from app.routes import auth
-from app.routes import fraud_history
-from app.routes import fraud_summary
-from app.routes import dashboard
+from .routes import user, loan, prediction
+from .routes import transaction
+from .routes.fraud import router as fraud_router
+from .routes.portfolio import router as portfolio_router
+from .models.prediction import Prediction
+from .models.fraud import FraudCheck
+from .models.portfolio import PortfolioAnalysis
+from .models.enterprise_assessment import EnterpriseAssessment
+from .routes import history
+from .models.user import User
+from .routes import auth
+from .routes import fraud_history
+from .routes import fraud_summary
+from .routes import dashboard
+from .routes import realtime
 
 app = FastAPI(
     title="AI Credit System",
@@ -34,7 +35,11 @@ app.add_middleware(
         "http://localhost:3000",
         "http://localhost:4173",
         "http://localhost:5173",
-        "http://localhost:8080"
+        "http://localhost:8080",
+        "http://127.0.0.1:3000",
+        "http://127.0.0.1:4173",
+        "http://127.0.0.1:5173",
+        "http://127.0.0.1:8080"
     ],
 
     allow_credentials=True,
@@ -47,8 +52,9 @@ app.add_middleware(
 # ========================================
 # DATABASE TABLES
 # ========================================
-
-Base.metadata.create_all(bind=engine)
+# Schema is managed by Alembic migrations (run `alembic upgrade head`).
+# `create_all` is intentionally NOT used so migrations remain the single
+# source of truth for schema changes across environments.
 
 # ========================================
 # ROUTES
@@ -93,6 +99,7 @@ app.include_router(auth.router)
 app.include_router(fraud_history.router)
 app.include_router(fraud_summary.router)
 app.include_router(dashboard.router)
+app.include_router(realtime.router)
 
 # ========================================
 # ROOT

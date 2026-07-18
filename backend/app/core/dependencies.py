@@ -10,11 +10,11 @@ from jose import jwt
 
 from sqlalchemy.orm import Session
 
-from app.db.database import get_db
+from backend.app.db.database import get_db
 
-from app.models.user import User
+from backend.app.models.user import User
 
-from app.core.security import (
+from backend.app.core.security import (
     SECRET_KEY,
     ALGORITHM
 )

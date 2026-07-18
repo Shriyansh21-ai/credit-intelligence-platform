@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, Float, String
 
-from app.db.database import Base
+from backend.app.db.database import Base
 
 class PortfolioAnalysis(Base):
 

@@ -1,22 +1,19 @@
 import joblib
 import pandas as pd
 import shap
+from pathlib import Path
 
 # ----------------------------------------
 # Load Artifacts
 # ----------------------------------------
 
-model = joblib.load(
-    "app/ml/artifacts/model.pkl"
-)
+ARTIFACTS_DIR = Path(__file__).resolve().parent / "artifacts"
 
-label_encoders = joblib.load(
-    "app/ml/artifacts/label_encoders.pkl"
-)
+model = joblib.load(ARTIFACTS_DIR / "model.pkl")
 
-feature_columns = joblib.load(
-    "app/ml/artifacts/feature_columns.pkl"
-)
+label_encoders = joblib.load(ARTIFACTS_DIR / "label_encoders.pkl")
+
+feature_columns = joblib.load(ARTIFACTS_DIR / "feature_columns.pkl")
 
 # ----------------------------------------
 # SHAP Explainer

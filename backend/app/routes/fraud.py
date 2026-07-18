@@ -3,17 +3,17 @@ from fastapi import Depends
 
 from sqlalchemy.orm import Session
 
-from app.services.fraud_detection import (
+from backend.app.services.fraud_detection import (
     detect_fraud
 )
 
-from app.db.database import get_db
+from backend.app.db.database import get_db
 
-from app.models.fraud import FraudCheck
+from backend.app.models.fraud import FraudCheck
 
-from app.models.user import User
+from backend.app.models.user import User
 
-from app.core.dependencies import (
+from backend.app.core.dependencies import (
     get_current_user
 )
 

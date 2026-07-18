@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from app.models.schemas import UserData
+from backend.app.models.schemas import UserData
 
 router = APIRouter()
 

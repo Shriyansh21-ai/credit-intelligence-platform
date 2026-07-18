@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from app.services.transaction_service import analyze_transactions
+from backend.app.services.transaction_service import analyze_transactions
 
 router = APIRouter()
 

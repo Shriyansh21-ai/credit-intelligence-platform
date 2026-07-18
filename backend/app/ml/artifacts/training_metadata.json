@@ -1,0 +1,7 @@
+{
+  "last_trained_at": "2026-07-08T17:25:09.615676",
+  "accuracy": 0.74,
+  "dataset_path": "C:\\Users\\shriyansh dev\\Desktop\\ai_credit_system\\backend\\app\\ml\\data\\german_credit_data.csv",
+  "artifacts_dir": "C:\\Users\\shriyansh dev\\Desktop\\ai_credit_system\\backend\\app\\ml\\artifacts",
+  "model_type": "RandomForestClassifier"
+}

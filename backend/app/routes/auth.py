@@ -2,16 +2,16 @@ from fastapi import APIRouter
 from fastapi import Depends
 from sqlalchemy.orm import Session
 
-from app.db.database import get_db
+from backend.app.db.database import get_db
 
-from app.models.user import User
+from backend.app.models.user import User
 
-from app.schemas.auth_schema import (
+from backend.app.schemas.auth_schema import (
     SignupRequest,
     LoginRequest
 )
 
-from app.core.security import (
+from backend.app.core.security import (
     hash_password,
     verify_password,
     create_access_token

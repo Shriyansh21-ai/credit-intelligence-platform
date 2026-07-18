@@ -1,8 +1,7 @@
 from datetime import datetime, timedelta
 
 from jose import jwt
-
-from passlib.context import CryptContext
+import bcrypt
 
 # ----------------------------------------
 # Config
@@ -15,21 +14,25 @@ ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60
 
 # ----------------------------------------
-# Password Hashing
+# Normalize Password for bcrypt
 # ----------------------------------------
 
-pwd_context = CryptContext(
-    schemes=["bcrypt"],
-    deprecated="auto"
-)
+def _normalize_password(password: str) -> bytes:
+    if not isinstance(password, str):
+        password = str(password)
+
+    # bcrypt supports up to 72 bytes. Truncate safely in utf-8.
+    encoded = password.encode("utf-8")[:72]
+    return encoded
 
 # ----------------------------------------
 # Hash Password
 # ----------------------------------------
 
-def hash_password(password: str):
-
-    return pwd_context.hash(password)
+def hash_password(password: str) -> str:
+    normalized = _normalize_password(password)
+    hashed = bcrypt.hashpw(normalized, bcrypt.gensalt())
+    return hashed.decode("utf-8")
 
 # ----------------------------------------
 # Verify Password
@@ -40,9 +43,10 @@ def verify_password(
     hashed_password
 ):
 
-    return pwd_context.verify(
-        plain_password,
-        hashed_password
+    normalized = _normalize_password(plain_password)
+    return bcrypt.checkpw(
+        normalized,
+        hashed_password.encode("utf-8")
     )
 
 # ----------------------------------------

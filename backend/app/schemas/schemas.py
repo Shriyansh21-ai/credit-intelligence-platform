@@ -41,3 +41,8 @@ class CreditPredictionResponse(BaseModel):
     prediction: int
 
     ai_analysis: str
+
+# ------------------------------------------------
+# Enterprise Assessment schemas now live in schemas/enterprise.py
+# (sectioned domain models + validation).
+# ------------------------------------------------

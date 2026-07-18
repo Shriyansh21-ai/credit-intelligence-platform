@@ -1,4 +1,4 @@
-from app.services.portfolio_ai import generate_portfolio_analysis
+from backend.app.services.portfolio_ai import generate_portfolio_analysis
 
 def analyze_portfolio(customers):
 
