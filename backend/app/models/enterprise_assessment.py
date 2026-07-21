@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, Float, String, Boolean, ForeignKey, DateTime
+from sqlalchemy import Column, Integer, Float, String, Boolean, ForeignKey, DateTime, JSON
 from datetime import datetime
 from backend.app.db.database import Base
 
@@ -54,4 +54,10 @@ class EnterpriseAssessment(Base):
     business_stability = Column(Integer, nullable=True)
 
     ai_analysis = Column(String, nullable=False)
+
+    # Phase 4: the exact flattened engine input that produced this assessment.
+    # Persisted so the AI Risk Intelligence layer (scenario / stress / report)
+    # can be driven by assessment_id without re-collecting inputs, and for audit.
+    engine_input = Column(JSON, nullable=True)
+
     created_at = Column(DateTime, default=datetime.utcnow)

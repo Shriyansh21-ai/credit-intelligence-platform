@@ -27,6 +27,8 @@ from backend.app.models import prediction  # noqa: E402,F401
 from backend.app.models import fraud  # noqa: E402,F401
 from backend.app.models import portfolio  # noqa: E402,F401
 from backend.app.models import enterprise_assessment  # noqa: E402,F401
+from backend.app.models import document  # noqa: E402,F401
+from backend.app.models import financial_analysis  # noqa: E402,F401
 
 config = context.config
 config.set_main_option("sqlalchemy.url", DATABASE_URL)

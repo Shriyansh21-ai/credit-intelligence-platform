@@ -22,6 +22,13 @@ from backend.app.core.realtime import manager
 from backend.app.services.statement_extraction import extract_financial_statement_from_bytes
 from backend.app.ml.train import train_and_persist_model
 from backend.app.services.credit_analyst_report import build_credit_analyst_report
+from backend.app.services.financial_analysis import analysis_service, repository
+from backend.app.services.ml.features import feature_pipeline
+from backend.app.services.ml.features import feature_store
+from backend.app.services.ml.explainability import explanation_store
+from backend.app.services.ml.explainability import service as explain_service
+from backend.app.services.ml.alerts import alert_engine, alert_store
+from backend.app.utils.logger import logger
 
 router = APIRouter()
 
@@ -206,10 +213,56 @@ async def enterprise_assessment(
         working_capital_health=health["working_capital_health"]["score"],
         business_stability=health["business_stability"]["score"],
         ai_analysis=result["ai_analysis"],
+        engine_input=engine_input,
     )
 
     db.add(db_record)
     db.commit()
     db.refresh(db_record)
+
+    # Phase 3: auto-compute and persist the full financial analysis, linked to
+    # this assessment. Best-effort — a failure here must not fail the
+    # assessment itself (the analysis can be recomputed on demand).
+    try:
+        analysis = analysis_service.analyze_engine_input(engine_input)
+        repository.save_analysis(
+            db,
+            user_id=current_user.id,
+            assessment_id=db_record.id,
+            analysis=analysis,
+        )
+    except Exception:  # pragma: no cover - defensive
+        logger.exception("Financial analysis persistence failed for assessment %s", db_record.id)
+
+    # Phase 4: build and persist the ML-ready feature vector for this
+    # assessment. Best-effort — feature generation must never fail an
+    # assessment, and the vector can always be recomputed on demand.
+    try:
+        vector = feature_pipeline.build_from_engine_input(engine_input)
+        feature_store.save_feature_vector(
+            db,
+            user_id=current_user.id,
+            assessment_id=db_record.id,
+            vector=vector,
+        )
+        # Explainable-AI: persist the risk explanation derived from the same
+        # feature vector so it is auditable and instantly retrievable.
+        explanation = explain_service.explain_vector(vector)
+        explanation_store.save_explanation(
+            db,
+            user_id=current_user.id,
+            assessment_id=db_record.id,
+            explanation=explanation,
+        )
+        # Early-warning: scan for deterioration signals and persist any alerts.
+        scan_result = alert_engine.scan(vector, engine_input=engine_input)
+        alert_store.save_alerts(
+            db,
+            user_id=current_user.id,
+            assessment_id=db_record.id,
+            scan_result=scan_result,
+        )
+    except Exception:  # pragma: no cover - defensive
+        logger.exception("Feature/explanation/alert persistence failed for assessment %s", db_record.id)
 
     return result

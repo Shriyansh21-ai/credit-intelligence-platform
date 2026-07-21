@@ -13,3 +13,6 @@ sqlalchemy
 alembic
 python-multipart
 httpx
+PyMuPDF
+Pillow
+pytesseract

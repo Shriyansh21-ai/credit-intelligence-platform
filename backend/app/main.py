@@ -17,6 +17,13 @@ from .routes import fraud_history
 from .routes import fraud_summary
 from .routes import dashboard
 from .routes import realtime
+from .routes import documents
+from .routes import analysis
+from .routes import ml
+from .models.financial_analysis import FinancialAnalysis
+from .models.feature_vector import FeatureVector
+from .models.risk_explanation import RiskExplanation
+from .models.risk_alert import RiskAlert
 
 app = FastAPI(
     title="AI Credit System",
@@ -100,6 +107,9 @@ app.include_router(fraud_history.router)
 app.include_router(fraud_summary.router)
 app.include_router(dashboard.router)
 app.include_router(realtime.router)
+app.include_router(documents.router)
+app.include_router(analysis.router)
+app.include_router(ml.router)
 
 # ========================================
 # ROOT
