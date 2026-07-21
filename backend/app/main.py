@@ -20,10 +20,35 @@ from .routes import realtime
 from .routes import documents
 from .routes import analysis
 from .routes import ml
+from .routes import rbac as rbac_routes
+from .routes import audit as audit_routes
+from .routes import applications as applications_routes
+from .routes import approvals as approvals_routes
+from .routes import covenants as covenants_routes
+from .routes import monitoring as monitoring_routes
+from .routes import tasks as tasks_routes
+from .routes import notifications as notifications_routes
+from .routes import collaboration as collaboration_routes
+from .routes import search as search_routes
+from .routes import reports as reports_routes
+from .routes import config as config_routes
+from .routes import dashboards as dashboards_routes
+from .routes import jobs as jobs_routes
+from .models import application as application_models  # noqa: F401
+from .models import approval as approval_models  # noqa: F401
+from .models import covenant as covenant_models  # noqa: F401
+from .models import monitoring as monitoring_models  # noqa: F401
+from .models import task as task_models  # noqa: F401
+from .models import notification as notification_models  # noqa: F401
+from .models import collaboration as collaboration_models  # noqa: F401
+from .models import system_config as system_config_models  # noqa: F401
 from .models.financial_analysis import FinancialAnalysis
 from .models.feature_vector import FeatureVector
 from .models.risk_explanation import RiskExplanation
 from .models.risk_alert import RiskAlert
+from .models import rbac as rbac_models  # noqa: F401  (register RBAC tables)
+from .models import audit as audit_models  # noqa: F401  (register audit table)
+from .core.audit_middleware import AuditMiddleware
 
 app = FastAPI(
     title="AI Credit System",
@@ -110,6 +135,54 @@ app.include_router(realtime.router)
 app.include_router(documents.router)
 app.include_router(analysis.router)
 app.include_router(ml.router)
+app.include_router(rbac_routes.router)
+app.include_router(audit_routes.router)
+app.include_router(applications_routes.router)
+app.include_router(approvals_routes.router)
+app.include_router(covenants_routes.router)
+app.include_router(monitoring_routes.router)
+app.include_router(tasks_routes.router)
+app.include_router(notifications_routes.router)
+app.include_router(collaboration_routes.router)
+app.include_router(search_routes.router)
+app.include_router(reports_routes.router)
+app.include_router(config_routes.router)
+app.include_router(dashboards_routes.router)
+app.include_router(jobs_routes.router)
+
+# ========================================
+# AUDIT MIDDLEWARE (Phase 5, Milestone 4)
+# ========================================
+# Records one audit row per mutating API request. Best-effort and self-contained
+# (never breaks a request); read-heavy/static paths are skipped internally.
+
+app.add_middleware(AuditMiddleware)
+
+# ========================================
+# STARTUP: RBAC catalog sync (Phase 5, Milestone 3)
+# ========================================
+# Idempotently reconciles the DB with the RBAC catalog on boot so catalog
+# changes take effect without a bespoke migration. Best-effort: a missing schema
+# (DB not yet migrated) must not stop the app from starting.
+
+
+@app.on_event("startup")
+def _sync_rbac_on_startup() -> None:
+    from .db.database import SessionLocal
+    from .services.rbac import sync_rbac
+
+    from .services.approvals import ensure_default_workflow
+    from .services.config import sync_config
+
+    db = SessionLocal()
+    try:
+        sync_rbac(db)
+        ensure_default_workflow(db)
+        sync_config(db)
+    except Exception:
+        db.rollback()
+    finally:
+        db.close()
 
 # ========================================
 # ROOT

@@ -29,6 +29,19 @@ from backend.app.models import portfolio  # noqa: E402,F401
 from backend.app.models import enterprise_assessment  # noqa: E402,F401
 from backend.app.models import document  # noqa: E402,F401
 from backend.app.models import financial_analysis  # noqa: E402,F401
+from backend.app.models import feature_vector  # noqa: E402,F401
+from backend.app.models import risk_explanation  # noqa: E402,F401
+from backend.app.models import risk_alert  # noqa: E402,F401
+from backend.app.models import rbac  # noqa: E402,F401
+from backend.app.models import audit as audit_model  # noqa: E402,F401
+from backend.app.models import application as application_model  # noqa: E402,F401
+from backend.app.models import approval as approval_model  # noqa: E402,F401
+from backend.app.models import covenant as covenant_model  # noqa: E402,F401
+from backend.app.models import monitoring as monitoring_model  # noqa: E402,F401
+from backend.app.models import task as task_model  # noqa: E402,F401
+from backend.app.models import notification as notification_model  # noqa: E402,F401
+from backend.app.models import collaboration as collaboration_model  # noqa: E402,F401
+from backend.app.models import system_config as system_config_model  # noqa: E402,F401
 
 config = context.config
 config.set_main_option("sqlalchemy.url", DATABASE_URL)
