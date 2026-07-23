@@ -67,6 +67,12 @@ PERMISSIONS: List[Tuple[str, str, str]] = [
     ("notifications.view", "Notifications", "View own notifications"),
     # Search
     ("search.use", "Search", "Use enterprise-wide search"),
+    # Machine Learning platform (Phase 6)
+    ("mlops.view", "Machine Learning", "View ML models, training, monitoring and dashboards"),
+    ("mlops.train", "Machine Learning", "Train and register ML models"),
+    ("mlops.deploy", "Machine Learning", "Approve, promote, roll back and retrain models"),
+    ("mlops.predict", "Machine Learning", "Run ML inference (serving)"),
+    ("mlops.fraud", "Machine Learning", "Run ML fraud and anomaly scoring"),
     # Audit & compliance
     ("audit.view", "Audit", "View the audit log / dashboard"),
     # Administration
@@ -119,6 +125,7 @@ ROLE_PERMISSIONS: Dict[str, List[str]] = {
         "covenants.view", "monitoring.view",
         "reports.view", "notifications.view", "search.use",
         "portfolio.view",
+        "mlops.view", "mlops.predict",
     ],
     "senior_analyst": [
         "applications.view", "applications.edit", "applications.transition",
@@ -131,6 +138,7 @@ ROLE_PERMISSIONS: Dict[str, List[str]] = {
         "covenants.view", "monitoring.view",
         "reports.view", "reports.export",
         "notifications.view", "search.use", "portfolio.view",
+        "mlops.view", "mlops.train", "mlops.predict", "mlops.fraud",
     ],
     "risk_manager": [
         "applications.view", "applications.transition", "applications.rollback",
@@ -145,6 +153,7 @@ ROLE_PERMISSIONS: Dict[str, List[str]] = {
         "collaboration.view", "collaboration.participate",
         "reports.view", "reports.export",
         "notifications.view", "search.use",
+        "mlops.view", "mlops.train", "mlops.deploy", "mlops.predict", "mlops.fraud",
     ],
     "auditor": [
         "applications.view", "approvals.view", "documents.view",
@@ -152,6 +161,7 @@ ROLE_PERMISSIONS: Dict[str, List[str]] = {
         "audit.view", "reports.view", "reports.export",
         "collaboration.view",
         "notifications.view", "search.use",
+        "mlops.view",
     ],
     "compliance_officer": [
         "applications.view", "approvals.view", "documents.view",
@@ -160,6 +170,7 @@ ROLE_PERMISSIONS: Dict[str, List[str]] = {
         "reports.view", "reports.export",
         "collaboration.view", "collaboration.participate",
         "notifications.view", "search.use",
+        "mlops.view",
     ],
     "viewer": [
         "applications.view", "portfolio.view",

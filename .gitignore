@@ -61,6 +61,14 @@ coverage/
 build/
 
 # ======================
+# ML Platform (Phase 6)
+# ======================
+# Trained model artifacts are binary and reproducible from the registry +
+# dataset spec; never commit them.
+backend/app/services/ml/artifacts/
+*.joblib
+
+# ======================
 # Temporary
 # ======================
 

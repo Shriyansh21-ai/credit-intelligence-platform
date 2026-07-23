@@ -48,6 +48,8 @@ from .models.risk_explanation import RiskExplanation
 from .models.risk_alert import RiskAlert
 from .models import rbac as rbac_models  # noqa: F401  (register RBAC tables)
 from .models import audit as audit_models  # noqa: F401  (register audit table)
+from .models import ml_platform as ml_platform_models  # noqa: F401  (Phase 6 ML tables)
+from .routes.ml_platform import ROUTERS as ML_PLATFORM_ROUTERS
 from .core.audit_middleware import AuditMiddleware
 
 app = FastAPI(
@@ -149,6 +151,10 @@ app.include_router(reports_routes.router)
 app.include_router(config_routes.router)
 app.include_router(dashboards_routes.router)
 app.include_router(jobs_routes.router)
+
+# Phase 6 — Enterprise ML Platform routers (all under /api/ml/*)
+for _ml_router in ML_PLATFORM_ROUTERS:
+    app.include_router(_ml_router)
 
 # ========================================
 # AUDIT MIDDLEWARE (Phase 5, Milestone 4)

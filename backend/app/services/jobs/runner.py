@@ -30,10 +30,26 @@ def job_open_alert_summary(db: Session) -> Dict[str, Any]:
     return {"open_covenant_alerts": open_cov, "open_monitoring_alerts": open_mon}
 
 
+def job_ml_drift_retrain_scan(db: Session) -> Dict[str, Any]:
+    """Scheduled retraining (Phase 6, M9): retrain any production model whose
+    latest drift report has breached thresholds. Challengers are left pending
+    approval (no auto-promotion) so a human owns the production decision."""
+    from backend.app.services.ml import retraining
+
+    outcomes = retraining.scan_and_retrain(db, auto_promote=False, author="scheduled-job")
+    return {
+        "retrained": len(outcomes),
+        "models": [{"model_key": o["model_key"], "challenger_id": o["challenger_id"],
+                    "winner": o["comparison"]["winner"]} for o in outcomes],
+    }
+
+
 # name -> (callable, description)
 JOBS: Dict[str, Dict[str, Any]] = {
     "due_task_scan": {"fn": job_due_task_scan, "description": "Notify owners of due/overdue tasks."},
     "open_alert_summary": {"fn": job_open_alert_summary, "description": "Summarise open risk alerts."},
+    "ml_drift_retrain_scan": {"fn": job_ml_drift_retrain_scan,
+                              "description": "Retrain production models with breached drift (M9)."},
 }
 
 

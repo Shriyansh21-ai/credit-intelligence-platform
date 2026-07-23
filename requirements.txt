@@ -7,6 +7,9 @@ joblib
 python-dotenv
 pandas
 shap
+xgboost
+lightgbm
+reportlab
 python-jose
 passlib[bcrypt]
 sqlalchemy

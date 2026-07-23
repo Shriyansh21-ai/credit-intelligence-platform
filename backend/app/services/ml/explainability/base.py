@@ -54,15 +54,22 @@ def build_explanation(
     raw_contributions: Mapping[str, float],
     logit: float,
     probability_of_default: float,
+    base_logit: Optional[float] = None,
 ) -> Explanation:
     """Assemble a full :class:`Explanation` from signed log-odds contributions.
 
     ``raw_contributions`` maps feature -> log-odds contribution; the mechanics of
     *how* they were derived (exact additive, SHAP, LIME) are the explainer's
     concern, not this builder's.
+
+    ``base_logit`` is the model's neutral/expected-value log-odds. It defaults to
+    the deterministic estimator's intercept (preserving the Phase 4 behaviour);
+    trained-model explainers pass the SHAP expected value so the waterfall starts
+    from the model's true base rate.
     """
-    base_probability = _sigmoid(ESTIMATOR.intercept)
-    total_logit_delta = logit - ESTIMATOR.intercept
+    reference_logit = ESTIMATOR.intercept if base_logit is None else base_logit
+    base_probability = _sigmoid(reference_logit)
+    total_logit_delta = logit - reference_logit
     total_pd_delta = probability_of_default - base_probability
 
     contribs: List[FeatureContribution] = []
