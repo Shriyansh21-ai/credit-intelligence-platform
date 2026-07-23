@@ -79,7 +79,7 @@ class RbacSeedingTest(RbacTestBase):
         from backend.app.models.rbac import Permission, Role
 
         self.assertEqual(db.query(Role).count(), 8)
-        self.assertEqual(db.query(Permission).count(), 46)
+        self.assertEqual(db.query(Permission).count(), 54)
         db.close()
 
     def test_admin_has_all_permissions(self):
@@ -88,7 +88,7 @@ class RbacSeedingTest(RbacTestBase):
         user = db.query(User).filter(User.id == uid).first()
         self.assertTrue(has_permission(db, user, "users.manage"))
         self.assertTrue(has_permission(db, user, "config.manage"))
-        self.assertEqual(len(user_permission_codes(db, user)), 46)
+        self.assertEqual(len(user_permission_codes(db, user)), 54)
         db.close()
 
     def test_viewer_is_restricted(self):

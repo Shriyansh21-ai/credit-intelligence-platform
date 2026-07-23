@@ -49,7 +49,9 @@ from .models.risk_alert import RiskAlert
 from .models import rbac as rbac_models  # noqa: F401  (register RBAC tables)
 from .models import audit as audit_models  # noqa: F401  (register audit table)
 from .models import ml_platform as ml_platform_models  # noqa: F401  (Phase 6 ML tables)
+from .models import integrations as integrations_models  # noqa: F401  (Phase 7 integration tables)
 from .routes.ml_platform import ROUTERS as ML_PLATFORM_ROUTERS
+from .routes.integrations import ROUTERS as INTEGRATION_ROUTERS
 from .core.audit_middleware import AuditMiddleware
 
 app = FastAPI(
@@ -156,6 +158,10 @@ app.include_router(jobs_routes.router)
 for _ml_router in ML_PLATFORM_ROUTERS:
     app.include_router(_ml_router)
 
+# Phase 7 — Banking Ecosystem Integration Platform routers
+for _int_router in INTEGRATION_ROUTERS:
+    app.include_router(_int_router)
+
 # ========================================
 # AUDIT MIDDLEWARE (Phase 5, Milestone 4)
 # ========================================
@@ -180,11 +186,14 @@ def _sync_rbac_on_startup() -> None:
     from .services.approvals import ensure_default_workflow
     from .services.config import sync_config
 
+    from .services.integrations.config import sync_connector_configs
+
     db = SessionLocal()
     try:
         sync_rbac(db)
         ensure_default_workflow(db)
         sync_config(db)
+        sync_connector_configs(db)
     except Exception:
         db.rollback()
     finally:

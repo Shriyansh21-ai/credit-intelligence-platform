@@ -73,6 +73,15 @@ PERMISSIONS: List[Tuple[str, str, str]] = [
     ("mlops.deploy", "Machine Learning", "Approve, promote, roll back and retrain models"),
     ("mlops.predict", "Machine Learning", "Run ML inference (serving)"),
     ("mlops.fraud", "Machine Learning", "Run ML fraud and anomaly scoring"),
+    # Banking Ecosystem Integration Platform (Phase 7)
+    ("integrations.view", "Integrations", "View connectors, snapshots, imports and observability"),
+    ("integrations.manage", "Integrations", "Configure connectors and trigger data imports"),
+    ("integrations.sync", "Integrations", "Run and manage portfolio synchronization jobs"),
+    ("collateral.view", "Integrations", "View collateral records and coverage"),
+    ("collateral.manage", "Integrations", "Create, revalue and inspect collateral"),
+    ("customer360.view", "Integrations", "View the unified Customer 360 profile"),
+    ("apiplatform.view", "Integrations", "View Open API keys, webhooks and usage"),
+    ("apiplatform.manage", "Integrations", "Manage Open API keys and webhook subscriptions"),
     # Audit & compliance
     ("audit.view", "Audit", "View the audit log / dashboard"),
     # Administration
@@ -126,6 +135,7 @@ ROLE_PERMISSIONS: Dict[str, List[str]] = {
         "reports.view", "notifications.view", "search.use",
         "portfolio.view",
         "mlops.view", "mlops.predict",
+        "integrations.view", "collateral.view", "customer360.view",
     ],
     "senior_analyst": [
         "applications.view", "applications.edit", "applications.transition",
@@ -139,6 +149,8 @@ ROLE_PERMISSIONS: Dict[str, List[str]] = {
         "reports.view", "reports.export",
         "notifications.view", "search.use", "portfolio.view",
         "mlops.view", "mlops.train", "mlops.predict", "mlops.fraud",
+        "integrations.view", "integrations.manage",
+        "collateral.view", "collateral.manage", "customer360.view",
     ],
     "risk_manager": [
         "applications.view", "applications.transition", "applications.rollback",
@@ -154,6 +166,9 @@ ROLE_PERMISSIONS: Dict[str, List[str]] = {
         "reports.view", "reports.export",
         "notifications.view", "search.use",
         "mlops.view", "mlops.train", "mlops.deploy", "mlops.predict", "mlops.fraud",
+        "integrations.view", "integrations.manage", "integrations.sync",
+        "collateral.view", "collateral.manage", "customer360.view",
+        "apiplatform.view", "apiplatform.manage",
     ],
     "auditor": [
         "applications.view", "approvals.view", "documents.view",
@@ -162,6 +177,7 @@ ROLE_PERMISSIONS: Dict[str, List[str]] = {
         "collaboration.view",
         "notifications.view", "search.use",
         "mlops.view",
+        "integrations.view", "collateral.view", "customer360.view", "apiplatform.view",
     ],
     "compliance_officer": [
         "applications.view", "approvals.view", "documents.view",
@@ -171,6 +187,7 @@ ROLE_PERMISSIONS: Dict[str, List[str]] = {
         "collaboration.view", "collaboration.participate",
         "notifications.view", "search.use",
         "mlops.view",
+        "integrations.view", "collateral.view", "customer360.view", "apiplatform.view",
     ],
     "viewer": [
         "applications.view", "portfolio.view",
