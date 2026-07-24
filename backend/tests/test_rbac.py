@@ -78,8 +78,8 @@ class RbacSeedingTest(RbacTestBase):
         sync_rbac(db)  # second run
         from backend.app.models.rbac import Permission, Role
 
-        self.assertEqual(db.query(Role).count(), 8)
-        self.assertEqual(db.query(Permission).count(), 54)
+        self.assertEqual(db.query(Role).count(), 9)
+        self.assertEqual(db.query(Permission).count(), 73)
         db.close()
 
     def test_admin_has_all_permissions(self):
@@ -88,7 +88,7 @@ class RbacSeedingTest(RbacTestBase):
         user = db.query(User).filter(User.id == uid).first()
         self.assertTrue(has_permission(db, user, "users.manage"))
         self.assertTrue(has_permission(db, user, "config.manage"))
-        self.assertEqual(len(user_permission_codes(db, user)), 54)
+        self.assertEqual(len(user_permission_codes(db, user)), 73)
         db.close()
 
     def test_viewer_is_restricted(self):
@@ -119,7 +119,7 @@ class RbacApiTest(RbacTestBase):
         client = self._app_for(uid)
         resp = client.get("/api/rbac/roles")
         self.assertEqual(resp.status_code, 200)
-        self.assertEqual(len(resp.json()), 8)
+        self.assertEqual(len(resp.json()), 9)
 
     def test_assign_role_requires_users_manage(self):
         target = self._make_user("target@x.com", "viewer")

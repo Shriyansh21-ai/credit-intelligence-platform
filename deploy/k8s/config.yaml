@@ -1,0 +1,26 @@
+# Configuration + secrets (Phase 8, Milestone 11).
+# ConfigMap holds non-secret environment profile; the Secret is a placeholder —
+# in production source it from a real manager (Vault/KMS/External Secrets) that
+# the platform's SecretManager abstraction points at.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ai-credit-config
+data:
+  APP_ENV: "production"
+  RUN_MIGRATIONS: "1"
+  CACHE_BACKEND: "redis"
+  REDIS_URL: "redis://cache:6379/0"
+  STORAGE_BACKEND: "s3"
+  OCR_ENGINE: "auto"
+  ML_DEFAULT_MODEL: "scorecard"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: ai-credit-secrets
+type: Opaque
+stringData:
+  # Replace via your secret manager; never commit real values.
+  SECRET_KEY: "change-me-in-production"
+  DATABASE_URL: "postgresql+psycopg://credit:credit@db:5432/credit"

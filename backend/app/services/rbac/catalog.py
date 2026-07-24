@@ -82,6 +82,26 @@ PERMISSIONS: List[Tuple[str, str, str]] = [
     ("customer360.view", "Integrations", "View the unified Customer 360 profile"),
     ("apiplatform.view", "Integrations", "View Open API keys, webhooks and usage"),
     ("apiplatform.manage", "Integrations", "Manage Open API keys and webhook subscriptions"),
+    # Multi-Tenant Enterprise SaaS Platform (Phase 8)
+    ("tenancy.view", "SaaS Platform", "View organizations, tenants and hierarchy"),
+    ("tenancy.manage", "SaaS Platform", "Create/manage orgs, tenants, members and invitations"),
+    ("branding.view", "SaaS Platform", "View white-label branding"),
+    ("branding.manage", "SaaS Platform", "Manage white-label branding and custom domains"),
+    ("billing.view", "SaaS Platform", "View subscriptions, usage and invoices"),
+    ("billing.manage", "SaaS Platform", "Manage subscriptions, plans and invoicing"),
+    ("flags.view", "SaaS Platform", "View feature flags"),
+    ("flags.manage", "SaaS Platform", "Manage feature flags and overrides"),
+    ("bgjobs.view", "SaaS Platform", "View the background job platform"),
+    ("bgjobs.manage", "SaaS Platform", "Enqueue, cancel and replay background jobs"),
+    ("storage.view", "SaaS Platform", "View cloud storage objects"),
+    ("storage.manage", "SaaS Platform", "Upload, version and delete cloud storage objects"),
+    ("realtime.view", "SaaS Platform", "Subscribe to real-time channels and activity"),
+    ("observability.view", "SaaS Platform", "View tracing, metrics and health"),
+    ("cache.manage", "SaaS Platform", "Manage and inspect the cache platform"),
+    ("security.view", "SaaS Platform", "View sessions, devices and security config"),
+    ("security.manage", "SaaS Platform", "Manage secrets, IP allow-lists, sessions and IdPs"),
+    ("analytics.view", "SaaS Platform", "View SaaS analytics dashboards"),
+    ("platform.admin", "SaaS Platform", "Full super-admin console across all tenants"),
     # Audit & compliance
     ("audit.view", "Audit", "View the audit log / dashboard"),
     # Administration
@@ -106,6 +126,16 @@ ROLES: List[Tuple[str, str, str]] = [
     ("auditor", "Auditor", "Read-only access with full audit visibility"),
     ("compliance_officer", "Compliance Officer", "Compliance oversight and reporting"),
     ("viewer", "Viewer", "Read-only access to applications and portfolio"),
+    ("platform_admin", "Platform Admin", "Super-admin of the multi-tenant SaaS platform (Phase 8)"),
+]
+
+# Phase 8 SaaS-platform permission codes, grouped for reuse below.
+_SAAS_PLATFORM_PERMISSIONS: List[str] = [
+    "tenancy.view", "tenancy.manage", "branding.view", "branding.manage",
+    "billing.view", "billing.manage", "flags.view", "flags.manage",
+    "bgjobs.view", "bgjobs.manage", "storage.view", "storage.manage",
+    "realtime.view", "observability.view", "cache.manage",
+    "security.view", "security.manage", "analytics.view", "platform.admin",
 ]
 
 # ---------------------------------------------------------------------------
@@ -192,8 +222,23 @@ ROLE_PERMISSIONS: Dict[str, List[str]] = {
     "viewer": [
         "applications.view", "portfolio.view",
         "reports.view", "notifications.view", "search.use",
+        "realtime.view",
+    ],
+    # Phase 8: dedicated super-admin of the SaaS platform. Holds every platform
+    # permission but not the credit-workflow permissions (separation of duties).
+    "platform_admin": list(_SAAS_PLATFORM_PERMISSIONS) + [
+        "audit.view", "config.view", "config.manage", "users.manage", "roles.manage",
     ],
 }
+
+# Grant read-only platform visibility to the oversight roles.
+for _role in ("risk_manager", "compliance_officer", "auditor"):
+    ROLE_PERMISSIONS[_role].extend([
+        "billing.view", "analytics.view", "observability.view", "tenancy.view",
+        "flags.view", "realtime.view",
+    ])
+# Risk managers additionally operate the background-job + storage platforms.
+ROLE_PERMISSIONS["risk_manager"].extend(["bgjobs.view", "storage.view", "branding.view"])
 
 # The role backfilled onto pre-existing users so nobody is locked out after the
 # RBAC migration. Kept intentionally broad for continuity with single-tenant dev

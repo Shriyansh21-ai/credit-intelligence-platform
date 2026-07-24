@@ -50,9 +50,17 @@ from .models import rbac as rbac_models  # noqa: F401  (register RBAC tables)
 from .models import audit as audit_models  # noqa: F401  (register audit table)
 from .models import ml_platform as ml_platform_models  # noqa: F401  (Phase 6 ML tables)
 from .models import integrations as integrations_models  # noqa: F401  (Phase 7 integration tables)
+from .models import tenancy as tenancy_models  # noqa: F401  (Phase 8 tenancy tables)
+from .models import billing as billing_models  # noqa: F401  (Phase 8 billing tables)
+from .models import feature_flags as feature_flag_models  # noqa: F401  (Phase 8 flags)
+from .models import platform_ops as platform_ops_models  # noqa: F401  (Phase 8 jobs/storage/realtime/obs)
+from .models import saas_security as saas_security_models  # noqa: F401  (Phase 8 security)
 from .routes.ml_platform import ROUTERS as ML_PLATFORM_ROUTERS
 from .routes.integrations import ROUTERS as INTEGRATION_ROUTERS
+from .routes.saas import ROUTERS as SAAS_ROUTERS
 from .core.audit_middleware import AuditMiddleware
+from .core.tenant_middleware import TenantMiddleware
+from .core.observability_middleware import ObservabilityMiddleware
 
 app = FastAPI(
     title="AI Credit System",
@@ -162,6 +170,10 @@ for _ml_router in ML_PLATFORM_ROUTERS:
 for _int_router in INTEGRATION_ROUTERS:
     app.include_router(_int_router)
 
+# Phase 8 — Multi-Tenant Enterprise SaaS Platform routers (/api/saas/* + probes)
+for _saas_router in SAAS_ROUTERS:
+    app.include_router(_saas_router)
+
 # ========================================
 # AUDIT MIDDLEWARE (Phase 5, Milestone 4)
 # ========================================
@@ -169,6 +181,17 @@ for _int_router in INTEGRATION_ROUTERS:
 # (never breaks a request); read-heavy/static paths are skipped internally.
 
 app.add_middleware(AuditMiddleware)
+
+# ========================================
+# PHASE 8 MIDDLEWARE
+# ========================================
+# Tenant resolution establishes the ambient tenant context (best-effort, never
+# rejects). Observability is added last so it is the outermost layer and every
+# request gets a correlation id + latency metric. Both are additive and safe on
+# requests that carry no tenant / correlation headers.
+
+app.add_middleware(TenantMiddleware)
+app.add_middleware(ObservabilityMiddleware)
 
 # ========================================
 # STARTUP: RBAC catalog sync (Phase 5, Milestone 3)
@@ -188,12 +211,15 @@ def _sync_rbac_on_startup() -> None:
 
     from .services.integrations.config import sync_connector_configs
 
+    from .services.saas.seeding import seed_saas
+
     db = SessionLocal()
     try:
         sync_rbac(db)
         ensure_default_workflow(db)
         sync_config(db)
         sync_connector_configs(db)
+        seed_saas(db)  # Phase 8: plans, feature flags, default tenant
     except Exception:
         db.rollback()
     finally:
