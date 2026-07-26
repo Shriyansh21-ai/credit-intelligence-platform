@@ -102,6 +102,20 @@ PERMISSIONS: List[Tuple[str, str, str]] = [
     ("security.manage", "SaaS Platform", "Manage secrets, IP allow-lists, sessions and IdPs"),
     ("analytics.view", "SaaS Platform", "View SaaS analytics dashboards"),
     ("platform.admin", "SaaS Platform", "Full super-admin console across all tenants"),
+    # Autonomous AI Banking Intelligence (Phase 9)
+    ("intelligence.view", "Autonomous Intelligence", "View the AI knowledge graph, monitoring, EWS and alerts"),
+    ("intelligence.manage", "Autonomous Intelligence", "Run monitoring, resolve alerts and manage the knowledge graph"),
+    ("copilot.use", "Autonomous Intelligence", "Use the AI Credit Copilot and natural-language analytics"),
+    ("simulation.run", "Autonomous Intelligence", "Run scenario simulations and stress tests"),
+    ("portfolio.optimize", "Autonomous Intelligence", "Run portfolio optimization and capital allocation"),
+    ("rm.workspace", "Autonomous Intelligence", "Use the Relationship Manager workspace"),
+    ("command.center", "Autonomous Intelligence", "View the executive command center dashboards"),
+    ("recommendations.view", "Autonomous Intelligence", "View AI recommendations and workflow actions"),
+    ("recommendations.act", "Autonomous Intelligence", "Accept/reject recommendations and execute workflow actions"),
+    ("governance.view", "Autonomous Intelligence", "View the model governance platform"),
+    ("governance.manage", "Autonomous Intelligence", "Validate, approve and govern ML models"),
+    ("datalake.view", "Autonomous Intelligence", "Query the enterprise data lake"),
+    ("datalake.manage", "Autonomous Intelligence", "Ingest into and manage the enterprise data lake"),
     # Audit & compliance
     ("audit.view", "Audit", "View the audit log / dashboard"),
     # Administration
@@ -239,6 +253,35 @@ for _role in ("risk_manager", "compliance_officer", "auditor"):
     ])
 # Risk managers additionally operate the background-job + storage platforms.
 ROLE_PERMISSIONS["risk_manager"].extend(["bgjobs.view", "storage.view", "branding.view"])
+
+# ---------------------------------------------------------------------------
+# Phase 9 — Autonomous AI Banking Intelligence grants.
+# The "AI Brain" is broadly readable by the credit-workflow roles; running heavy
+# engines (simulation, optimization, governance) is restricted by seniority.
+# ---------------------------------------------------------------------------
+_PHASE9_READ = [
+    "intelligence.view", "copilot.use", "recommendations.view",
+    "rm.workspace", "datalake.view",
+]
+for _role in ("relationship_manager", "credit_analyst", "senior_analyst",
+              "risk_manager", "compliance_officer", "auditor"):
+    ROLE_PERMISSIONS[_role].extend(_PHASE9_READ)
+
+# Analysts and above can drive simulations and act on recommendations.
+for _role in ("credit_analyst", "senior_analyst", "risk_manager"):
+    ROLE_PERMISSIONS[_role].extend([
+        "simulation.run", "recommendations.act", "command.center",
+    ])
+# Senior analysts + risk managers additionally manage intelligence + governance.
+for _role in ("senior_analyst", "risk_manager"):
+    ROLE_PERMISSIONS[_role].extend([
+        "intelligence.manage", "portfolio.optimize", "governance.view",
+    ])
+# Risk managers own model governance + data-lake management.
+ROLE_PERMISSIONS["risk_manager"].extend(["governance.manage", "datalake.manage"])
+# Oversight roles see the command center and governance read-only.
+for _role in ("compliance_officer", "auditor"):
+    ROLE_PERMISSIONS[_role].extend(["command.center", "governance.view"])
 
 # The role backfilled onto pre-existing users so nobody is locked out after the
 # RBAC migration. Kept intentionally broad for continuity with single-tenant dev

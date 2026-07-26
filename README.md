@@ -297,6 +297,31 @@ Supports:
 
 ---
 
+# 🧠 Autonomous AI Banking Intelligence (Phase 9)
+
+The platform now includes an autonomous "AI Brain" layer (all under `/api/ai/*`,
+UI under the **Autonomous Intelligence** sidebar group). Fully additive and
+grounded in deterministic platform data — the optional LLM only phrases facts,
+never fabricates numbers. See `docs/PHASE9_ENGINEERING_REPORT.md`.
+
+* **Enterprise Knowledge Graph** — companies, directors, subsidiaries, suppliers,
+  lenders and sectors as a weighted graph with traversal, connected exposure,
+  similarity and risk propagation.
+* **Real-Time Risk Monitoring** & **Early Warning Signals** — continuous change
+  detection across financials/connectors/GST/MCA/bureau/news with prioritized
+  alerts, EWS scoring and escalation.
+* **AI Credit Copilot** & **Natural Language Analytics** — ask questions and get
+  grounded answers / structured queries (offline-safe local LLM by default; a
+  gated Claude adapter can be enabled with `COPILOT_LLM_PROVIDER=claude`).
+* **Scenario Simulation**, **Stress Testing**, **Portfolio Optimization** —
+  what-if PD/rating/limit re-scoring, Base/Moderate/Severe/Custom stress with
+  loss & capital projections, RAROC and concentration analysis.
+* **RM Workspace**, **Executive Command Center**, **Recommendation Engine**,
+  **Autonomous Workflow Intelligence**, **Model Governance** and an
+  **Enterprise Data Lake** for analytics.
+
+---
+
 # 👨‍💻 Developer
 
 **Shriyansh Dev**

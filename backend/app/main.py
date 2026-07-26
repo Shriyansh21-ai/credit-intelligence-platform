@@ -55,9 +55,11 @@ from .models import billing as billing_models  # noqa: F401  (Phase 8 billing ta
 from .models import feature_flags as feature_flag_models  # noqa: F401  (Phase 8 flags)
 from .models import platform_ops as platform_ops_models  # noqa: F401  (Phase 8 jobs/storage/realtime/obs)
 from .models import saas_security as saas_security_models  # noqa: F401  (Phase 8 security)
+from .models import autonomous as autonomous_models  # noqa: F401  (Phase 9 AI-brain tables)
 from .routes.ml_platform import ROUTERS as ML_PLATFORM_ROUTERS
 from .routes.integrations import ROUTERS as INTEGRATION_ROUTERS
 from .routes.saas import ROUTERS as SAAS_ROUTERS
+from .routes.autonomous import ROUTERS as AUTONOMOUS_ROUTERS
 from .core.audit_middleware import AuditMiddleware
 from .core.tenant_middleware import TenantMiddleware
 from .core.observability_middleware import ObservabilityMiddleware
@@ -173,6 +175,10 @@ for _int_router in INTEGRATION_ROUTERS:
 # Phase 8 — Multi-Tenant Enterprise SaaS Platform routers (/api/saas/* + probes)
 for _saas_router in SAAS_ROUTERS:
     app.include_router(_saas_router)
+
+# Phase 9 — Autonomous AI Banking Intelligence Platform routers (/api/ai/*)
+for _ai_router in AUTONOMOUS_ROUTERS:
+    app.include_router(_ai_router)
 
 # ========================================
 # AUDIT MIDDLEWARE (Phase 5, Milestone 4)
