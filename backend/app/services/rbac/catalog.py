@@ -116,6 +116,23 @@ PERMISSIONS: List[Tuple[str, str, str]] = [
     ("governance.manage", "Autonomous Intelligence", "Validate, approve and govern ML models"),
     ("datalake.view", "Autonomous Intelligence", "Query the enterprise data lake"),
     ("datalake.manage", "Autonomous Intelligence", "Ingest into and manage the enterprise data lake"),
+    # Enterprise Banking Operating System (Phase 10)
+    ("policy.view", "Banking OS", "View business policies, versions and evaluations"),
+    ("policy.manage", "Banking OS", "Author, version, publish and archive business policies"),
+    ("policy.evaluate", "Banking OS", "Execute policy evaluations in real time"),
+    ("committee.view", "Banking OS", "View loan committees, meetings, agendas and decisions"),
+    ("committee.participate", "Banking OS", "Attend meetings and cast committee votes"),
+    ("committee.manage", "Banking OS", "Manage committees, meetings, agendas and minutes"),
+    ("prompt.view", "Banking OS", "View prompt templates, versions and evaluations"),
+    ("prompt.manage", "Banking OS", "Author, evaluate, approve and deploy prompts"),
+    ("llm.view", "Banking OS", "View the multi-LLM provider registry and analytics"),
+    ("llm.manage", "Banking OS", "Manage LLM providers and routing configuration"),
+    ("fabric.view", "Banking OS", "View the enterprise data fabric catalog, lineage and quality"),
+    ("fabric.manage", "Banking OS", "Manage datasets, data contracts and quality rules"),
+    ("workflowstudio.view", "Banking OS", "View enterprise workflow designs and runs"),
+    ("workflowstudio.manage", "Banking OS", "Design, version and execute enterprise workflows"),
+    ("marketplace.view", "Banking OS", "View the AI recommendation marketplace"),
+    ("marketplace.manage", "Banking OS", "Install and configure recommendation plugins"),
     # Audit & compliance
     ("audit.view", "Audit", "View the audit log / dashboard"),
     # Administration
@@ -282,6 +299,36 @@ ROLE_PERMISSIONS["risk_manager"].extend(["governance.manage", "datalake.manage"]
 # Oversight roles see the command center and governance read-only.
 for _role in ("compliance_officer", "auditor"):
     ROLE_PERMISSIONS[_role].extend(["command.center", "governance.view"])
+
+# ---------------------------------------------------------------------------
+# Phase 10 — Enterprise Banking Operating System grants.
+# The AI-native OS layer (policies, committees, prompts, multi-LLM, data fabric,
+# workflow studio, marketplace) is broadly readable by credit-workflow roles;
+# authoring/governance is restricted by seniority.
+# ---------------------------------------------------------------------------
+_PHASE10_READ = [
+    "policy.view", "committee.view", "prompt.view", "llm.view", "fabric.view",
+    "workflowstudio.view", "marketplace.view",
+]
+for _role in ("relationship_manager", "credit_analyst", "senior_analyst",
+              "risk_manager", "compliance_officer", "auditor"):
+    ROLE_PERMISSIONS[_role].extend(_PHASE10_READ)
+
+# Analysts and above evaluate policies, participate in committees and use the
+# recommendation marketplace.
+for _role in ("credit_analyst", "senior_analyst", "risk_manager"):
+    ROLE_PERMISSIONS[_role].extend([
+        "policy.evaluate", "committee.participate", "prompt.manage",
+    ])
+# Senior analysts + risk managers author policies, run the studio and manage LLMs.
+for _role in ("senior_analyst", "risk_manager"):
+    ROLE_PERMISSIONS[_role].extend([
+        "policy.manage", "committee.manage", "workflowstudio.manage",
+    ])
+# Risk managers own the OS governance surfaces end-to-end.
+ROLE_PERMISSIONS["risk_manager"].extend([
+    "llm.manage", "fabric.manage", "marketplace.manage",
+])
 
 # The role backfilled onto pre-existing users so nobody is locked out after the
 # RBAC migration. Kept intentionally broad for continuity with single-tenant dev
