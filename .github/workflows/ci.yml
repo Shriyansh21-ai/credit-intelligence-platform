@@ -146,14 +146,14 @@ jobs:
             --cov=backend/app --cov-report=xml --cov-report=term-missing
       - name: Upload test results
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: junit-${{ matrix.os }}-py${{ matrix.python }}
           path: junit-*.xml
           retention-days: 14
       - name: Upload coverage
         if: matrix.os == 'ubuntu-latest' && matrix.python == '3.13'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: coverage-xml
           path: coverage.xml
@@ -268,7 +268,7 @@ jobs:
           fi
       - name: Upload build artifact
         if: matrix.node == '22'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: frontend-dist
           path: frontend/dist
