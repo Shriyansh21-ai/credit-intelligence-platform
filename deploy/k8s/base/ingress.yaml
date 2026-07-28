@@ -1,0 +1,39 @@
+# Ingress (Phase 11, M4). Routes the web UI and the API through the nginx edge.
+# TLS is terminated here (cert-manager annotation shown); adjust host/class to
+# your environment.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ai-credit
+  namespace: ai-credit
+  labels:
+    app.kubernetes.io/part-of: ai-credit-platform
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/proxy-body-size: "25m"
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - app.ai-credit.example.com
+        - api.ai-credit.example.com
+      secretName: ai-credit-tls
+  rules:
+    - host: app.ai-credit.example.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: nginx
+                port: {name: web}
+    - host: api.ai-credit.example.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: nginx
+                port: {name: apigw}

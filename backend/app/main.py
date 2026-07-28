@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 
 from fastapi.middleware.cors import CORSMiddleware
+from starlette.middleware.gzip import GZipMiddleware
 
 from .routes import user, loan, prediction
 from .routes import transaction
@@ -64,33 +65,48 @@ from .routes.autonomous import ROUTERS as AUTONOMOUS_ROUTERS
 from .routes.banking_os import ROUTERS as BANKING_OS_ROUTERS
 from .core.audit_middleware import AuditMiddleware
 from .core.tenant_middleware import TenantMiddleware
+from .core.api_versioning import APIVersionMiddleware
 from .core.observability_middleware import ObservabilityMiddleware
+from .core.security_middleware import SecurityHeadersMiddleware
+from .core.settings import get_settings
+from .core.telemetry import instrument_app as _instrument_app
+from .core.telemetry import metrics_router as _metrics_router
+
+_settings = get_settings()
 
 app = FastAPI(
-    title="AI Credit System",
-    version="1.0"
+    title=_settings.app_name,
+    version=_settings.app_version,
+    debug=_settings.debug,
+    # OpenAPI enrichment (Phase 11, M10) — additive metadata for the generated
+    # spec / developer portal / SDK generation. Does not change any route.
+    description=(
+        "Enterprise AI credit intelligence platform API. "
+        "See docs/API_PLATFORM.md for versioning, deprecation, rate limits, "
+        "API keys, and webhook signing/retry/replay."
+    ),
+    contact={"name": "AI Credit Platform", "url": "https://github.com/Shriyansh21-ai/ai_credit_system"},
+    license_info={"name": "Proprietary"},
+    openapi_tags=[
+        {"name": "Observability", "description": "Metrics, health, and probes."},
+        {"name": "Probes", "description": "Kubernetes liveness/readiness probes."},
+    ],
 )
 
 # ========================================
 # CORS MIDDLEWARE
 # ========================================
+# Allowed origins, credentials and headers come from the centralized settings
+# (Phase 11, M1). The default origin list preserves the historical localhost
+# development ports; set CORS_ORIGINS in staging/production.
 
 app.add_middleware(
 
     CORSMiddleware,
 
-    allow_origins=[
-        "http://localhost:3000",
-        "http://localhost:4173",
-        "http://localhost:5173",
-        "http://localhost:8080",
-        "http://127.0.0.1:3000",
-        "http://127.0.0.1:4173",
-        "http://127.0.0.1:5173",
-        "http://127.0.0.1:8080"
-    ],
+    allow_origins=_settings.cors_origins,
 
-    allow_credentials=True,
+    allow_credentials=_settings.cors_allow_credentials,
 
     allow_methods=["*"],
 
@@ -166,6 +182,10 @@ app.include_router(config_routes.router)
 app.include_router(dashboards_routes.router)
 app.include_router(jobs_routes.router)
 
+# Root-level Prometheus scrape endpoint (Phase 11, M7). Additive; the scrape
+# target is already declared in deploy/monitoring/prometheus.
+app.include_router(_metrics_router)
+
 # Phase 6 — Enterprise ML Platform routers (all under /api/ml/*)
 for _ml_router in ML_PLATFORM_ROUTERS:
     app.include_router(_ml_router)
@@ -205,12 +225,58 @@ app.add_middleware(AuditMiddleware)
 app.add_middleware(TenantMiddleware)
 app.add_middleware(ObservabilityMiddleware)
 
+# Security response headers (Phase 11, M8). Added last so it is the outermost
+# layer and stamps OWASP headers on every fully-formed response. Additive: only
+# sets headers not already present, and is togglable via SECURITY_HEADERS_ENABLED.
+app.add_middleware(SecurityHeadersMiddleware)
+
+# Response compression (Phase 11, M9). Gzips responses above a threshold. Uses
+# Starlette's built-in middleware; togglable via COMPRESSION_ENABLED.
+if _settings.compression_enabled:
+    app.add_middleware(GZipMiddleware, minimum_size=_settings.compression_min_size)
+
+# API lifecycle headers (Phase 11, M10). Stamps X-API-Version and, for
+# deprecated versions, Deprecation/Sunset/Link headers. Additive and inert for
+# unversioned routes.
+app.add_middleware(APIVersionMiddleware)
+
 # ========================================
 # STARTUP: RBAC catalog sync (Phase 5, Milestone 3)
 # ========================================
 # Idempotently reconciles the DB with the RBAC catalog on boot so catalog
 # changes take effect without a bespoke migration. Best-effort: a missing schema
 # (DB not yet migrated) must not stop the app from starting.
+
+
+@app.on_event("startup")
+def _validate_configuration_on_startup() -> None:
+    """Validate configuration before serving traffic (Phase 11, M1).
+
+    Fails fast in staging/production if a fatal misconfiguration is present;
+    warns only in development/testing so the zero-config flow is preserved.
+    """
+    from .core.startup import validate_configuration
+
+    validate_configuration()
+
+
+@app.on_event("startup")
+def _init_telemetry_on_startup() -> None:
+    """Wire structured logging + OpenTelemetry tracing (Phase 11, M7).
+
+    Best-effort: telemetry initialisation never blocks serving traffic.
+    """
+    _instrument_app(app)
+    # Attach the SQLAlchemy query profiler when explicitly enabled (Phase 11,
+    # M9). Off by default so it never adds overhead to the hot path.
+    if _settings.query_profiling_enabled:
+        try:
+            from .core.performance import profiler
+            from .db.database import engine
+
+            profiler.attach(engine)
+        except Exception:
+            pass
 
 
 @app.on_event("startup")

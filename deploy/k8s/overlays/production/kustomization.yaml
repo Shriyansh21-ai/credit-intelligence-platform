@@ -1,0 +1,44 @@
+# Production overlay (Phase 11, M5).
+#
+#   kubectl apply -k deploy/k8s/overlays/production
+#
+# Full HA topology. Image tags are pinned to an immutable release version by
+# deploy.yml (`kustomize edit set image ...=<semver>`) — never `latest`.
+# Additive: references the frozen base without editing it.
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: ai-credit
+
+resources:
+  - ../../base
+
+commonLabels:
+  app.kubernetes.io/environment: production
+
+# HA replica counts (base defaults are already production-oriented; restated
+# here so the overlay is the single source of truth for prod scale).
+replicas:
+  - name: backend
+    count: 4
+  - name: worker
+    count: 3
+  - name: frontend
+    count: 3
+  - name: nginx
+    count: 3
+  - name: scheduler
+    count: 1
+
+# Pinned at deploy time to the released semantic version — placeholder here.
+images:
+  - name: ai-credit/backend
+    newTag: stable
+  - name: ai-credit/worker
+    newTag: stable
+  - name: ai-credit/scheduler
+    newTag: stable
+  - name: ai-credit/frontend
+    newTag: stable
+  - name: ai-credit/nginx
+    newTag: stable

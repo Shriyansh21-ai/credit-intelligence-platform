@@ -1,0 +1,331 @@
+# =============================================================================
+# CI — build, lint, type-check, test, migrate, scan, package (Phase 11, M5)
+# =============================================================================
+# Runs on every pull request and on pushes to the long-lived branches. Path
+# filtering skips the backend or frontend lanes when that tree is untouched, so
+# doc-only or infra-only changes stay fast. The `ci-success` aggregator at the
+# bottom is the single required status check to wire into branch protection.
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+  workflow_dispatch:
+
+# Cancel superseded runs for the same ref to save runners; never cancel on the
+# protected branches (a push there should always complete for release gating).
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' && github.ref != 'refs/heads/develop' }}
+
+permissions:
+  contents: read
+
+env:
+  PYTHON_DEFAULT: "3.13"
+  PIP_DISABLE_PIP_VERSION_CHECK: "1"
+  FORCE_COLOR: "1"
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # Detect which trees changed so downstream lanes can no-op cheaply.
+  # ---------------------------------------------------------------------------
+  changes:
+    name: Detect changes
+    runs-on: ubuntu-latest
+    outputs:
+      backend: ${{ steps.filter.outputs.backend }}
+      frontend: ${{ steps.filter.outputs.frontend }}
+      migrations: ${{ steps.filter.outputs.migrations }}
+      docker: ${{ steps.filter.outputs.docker }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            backend:
+              - 'backend/**'
+              - 'requirements.txt'
+              - 'pyproject.toml'
+              - 'alembic.ini'
+            frontend:
+              - 'frontend/**'
+            migrations:
+              - 'backend/alembic/**'
+              - 'backend/app/models/**'
+            docker:
+              - 'Dockerfile'
+              - 'deploy/docker/**'
+              - '.dockerignore'
+              - 'requirements.txt'
+
+  # ---------------------------------------------------------------------------
+  # Backend lint + format. Two-tier ruff:
+  #   1. Repo-wide correctness-core gate (fast, green on the full legacy tree).
+  #   2. Strict full-rule gate on ONLY the files changed in this PR, so new
+  #      code meets the complete standard without rewriting prior phases.
+  # ---------------------------------------------------------------------------
+  backend-lint:
+    name: Backend lint & format
+    needs: changes
+    if: needs.changes.outputs.backend == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_DEFAULT }}
+          cache: pip
+          cache-dependency-path: requirements.txt
+      - name: Install ruff
+        run: pip install "ruff==0.16.0"
+      - name: Repo correctness-core gate
+        run: ruff check backend
+      - name: Compute changed Python files
+        id: changed
+        run: |
+          BASE="${{ github.event.pull_request.base.sha }}"
+          if [ -z "$BASE" ]; then BASE="$(git rev-parse HEAD~1 2>/dev/null || git rev-parse HEAD)"; fi
+          FILES=$(git diff --name-only --diff-filter=ACMR "$BASE" HEAD -- 'backend/**/*.py' \
+                    ':(exclude)backend/alembic/versions/**' | tr '\n' ' ')
+          echo "files=$FILES" >> "$GITHUB_OUTPUT"
+          echo "Changed Python files: ${FILES:-<none>}"
+      - name: Strict lint on changed files
+        if: steps.changed.outputs.files != ''
+        run: |
+          ruff check --no-cache --output-format=github \
+            --select "E,W,F,I,B,C4,UP,SIM,RET,ISC,PIE,RUF,PLE,PLC,PLW,S,DTZ,ASYNC,LOG,G,T20,ARG,PTH" \
+            --ignore "B008,S101" \
+            ${{ steps.changed.outputs.files }}
+      - name: Strict format check on changed files
+        if: steps.changed.outputs.files != ''
+        run: ruff format --check --diff ${{ steps.changed.outputs.files }}
+
+  # ---------------------------------------------------------------------------
+  # Backend unit tests — OS matrix x Python matrix.
+  # ---------------------------------------------------------------------------
+  backend-test:
+    name: Backend tests (py${{ matrix.python }} / ${{ matrix.os }})
+    needs: changes
+    if: needs.changes.outputs.backend == 'true'
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        python: ["3.12", "3.13"]
+        # Trim the matrix: the full OS x Python cross-product is only needed on
+        # the primary interpreter; keep the older interpreter to Linux.
+        exclude:
+          - os: windows-latest
+            python: "3.12"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+          cache: pip
+          cache-dependency-path: requirements.txt
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest pytest-cov pytest-xdist
+      - name: Run test suite
+        env:
+          APP_ENV: test
+        run: |
+          python -m pytest backend/tests \
+            -n auto --dist loadscope \
+            --junitxml=junit-${{ matrix.os }}-${{ matrix.python }}.xml \
+            --cov=backend/app --cov-report=xml --cov-report=term-missing
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: junit-${{ matrix.os }}-py${{ matrix.python }}
+          path: junit-*.xml
+          retention-days: 14
+      - name: Upload coverage
+        if: matrix.os == 'ubuntu-latest' && matrix.python == '3.13'
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-xml
+          path: coverage.xml
+          retention-days: 14
+
+  # ---------------------------------------------------------------------------
+  # Migration round-trip against a real Postgres. Proves the Alembic chain
+  # upgrades to head, downgrades to base, and re-upgrades — and that a single
+  # head exists (no accidental branch).
+  # ---------------------------------------------------------------------------
+  backend-migrations:
+    name: Migration round-trip (Postgres)
+    needs: changes
+    if: needs.changes.outputs.backend == 'true' || needs.changes.outputs.migrations == 'true'
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: credit
+          POSTGRES_PASSWORD: credit
+          POSTGRES_DB: credit_ai
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U credit"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      DATABASE_URL: postgresql+psycopg://credit:credit@localhost:5432/credit_ai
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_DEFAULT }}
+          cache: pip
+          cache-dependency-path: requirements.txt
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install "psycopg[binary]"
+      - name: Assert a single migration head
+        run: |
+          HEADS=$(alembic heads | grep -c '(head)' || true)
+          echo "Detected $HEADS head(s)"
+          test "$HEADS" -eq 1
+      - name: Upgrade to head
+        run: alembic upgrade head
+      - name: Downgrade to base
+        run: alembic downgrade base
+      - name: Re-upgrade to head
+        run: alembic upgrade head
+
+  # ---------------------------------------------------------------------------
+  # Security + dependency scanning (reusable workflow, also runs on schedule).
+  # ---------------------------------------------------------------------------
+  security:
+    name: Security
+    needs: changes
+    uses: ./.github/workflows/security.yml
+    permissions:
+      contents: read
+      security-events: write
+      actions: read
+
+  # ---------------------------------------------------------------------------
+  # Frontend lane — Node matrix. Install with bun (matches bun.lock), run the
+  # tooling under each Node version to catch runtime-version regressions.
+  # ---------------------------------------------------------------------------
+  frontend:
+    name: Frontend (node ${{ matrix.node }})
+    needs: changes
+    if: needs.changes.outputs.frontend == 'true'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    strategy:
+      fail-fast: false
+      matrix:
+        node: ["20", "22"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+      - name: Lint
+        run: bun run lint
+      - name: Type-check
+        run: bun run typecheck
+      - name: Build
+        run: bun run build
+      - name: Bundle analysis
+        run: |
+          echo "### Frontend bundle report (node ${{ matrix.node }})" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Asset | Size |" >> "$GITHUB_STEP_SUMMARY"
+          echo "|-------|------|" >> "$GITHUB_STEP_SUMMARY"
+          if [ -d dist ]; then
+            find dist -type f \( -name '*.js' -o -name '*.css' \) -printf '%s\t%p\n' \
+              | sort -rn | head -25 \
+              | awk -F'\t' '{ printf "| %s | %.1f KB |\n", $2, $1/1024 }' >> "$GITHUB_STEP_SUMMARY"
+            TOTAL=$(find dist -type f -printf '%s\n' | awk '{s+=$1} END {printf "%.2f", s/1048576}')
+            echo "" >> "$GITHUB_STEP_SUMMARY"
+            echo "**Total dist size: ${TOTAL} MB**" >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - name: Upload build artifact
+        if: matrix.node == '22'
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-dist
+          path: frontend/dist
+          retention-days: 7
+
+  # ---------------------------------------------------------------------------
+  # Docker build for all three service targets (no push — release.yml pushes).
+  # Uses buildx GHA cache so PR builds are fast.
+  # ---------------------------------------------------------------------------
+  docker-build:
+    name: Docker build (${{ matrix.target }})
+    needs: changes
+    if: needs.changes.outputs.backend == 'true' || needs.changes.outputs.docker == 'true'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        target: [backend, worker, scheduler]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - name: Build ${{ matrix.target }} image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: Dockerfile
+          target: ${{ matrix.target }}
+          push: false
+          load: false
+          tags: ai-credit-${{ matrix.target }}:ci-${{ github.sha }}
+          cache-from: type=gha,scope=${{ matrix.target }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.target }}
+
+  # ---------------------------------------------------------------------------
+  # Aggregator — the ONE required check for branch protection. Passes only if
+  # no upstream job failed (skipped is allowed, so path-filtered lanes are OK).
+  # ---------------------------------------------------------------------------
+  ci-success:
+    name: CI success
+    if: always()
+    needs:
+      - backend-lint
+      - backend-test
+      - backend-migrations
+      - security
+      - frontend
+      - docker-build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify no upstream failures
+        run: |
+          RESULTS='${{ join(needs.*.result, ",") }}'
+          echo "Upstream results: $RESULTS"
+          case ",$RESULTS," in
+            *,failure,*|*,cancelled,*)
+              echo "::error::A required CI job failed or was cancelled"
+              exit 1
+              ;;
+          esac
+          echo "All required CI jobs passed (or were skipped by path filter)."

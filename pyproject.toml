@@ -1,0 +1,121 @@
+# =============================================================================
+# AI Credit Intelligence Platform — tooling configuration (Phase 11, M5)
+# =============================================================================
+# This file holds *tooling* configuration only (ruff, pytest, coverage, mypy).
+# It intentionally declares no [project]/[build-system] table: the application
+# is deployed from source (see Dockerfile) and dependencies are pinned in
+# requirements.txt, so packaging metadata is out of scope and adding it would
+# change how `pip install` treats the tree. Keeping this file tooling-only is
+# fully additive and backward compatible with every prior phase.
+# -----------------------------------------------------------------------------
+
+# ----------------------------------------------------------------------------
+# Ruff — linter + formatter
+# ----------------------------------------------------------------------------
+# Adoption strategy for a large, pre-existing codebase (see
+# docs/CODING_STANDARDS.md for the full rationale):
+#
+#   * Repo-wide gate (this config): the "these are bugs" correctness core.
+#     `ruff check backend` is GREEN on the entire legacy tree today, so the
+#     linter can be adopted without mass-rewriting the ~350 files produced by
+#     Phases 1-10. Two pre-existing rules (unused imports / unused locals) are
+#     ignored here and tracked as debt in docs/TECHNICAL_DEBT_REPORT.md.
+#
+#   * Strict diff gate (CI): .github/workflows/ci.yml additionally runs a much
+#     broader rule set against ONLY the files changed in a pull request, so all
+#     *new* code is held to the full standard. This gives strict enforcement
+#     going forward with zero disruption to committed history.
+[tool.ruff]
+target-version = "py313"
+line-length = 100
+extend-exclude = [
+    ".venv",
+    "frontend",
+    "backend/storage",
+    "backend/alembic/versions",
+    "**/__pycache__",
+]
+
+[tool.ruff.lint]
+# Correctness core: syntax/runtime errors (E9), Pyflakes (F), Pylint errors
+# (PLE). These catch undefined names, broken imports, duplicate arguments,
+# f-string mistakes, etc. — real defects, not style.
+select = ["E9", "F", "PLE"]
+# Pre-existing occurrences only; enforced on new code via the CI diff gate.
+ignore = ["F401", "F841"]
+
+[tool.ruff.lint.per-file-ignores]
+# Test modules deliberately import models for SQLAlchemy table registration,
+# use asserts / hardcoded fixture secrets / magic numbers / local imports, and
+# bind fixtures that read as "unused". These are idiomatic in tests, so exempt
+# them from the security/path/redefinition lints that only make sense in
+# application code.
+"backend/tests/*" = ["F811", "S", "PLC0415", "PLR2004", "ARG", "PTH", "DTZ", "SLF001"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+line-ending = "lf"
+skip-magic-trailing-comma = false
+
+# ----------------------------------------------------------------------------
+# Pytest
+# ----------------------------------------------------------------------------
+[tool.pytest.ini_options]
+testpaths = ["backend/tests"]
+python_files = ["test_*.py"]
+python_functions = ["test_*"]
+# Custom markers used to slice the suite in CI (unit vs. integration vs. slow).
+# `--strict-markers` makes a typo in a marker name a hard error rather than a
+# silent no-op, which keeps the CI job selectors honest.
+addopts = "-ra --strict-markers"
+markers = [
+    "integration: exercises multiple layers / a real-ish DB (slower).",
+    "migration: alembic upgrade/downgrade round-trip tests.",
+    "load: throughput / concurrency load tests.",
+    "performance: latency / resource performance tests.",
+    "stress: sustained / adversarial stress tests.",
+    "security: security-hardening and authz/authn tests.",
+    "workflow: end-to-end business workflow tests.",
+    "tenant_isolation: multi-tenant data-isolation tests.",
+    "ml: ML pipeline / model validation tests.",
+    "connector: external-connector integration tests.",
+    "websocket: realtime / WebSocket tests.",
+    "slow: long-running tests, excluded from the fast unit lane.",
+]
+
+# ----------------------------------------------------------------------------
+# Coverage
+# ----------------------------------------------------------------------------
+[tool.coverage.run]
+branch = true
+source = ["backend/app"]
+omit = [
+    "backend/alembic/*",
+    "backend/tests/*",
+    "*/__pycache__/*",
+]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = false
+precision = 2
+exclude_lines = [
+    "pragma: no cover",
+    "if __name__ == .__main__.:",
+    "raise NotImplementedError",
+    "if TYPE_CHECKING:",
+    "\\.\\.\\.",
+]
+
+# ----------------------------------------------------------------------------
+# mypy (optional static typing gate — advisory in CI to start)
+# ----------------------------------------------------------------------------
+[tool.mypy]
+python_version = "3.13"
+ignore_missing_imports = true
+follow_imports = "silent"
+warn_redundant_casts = true
+warn_unused_ignores = false
+show_error_codes = true
+exclude = "(^|/)(\\.venv|frontend|backend/alembic/versions|backend/storage)(/|$)"

@@ -1,0 +1,14 @@
+# Alertmanager config (Phase 11, M3) — routing enriched in M7.
+global:
+  resolve_timeout: 5m
+
+route:
+  receiver: default
+  group_by: ["alertname", "severity"]
+  group_wait: 30s
+  group_interval: 5m
+  repeat_interval: 3h
+
+receivers:
+  - name: default
+    # Wire real webhook/email/Slack/PagerDuty targets per environment in M7.

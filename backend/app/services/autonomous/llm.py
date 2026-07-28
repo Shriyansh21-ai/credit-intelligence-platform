@@ -91,11 +91,13 @@ class ClaudeProvider(LLMProvider):
     name = "claude"
 
     def __init__(self, model: Optional[str] = None):
-        self.model = model or os.getenv("COPILOT_CLAUDE_MODEL", "claude-sonnet-5")
+        from backend.app.core.settings import get_settings
+        _s = get_settings()
+        self.model = model or _s.llm_model
         self._client = None
         try:  # pragma: no cover - only exercised when SDK+key are present
             import anthropic  # type: ignore
-            key = os.getenv("ANTHROPIC_API_KEY")
+            key = _s.anthropic_api_key
             if key:
                 self._client = anthropic.Anthropic(api_key=key)
         except Exception:
@@ -138,7 +140,8 @@ def get_provider(name: Optional[str] = None) -> LLMProvider:
     Order: explicit ``name`` → ``COPILOT_LLM_PROVIDER`` env → ``local``. A requested
     Claude provider that is not actually available degrades to local (never errors).
     """
-    choice = (name or os.getenv("COPILOT_LLM_PROVIDER") or "local").lower()
+    from backend.app.core.settings import get_settings
+    choice = (name or get_settings().llm_provider or "local").lower()
     if choice in _CACHE:
         return _CACHE[choice]
     if choice == "claude":
@@ -153,6 +156,7 @@ def get_provider(name: Optional[str] = None) -> LLMProvider:
 def provider_status() -> Dict[str, Any]:
     active = get_provider()
     claude = ClaudeProvider()
+    from backend.app.core.settings import get_settings
     return {"active": active.name, "local_available": True,
             "claude_available": claude.available,
-            "configured": os.getenv("COPILOT_LLM_PROVIDER", "local")}
+            "configured": get_settings().llm_provider}

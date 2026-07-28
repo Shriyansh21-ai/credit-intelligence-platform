@@ -1,0 +1,36 @@
+# Least-privilege ServiceAccount + Role for the platform pods (Phase 11, M4).
+# The app itself needs no Kubernetes API access; this Role grants only the
+# minimal read access some sidecars/operators expect and is bound to the SA
+# the workloads run under.
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: ai-credit
+  namespace: ai-credit
+  labels:
+    app.kubernetes.io/part-of: ai-credit-platform
+automountServiceAccountToken: false
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: ai-credit
+  namespace: ai-credit
+rules:
+  - apiGroups: [""]
+    resources: ["configmaps"]
+    verbs: ["get", "list", "watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: ai-credit
+  namespace: ai-credit
+subjects:
+  - kind: ServiceAccount
+    name: ai-credit
+    namespace: ai-credit
+roleRef:
+  kind: Role
+  name: ai-credit
+  apiGroup: rbac.authorization.k8s.io

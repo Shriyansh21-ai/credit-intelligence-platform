@@ -1,0 +1,6 @@
+# Copy to terraform.tfvars and adjust. NO SECRETS here.
+project      = "ai-credit"
+environment  = "prod"
+region       = "us-east-1"
+domain       = "" # e.g. "app.ai-credit.example.com"
+alert_emails = ["platform-oncall@example.com", "sre-leads@example.com"]

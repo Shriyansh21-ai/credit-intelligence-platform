@@ -1,0 +1,50 @@
+# Build context excludes for the Python application image (Phase 11, M2).
+# The backend image is built from the repo root; keep the context small and
+# free of host-specific / non-runtime artifacts for fast, reproducible builds.
+
+# Version control / IDE / agent
+.git
+.gitignore
+.claude
+.vscode
+.idea
+
+# Python virtualenvs & caches
+.venv
+venv
+**/__pycache__
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache
+.mypy_cache
+.ruff_cache
+
+# Local databases (never bake data into the image)
+*.db
+*.db.bak
+*.sqlite3
+credit_ai.db*
+
+# Frontend is a separate image (built from ./frontend)
+frontend
+
+# Docs & reports (not needed at runtime)
+docs
+*.md
+
+# Kubernetes / compose manifests are not needed inside the app image
+deploy/k8s
+
+# Tests are run in CI, not shipped in the runtime image
+backend/tests
+
+# Uploaded/generated storage contents (dir is recreated in the image)
+backend/storage/documents
+backend/storage/**/*
+
+# Logs & temp
+*.log
+logs
+*.tmp
+*.temp

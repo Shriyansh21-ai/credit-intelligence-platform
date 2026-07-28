@@ -1,0 +1,43 @@
+# Development overlay (Phase 11, M5).
+#
+#   kubectl apply -k deploy/k8s/overlays/development
+#
+# Additive: references the frozen base and patches only environment-specific
+# concerns (namespace, replica counts, image tags). The base is never edited.
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: ai-credit-dev
+nameSuffix: ""
+
+resources:
+  - ../../base
+
+commonLabels:
+  app.kubernetes.io/environment: development
+
+# Single replica of everything — dev is cost-optimised, not HA.
+replicas:
+  - name: backend
+    count: 1
+  - name: worker
+    count: 1
+  - name: frontend
+    count: 1
+  - name: nginx
+    count: 1
+  - name: scheduler
+    count: 1
+
+# deploy.yml overwrites newTag via `kustomize edit set image` at deploy time.
+images:
+  - name: ai-credit/backend
+    newTag: develop
+  - name: ai-credit/worker
+    newTag: develop
+  - name: ai-credit/scheduler
+    newTag: develop
+  - name: ai-credit/frontend
+    newTag: develop
+  - name: ai-credit/nginx
+    newTag: develop

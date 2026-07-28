@@ -1,0 +1,8 @@
+# Azure remote state backend (Phase 11, M6) — Azure Blob Storage.
+# Usage (change the environment's terraform{} block to `backend "azurerm" {}`):
+#   terraform init -backend-config=../../backends/azure.azurerm.tfbackend
+# NO SECRETS: auth via `az login` / a managed identity / OIDC.
+resource_group_name  = "ai-credit-tfstate-rg"
+storage_account_name = "aicredittfstate"
+container_name       = "tfstate"
+key                  = "platform/terraform.tfstate"

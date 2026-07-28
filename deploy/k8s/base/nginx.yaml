@@ -1,0 +1,64 @@
+# Nginx edge — Deployment + Service (Phase 11, M4).
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx
+  namespace: ai-credit
+  labels:
+    app.kubernetes.io/name: nginx
+    app.kubernetes.io/part-of: ai-credit-platform
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: nginx
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: nginx
+        app.kubernetes.io/part-of: ai-credit-platform
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 101
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: nginx
+          image: ai-credit/nginx:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - {name: web, containerPort: 8080}
+            - {name: apigw, containerPort: 8081}
+          env:
+            - {name: BACKEND_UPSTREAM, value: "api:8000"}
+            - {name: FRONTEND_UPSTREAM, value: "frontend:3000"}
+          livenessProbe:
+            httpGet: {path: /nginx-health, port: web}
+            periodSeconds: 20
+          readinessProbe:
+            httpGet: {path: /nginx-health, port: web}
+            periodSeconds: 10
+          resources:
+            requests: {cpu: "50m", memory: "64Mi"}
+            limits: {cpu: "500m", memory: "256Mi"}
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: false   # nginx writes temp/pid under /tmp,/var
+            capabilities: {drop: ["ALL"]}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx
+  namespace: ai-credit
+  labels:
+    app.kubernetes.io/name: nginx
+    app.kubernetes.io/part-of: ai-credit-platform
+spec:
+  selector:
+    app.kubernetes.io/name: nginx
+  ports:
+    - {name: web, port: 80, targetPort: web}
+    - {name: apigw, port: 8081, targetPort: apigw}
+  type: ClusterIP

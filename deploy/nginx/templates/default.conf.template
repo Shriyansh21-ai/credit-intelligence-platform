@@ -1,0 +1,83 @@
+# =============================================================================
+# AI Credit Intelligence Platform — nginx edge (Phase 11, M2)
+# =============================================================================
+# Two independent edges so backend routes never collide with SPA routes:
+#   :8080  web edge      -> frontend SSR (default site)
+#   :8081  API gateway   -> backend API
+# Upstream hosts are injected from the environment at container start via the
+# nginx image's envsubst template mechanism (BACKEND_UPSTREAM / FRONTEND_UPSTREAM).
+# Ports are >1024 so the container runs fully unprivileged (uid 101).
+# =============================================================================
+
+upstream backend_upstream  { server ${BACKEND_UPSTREAM};  keepalive 32; }
+upstream frontend_upstream { server ${FRONTEND_UPSTREAM}; keepalive 32; }
+
+# gzip for text responses (http context, included from nginx.conf).
+gzip on;
+gzip_comp_level 5;
+gzip_min_length 256;
+gzip_proxied any;
+gzip_types
+    application/javascript application/json application/xml
+    text/css text/plain text/xml image/svg+xml font/woff font/woff2;
+
+proxy_http_version 1.1;
+proxy_set_header Host              $host;
+proxy_set_header X-Real-IP         $remote_addr;
+proxy_set_header X-Forwarded-For   $proxy_add_x_forwarded_for;
+proxy_set_header X-Forwarded-Proto $scheme;
+proxy_read_timeout 60s;
+
+# Baseline security headers (hardened further in M14).
+add_header X-Content-Type-Options nosniff always;
+add_header X-Frame-Options SAMEORIGIN always;
+add_header Referrer-Policy strict-origin-when-cross-origin always;
+
+# ---------------------------------------------------------------- web edge ---
+server {
+    listen 8080;
+    server_name _;
+
+    # Cap request bodies at the platform's max upload (MAX_UPLOAD_MB=20 + slack).
+    client_max_body_size 25m;
+
+    location = /nginx-health {
+        access_log off;
+        return 200 "ok\n";
+        default_type text/plain;
+    }
+
+    # Immutable, hashed client assets — instruct clients/CDN to cache long-term.
+    location /assets/ {
+        proxy_pass http://frontend_upstream;
+        add_header Cache-Control "public, max-age=31536000, immutable";
+    }
+
+    # Everything else -> SSR (supports streamed SSR + websocket upgrades).
+    location / {
+        proxy_pass http://frontend_upstream;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+    }
+}
+
+# ------------------------------------------------------------- API gateway ---
+server {
+    listen 8081;
+    server_name _;
+
+    client_max_body_size 25m;
+
+    location = /nginx-health {
+        access_log off;
+        return 200 "ok\n";
+        default_type text/plain;
+    }
+
+    # All backend routes (/api/*, legacy REST, auth, probes, docs) pass through.
+    location / {
+        proxy_pass http://backend_upstream;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+    }
+}

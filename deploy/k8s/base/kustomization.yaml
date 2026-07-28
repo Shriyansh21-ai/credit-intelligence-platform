@@ -1,0 +1,47 @@
+# Kustomize base for the AI Credit Intelligence Platform (Phase 11, M4).
+#
+#   kubectl apply -k deploy/k8s/base
+#
+# Overlay per environment (staging/production) by adding a kustomization that
+# references this base and patches replicas/images/resources. This layout is
+# Helm-ready — each manifest maps cleanly to a chart template.
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: ai-credit
+
+commonLabels:
+  app.kubernetes.io/part-of: ai-credit-platform
+  app.kubernetes.io/managed-by: kustomize
+
+resources:
+  - namespace.yaml
+  - rbac.yaml
+  - configmap.yaml
+  - secret.example.yaml
+  - postgres.yaml
+  - redis.yaml
+  - storage.yaml
+  - migrations-job.yaml
+  - backup-cronjob.yaml
+  - backend.yaml
+  - worker.yaml
+  - scheduler.yaml
+  - frontend.yaml
+  - nginx.yaml
+  - ingress.yaml
+  - hpa.yaml
+  - pdb.yaml
+  - networkpolicy.yaml
+
+images:
+  - name: ai-credit/backend
+    newTag: latest
+  - name: ai-credit/worker
+    newTag: latest
+  - name: ai-credit/scheduler
+    newTag: latest
+  - name: ai-credit/frontend
+    newTag: latest
+  - name: ai-credit/nginx
+    newTag: latest

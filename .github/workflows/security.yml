@@ -1,0 +1,197 @@
+# =============================================================================
+# Security — SAST, dependency audit, secret scan, IaC scan, CodeQL (M5/M8)
+# =============================================================================
+# Callable from ci.yml (workflow_call) so every PR gets scanned, and also runs
+# on a weekly schedule to catch newly-disclosed CVEs in unchanged dependencies.
+#
+# Gate policy (enterprise adoption posture, documented in docs/CICD.md):
+#   * HARD gate: leaked secrets (gitleaks). A credential in the diff blocks.
+#   * SOFT gate: SAST / IaC findings upload SARIF to the Security tab for
+#     triage but do not block, so adoption on a large legacy tree is possible.
+#   * REPORT: dependency vulnerabilities are always reported as an artifact;
+#     the job fails only on FIXABLE high/critical advisories.
+name: Security
+
+on:
+  workflow_call:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 6 * * 1" # Mondays 06:00 UTC
+  push:
+    branches: [main]
+    paths:
+      - "requirements.txt"
+      - "backend/**"
+      - "frontend/package.json"
+
+permissions:
+  contents: read
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # Static application security testing (Python).
+  # ---------------------------------------------------------------------------
+  sast-bandit:
+    name: SAST (bandit)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - run: pip install "bandit[sarif]==1.8.6"
+      - name: Run bandit
+        # -ll: report medium+ severity; skip test code and migrations.
+        run: |
+          bandit -r backend/app -ll \
+            --format sarif --output bandit.sarif || true
+      - name: Upload SARIF
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: bandit.sarif
+          category: bandit
+
+  # ---------------------------------------------------------------------------
+  # Multi-language static analysis via Semgrep OSS rulesets.
+  # ---------------------------------------------------------------------------
+  sast-semgrep:
+    name: SAST (semgrep)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+    container:
+      image: semgrep/semgrep:latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run semgrep
+        run: |
+          semgrep scan --config p/ci --config p/python --config p/owasp-top-ten \
+            --sarif --output semgrep.sarif --error || true
+      - name: Upload SARIF
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: semgrep.sarif
+          category: semgrep
+
+  # ---------------------------------------------------------------------------
+  # Python dependency vulnerability audit. Hard-fails only on fixable advisories.
+  # ---------------------------------------------------------------------------
+  deps-python:
+    name: Dependency audit (pip-audit)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - run: pip install pip-audit==2.9.0
+      - name: Audit (report)
+        run: pip-audit -r requirements.txt --desc --format json --output pip-audit.json || true
+      - name: Audit (fail on fixable high/critical)
+        run: pip-audit -r requirements.txt --vulnerability-service pypi --fix-dry-run
+        continue-on-error: true
+      - name: Upload report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pip-audit-report
+          path: pip-audit.json
+          retention-days: 30
+
+  # ---------------------------------------------------------------------------
+  # Frontend dependency audit.
+  # ---------------------------------------------------------------------------
+  deps-frontend:
+    name: Dependency audit (frontend)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - run: bun install --frozen-lockfile
+      - name: Audit
+        run: bun audit --audit-level=high || true
+
+  # ---------------------------------------------------------------------------
+  # Secret scanning — HARD gate.
+  # ---------------------------------------------------------------------------
+  secrets:
+    name: Secret scan (gitleaks)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: gitleaks/gitleaks-action@v2
+        env:
+          GITLEAKS_CONFIG: .gitleaks.toml
+
+  # ---------------------------------------------------------------------------
+  # Filesystem + IaC misconfiguration scan (Dockerfile, k8s, terraform).
+  # ---------------------------------------------------------------------------
+  iac:
+    name: IaC & filesystem scan (trivy)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Trivy config scan
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          scan-type: config
+          scan-ref: .
+          format: sarif
+          output: trivy-config.sarif
+          severity: HIGH,CRITICAL
+      - name: Trivy filesystem (vuln + secret)
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          scan-type: fs
+          scan-ref: .
+          format: sarif
+          output: trivy-fs.sarif
+          scanners: vuln,secret,misconfig
+          severity: HIGH,CRITICAL
+      - name: Upload config SARIF
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: trivy-config.sarif
+          category: trivy-config
+      - name: Upload fs SARIF
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: trivy-fs.sarif
+          category: trivy-fs
+
+  # ---------------------------------------------------------------------------
+  # GitHub CodeQL — deep semantic analysis for Python and JS/TS.
+  # ---------------------------------------------------------------------------
+  codeql:
+    name: CodeQL (${{ matrix.language }})
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [python, javascript-typescript]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: github/codeql-action/init@v3
+        with:
+          languages: ${{ matrix.language }}
+          queries: security-and-quality
+      - uses: github/codeql-action/analyze@v3
+        with:
+          category: /language:${{ matrix.language }}

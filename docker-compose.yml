@@ -1,43 +1,160 @@
-# Docker Compose for local / staging (Phase 8, Milestone 11).
-# The app is stateless and scalable; Postgres, Redis and MinIO are provided so
-# the storage/cache/broker abstractions can be pointed at real backends. By
-# default the app still runs on SQLite + in-process backends (zero-config) —
-# uncomment the env vars to switch.
-version: "3.9"
+# =============================================================================
+# AI Credit Intelligence Platform — DEVELOPMENT stack (Phase 11, M3)
+# =============================================================================
+# Full local stack: app (api + worker + scheduler), frontend, nginx edge, and
+# real backing services (Postgres, Redis, Kafka, RabbitMQ, MinIO) plus dev
+# tooling (Mailhog, Adminer, PgAdmin). Bring up with:
+#
+#   docker compose up -d --build
+#
+# Production stack:  deploy/compose/docker-compose.prod.yml
+# Observability:     deploy/compose/docker-compose.monitoring.yml
+# =============================================================================
+
+name: ai-credit-dev
+
+x-app-env: &app-env
+  APP_ENV: development
+  DATABASE_URL: postgresql+psycopg://credit:credit@postgres:5432/credit
+  CACHE_BACKEND: redis
+  REDIS_URL: redis://redis:6379/0
+  JOB_BROKER: in_process
+  STORAGE_BACKEND: local
+  RABBITMQ_URL: amqp://credit:credit@rabbitmq:5672/
+  KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+  MAIL_BACKEND: smtp
+  SMTP_HOST: mailhog
+  SMTP_PORT: "1025"
+  SMTP_TLS: "false"
+  SECRET_KEY: dev-insecure-change-me
+  CONNECTOR_MASTER_KEY: dev-master-key-change-me
 
 services:
   api:
-    build: .
-    image: ai-credit-platform:latest
+    build:
+      context: .
+      target: backend
+    image: ai-credit-backend:dev
+    environment:
+      <<: *app-env
+      RUN_MIGRATIONS: "1"
     ports:
       - "8000:8000"
-    environment:
-      APP_ENV: ${APP_ENV:-development}
-      RUN_MIGRATIONS: "1"
-      # DATABASE_URL: postgresql+psycopg://credit:credit@db:5432/credit
-      # CACHE_BACKEND: redis
-      # REDIS_URL: redis://cache:6379/0
-      # STORAGE_BACKEND: minio
-      # SECRET_KEY: change-me-in-production
     depends_on:
-      - db
-      - cache
-    deploy:
-      replicas: 2            # horizontal scaling — app is stateless
+      postgres: {condition: service_healthy}
+      redis: {condition: service_healthy}
     restart: unless-stopped
 
-  db:
+  worker:
+    build:
+      context: .
+      target: worker
+    image: ai-credit-worker:dev
+    environment:
+      <<: *app-env
+      RUN_MIGRATIONS: "0"
+    depends_on:
+      api: {condition: service_started}
+      postgres: {condition: service_healthy}
+    restart: unless-stopped
+
+  scheduler:
+    build:
+      context: .
+      target: scheduler
+    image: ai-credit-scheduler:dev
+    environment:
+      <<: *app-env
+      RUN_MIGRATIONS: "0"
+    depends_on:
+      api: {condition: service_started}
+      postgres: {condition: service_healthy}
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+    image: ai-credit-frontend:dev
+    environment:
+      VITE_API_URL: http://localhost:8081
+      PORT: "3000"
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
+
+  nginx:
+    build:
+      context: .
+      dockerfile: deploy/docker/Dockerfile.nginx
+    image: ai-credit-nginx:dev
+    environment:
+      BACKEND_UPSTREAM: api:8000
+      FRONTEND_UPSTREAM: frontend:3000
+    ports:
+      - "8080:8080"   # web edge
+      - "8081:8081"   # API gateway
+    depends_on:
+      - api
+      - frontend
+    restart: unless-stopped
+
+  # ----------------------------- data services -----------------------------
+  postgres:
     image: postgres:16-alpine
     environment:
       POSTGRES_USER: credit
       POSTGRES_PASSWORD: credit
       POSTGRES_DB: credit
+    ports:
+      - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U credit"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     restart: unless-stopped
 
-  cache:
+  redis:
     image: redis:7-alpine
+    command: ["redis-server", "--appendonly", "yes"]
+    ports:
+      - "6379:6379"
+    volumes:
+      - redisdata:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    restart: unless-stopped
+
+  kafka:
+    image: apache/kafka:3.7.0
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_LISTENERS: PLAINTEXT://:9092,CONTROLLER://:9093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+    ports:
+      - "9092:9092"
+    restart: unless-stopped
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    environment:
+      RABBITMQ_DEFAULT_USER: credit
+      RABBITMQ_DEFAULT_PASS: credit
+    ports:
+      - "5672:5672"
+      - "15672:15672"   # management UI
     restart: unless-stopped
 
   minio:
@@ -53,6 +170,35 @@ services:
       - miniodata:/data
     restart: unless-stopped
 
+  # ------------------------------ dev tooling ------------------------------
+  mailhog:
+    image: mailhog/mailhog:latest
+    ports:
+      - "1025:1025"   # SMTP
+      - "8025:8025"   # web UI
+    restart: unless-stopped
+
+  adminer:
+    image: adminer:latest
+    ports:
+      - "8090:8080"
+    depends_on:
+      - postgres
+    restart: unless-stopped
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@ai-credit.local
+      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_LISTEN_PORT: "5050"
+    ports:
+      - "5050:5050"
+    depends_on:
+      - postgres
+    restart: unless-stopped
+
 volumes:
   pgdata:
+  redisdata:
   miniodata:

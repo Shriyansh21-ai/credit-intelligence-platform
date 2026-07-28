@@ -1,0 +1,37 @@
+# Prometheus recording rules (Phase 11, M7) — precompute the SLIs the
+# dashboards and alerts consume. Metric names come from the application
+# exposition in backend/app/core/telemetry.py (aicredit_* namespace).
+groups:
+  - name: ai-credit.sli.api
+    interval: 30s
+    rules:
+      # Request throughput (req/s) over 5m.
+      - record: job:aicredit_http_requests:rate5m
+        expr: sum(rate(aicredit_http_requests[5m]))
+
+      # Error request rate (5xx) over 5m.
+      - record: job:aicredit_http_requests_errors:rate5m
+        expr: sum(rate(aicredit_http_requests{status=~"5.."}[5m]))
+
+      # Availability SLI = 1 - (errors / total). Guard divide-by-zero.
+      - record: job:aicredit_api_availability:ratio5m
+        expr: |
+          1 - (
+            sum(rate(aicredit_http_requests{status=~"5.."}[5m]))
+            /
+            clamp_min(sum(rate(aicredit_http_requests[5m])), 1)
+          )
+
+      # Latency SLI: p99 request latency (ms), exposed as a summary quantile.
+      - record: job:aicredit_http_latency_ms:p99
+        expr: max(aicredit_http_latency_ms{quantile="0.99"})
+
+  - name: ai-credit.sli.platform
+    interval: 30s
+    rules:
+      - record: job:aicredit_db_slow_query:rate5m
+        expr: sum(rate(aicredit_db_slow_query[5m]))
+      - record: job:aicredit_errors:rate5m
+        expr: sum(rate(aicredit_errors[5m]))
+      - record: job:aicredit_ml_inference_ms:p95
+        expr: max(aicredit_ml_inference_ms{quantile="0.95"})

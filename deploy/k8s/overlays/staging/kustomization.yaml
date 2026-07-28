@@ -1,0 +1,40 @@
+# Staging overlay (Phase 11, M5).
+#
+#   kubectl apply -k deploy/k8s/overlays/staging
+#
+# Production-like topology at reduced scale for pre-prod validation. Additive:
+# references the frozen base without editing it.
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: ai-credit-staging
+
+resources:
+  - ../../base
+
+commonLabels:
+  app.kubernetes.io/environment: staging
+
+replicas:
+  - name: backend
+    count: 2
+  - name: worker
+    count: 1
+  - name: frontend
+    count: 2
+  - name: nginx
+    count: 2
+  - name: scheduler
+    count: 1
+
+images:
+  - name: ai-credit/backend
+    newTag: staging
+  - name: ai-credit/worker
+    newTag: staging
+  - name: ai-credit/scheduler
+    newTag: staging
+  - name: ai-credit/frontend
+    newTag: staging
+  - name: ai-credit/nginx
+    newTag: staging

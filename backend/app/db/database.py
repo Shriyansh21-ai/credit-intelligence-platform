@@ -1,29 +1,39 @@
-import os
+"""SQLAlchemy engine and session factory.
+
+The connection string and pool tuning come from the centralized settings
+(Phase 11, M1). The historical zero-config SQLite default is preserved when
+``DATABASE_URL`` is unset, so every existing dev/test flow keeps working; set
+``DATABASE_URL`` to a PostgreSQL DSN (plus the ``DB_POOL_*`` knobs) for
+staging/production. ``DATABASE_URL`` remains importable for Alembic.
+"""
 
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
-# Phase 8 (M11): the connection string is environment-overridable for cloud
-# deployments (Postgres, etc.). The historical SQLite default is unchanged when
-# ``DATABASE_URL`` is not set, so every existing dev/test flow keeps working.
-DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./credit_ai.db")
+from backend.app.core.settings import get_settings
 
-# ``check_same_thread`` is a SQLite-only connect arg; omit it for other engines.
-_connect_args = {"check_same_thread": False} if DATABASE_URL.startswith("sqlite") else {}
+_settings = get_settings()
 
+# Exposed for Alembic (backend/alembic/env.py) and backward compatibility.
+DATABASE_URL = _settings.database_url
+
+# Pool tuning + connect args are derived from the profile: SQLite gets the
+# thread guard only; real DB servers get sized connection pooling with
+# pre-ping (drops dead connections) and recycling.
 engine = create_engine(
     DATABASE_URL,
-    connect_args=_connect_args,
+    **_settings.sqlalchemy_engine_kwargs,
 )
 
 SessionLocal = sessionmaker(
     autocommit=False,
     autoflush=False,
-    bind=engine
+    bind=engine,
 )
 
 Base = declarative_base()
+
 
 # Dependency
 def get_db():

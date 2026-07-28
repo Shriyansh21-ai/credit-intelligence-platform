@@ -1,0 +1,57 @@
+# Scheduler — Deployment (Phase 11, M4). Exactly one replica (single writer).
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: scheduler
+  namespace: ai-credit
+  labels:
+    app.kubernetes.io/name: scheduler
+    app.kubernetes.io/part-of: ai-credit-platform
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate   # never run two schedulers concurrently
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: scheduler
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: scheduler
+        app.kubernetes.io/part-of: ai-credit-platform
+    spec:
+      serviceAccountName: ai-credit
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        fsGroup: 10001
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: scheduler
+          image: ai-credit/scheduler:latest
+          imagePullPolicy: IfNotPresent
+          command: ["python", "-m", "backend.app.workers.scheduler"]
+          envFrom:
+            - configMapRef: {name: ai-credit-config}
+            - secretRef: {name: ai-credit-secrets}
+          env:
+            - {name: RUN_MIGRATIONS, value: "0"}
+            - {name: WORKER_HEARTBEAT_FILE, value: "/tmp/worker-heartbeat"}
+          livenessProbe:
+            exec:
+              command: ["python", "-m", "backend.app.workers.healthcheck", "--max-age", "120"]
+            initialDelaySeconds: 20
+            periodSeconds: 30
+          resources:
+            requests: {cpu: "100m", memory: "256Mi"}
+            limits: {cpu: "1", memory: "1Gi"}
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities: {drop: ["ALL"]}
+          volumeMounts:
+            - {name: tmp, mountPath: /tmp}
+      volumes:
+        - name: tmp
+          emptyDir: {}

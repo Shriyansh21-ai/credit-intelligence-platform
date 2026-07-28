@@ -1,0 +1,45 @@
+# CODEOWNERS (Phase 11, M5)
+# -----------------------------------------------------------------------------
+# Required reviewers per path. Combined with the "Require review from Code
+# Owners" branch-protection rule (see docs/BRANCH_PROTECTION.md), a PR touching
+# a path here cannot merge without approval from its owner(s).
+#
+# Replace the placeholder @org/* team handles with your GitHub org's real teams.
+# The repo owner is the catch-all so nothing is ever unowned.
+
+# Default owner for everything.
+*                               @Shriyansh21-ai
+
+# Backend application code.
+/backend/app/                   @Shriyansh21-ai @org/backend
+/backend/app/core/              @Shriyansh21-ai @org/platform @org/security
+/backend/app/services/          @Shriyansh21-ai @org/backend
+/backend/app/ml/                @Shriyansh21-ai @org/ml
+/backend/app/services/ml/       @Shriyansh21-ai @org/ml
+
+# Database schema & migrations — DBA + backend sign-off.
+/backend/alembic/               @Shriyansh21-ai @org/backend @org/dba
+/backend/app/models/            @Shriyansh21-ai @org/backend @org/dba
+
+# Tests.
+/backend/tests/                 @Shriyansh21-ai @org/backend @org/qa
+
+# Frontend.
+/frontend/                      @Shriyansh21-ai @org/frontend
+
+# Infrastructure, deployment, CI/CD — platform + security.
+/deploy/                        @Shriyansh21-ai @org/platform @org/sre
+/infra/                         @Shriyansh21-ai @org/platform @org/sre
+/.github/                       @Shriyansh21-ai @org/platform
+/Dockerfile                     @Shriyansh21-ai @org/platform
+/docker-compose.yml             @Shriyansh21-ai @org/platform
+/pyproject.toml                 @Shriyansh21-ai @org/platform
+
+# Security-sensitive surfaces require the security team.
+/backend/app/core/security.py           @Shriyansh21-ai @org/security
+/backend/app/services/integrations/base/security.py @Shriyansh21-ai @org/security
+/.gitleaks.toml                 @Shriyansh21-ai @org/security
+/.github/workflows/security.yml @Shriyansh21-ai @org/security
+
+# Documentation.
+/docs/                          @Shriyansh21-ai @org/docs

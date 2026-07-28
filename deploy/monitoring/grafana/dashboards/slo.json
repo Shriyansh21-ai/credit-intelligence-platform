@@ -1,0 +1,49 @@
+{
+  "annotations": { "list": [] },
+  "editable": true,
+  "graphTooltip": 1,
+  "title": "AI Credit — SLO / Error Budget",
+  "uid": "ai-credit-slo",
+  "tags": ["ai-credit", "slo"],
+  "schemaVersion": 39,
+  "version": 1,
+  "time": { "from": "now-30d", "to": "now" },
+  "templating": { "list": [] },
+  "panels": [
+    {
+      "id": 1,
+      "type": "gauge",
+      "title": "30-day availability vs 99.9% objective",
+      "gridPos": { "h": 8, "w": 8, "x": 0, "y": 0 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "unit": "percentunit", "min": 0.99, "max": 1, "thresholds": { "mode": "absolute", "steps": [ { "color": "red", "value": null }, { "color": "yellow", "value": 0.999 }, { "color": "green", "value": 0.9995 } ] } } },
+      "targets": [ { "refId": "A", "expr": "1 - (sum(increase(aicredit_http_requests{status=~\"5..\"}[30d])) / clamp_min(sum(increase(aicredit_http_requests[30d])), 1))" } ]
+    },
+    {
+      "id": 2,
+      "type": "stat",
+      "title": "Error budget remaining (%)",
+      "gridPos": { "h": 8, "w": 8, "x": 8, "y": 0 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "unit": "percent", "thresholds": { "mode": "absolute", "steps": [ { "color": "red", "value": null }, { "color": "yellow", "value": 25 }, { "color": "green", "value": 50 } ] } } },
+      "targets": [ { "refId": "A", "expr": "100 * (1 - ((sum(increase(aicredit_http_requests{status=~\"5..\"}[30d])) / clamp_min(sum(increase(aicredit_http_requests[30d])), 1)) / 0.001))" } ]
+    },
+    {
+      "id": 3,
+      "type": "stat",
+      "title": "p99 latency SLI (ms) — objective 750",
+      "gridPos": { "h": 8, "w": 8, "x": 16, "y": 0 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "unit": "ms", "thresholds": { "mode": "absolute", "steps": [ { "color": "green", "value": null }, { "color": "yellow", "value": 500 }, { "color": "red", "value": 750 } ] } } },
+      "targets": [ { "refId": "A", "expr": "job:aicredit_http_latency_ms:p99" } ]
+    },
+    {
+      "id": 4,
+      "type": "timeseries",
+      "title": "Error budget burn rate (1h window, multiples of budget)",
+      "gridPos": { "h": 9, "w": 24, "x": 0, "y": 8 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [ { "refId": "A", "expr": "(sum(rate(aicredit_http_requests{status=~\"5..\"}[1h])) / clamp_min(sum(rate(aicredit_http_requests[1h])), 1)) / 0.001", "legendFormat": "burn x budget" } ]
+    }
+  ]
+}

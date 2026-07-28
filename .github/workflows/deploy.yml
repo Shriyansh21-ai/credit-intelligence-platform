@@ -1,0 +1,189 @@
+# =============================================================================
+# Deploy — environment-gated Kubernetes rollout with rollback (Phase 11, M5)
+# =============================================================================
+# Deployment is driven through GitHub Environments (development / staging /
+# production). Protection rules (required reviewers, wait timers, allowed
+# branches) are configured per environment in repo settings — see
+# docs/BRANCH_PROTECTION.md — so the "manual approval" for production is
+# enforced by the platform, not by workflow logic.
+#
+# Flow per environment:
+#   1. Resolve the immutable image tag to roll out.
+#   2. Run DB migrations as a one-shot Job (idempotent Alembic upgrade).
+#   3. `kustomize edit set image` to the resolved tag, then `kubectl apply -k`.
+#   4. Wait for rollout; on any failure, `kubectl rollout undo` every workload.
+name: Deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: Target environment
+        type: choice
+        required: true
+        options: [development, staging, production]
+      image_tag:
+        description: Image tag / semver to deploy (e.g. v1.4.2 or a commit SHA)
+        type: string
+        required: true
+      run_migrations:
+        description: Run database migrations before rollout
+        type: boolean
+        default: true
+  # Auto-deploy the develop branch to the development environment on green CI.
+  workflow_run:
+    workflows: ["CI"]
+    types: [completed]
+    branches: [develop]
+
+permissions:
+  contents: read
+
+concurrency:
+  # Never run two deploys at the same environment concurrently.
+  group: deploy-${{ github.event.inputs.environment || 'development' }}
+  cancel-in-progress: false
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_PREFIX: ghcr.io/${{ github.repository }}
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # Resolve parameters for both manual dispatch and the auto-develop path.
+  # ---------------------------------------------------------------------------
+  resolve:
+    name: Resolve deploy parameters
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success')
+    runs-on: ubuntu-latest
+    outputs:
+      environment: ${{ steps.p.outputs.environment }}
+      overlay: ${{ steps.p.outputs.overlay }}
+      image_tag: ${{ steps.p.outputs.image_tag }}
+      run_migrations: ${{ steps.p.outputs.run_migrations }}
+    steps:
+      - id: p
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            ENV="${{ github.event.inputs.environment }}"
+            TAG="${{ github.event.inputs.image_tag }}"
+            MIG="${{ github.event.inputs.run_migrations }}"
+          else
+            ENV="development"
+            TAG="${{ github.event.workflow_run.head_sha }}"
+            MIG="true"
+          fi
+          echo "environment=$ENV" >> "$GITHUB_OUTPUT"
+          echo "overlay=deploy/k8s/overlays/$ENV" >> "$GITHUB_OUTPUT"
+          echo "image_tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "run_migrations=$MIG" >> "$GITHUB_OUTPUT"
+
+  # ---------------------------------------------------------------------------
+  # The gated deployment. `environment:` binds this job to the GitHub
+  # Environment, which is what enforces required-reviewer approval for prod.
+  # ---------------------------------------------------------------------------
+  deploy:
+    name: Deploy to ${{ needs.resolve.outputs.environment }}
+    needs: resolve
+    runs-on: ubuntu-latest
+    environment:
+      name: ${{ needs.resolve.outputs.environment }}
+      url: ${{ vars.APP_URL }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up kubectl & kustomize
+        uses: azure/setup-kubectl@v4
+
+      - name: Install kustomize
+        run: |
+          curl -sSfL https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh | bash
+          sudo mv kustomize /usr/local/bin/
+
+      - name: Configure cluster access
+        # KUBE_CONFIG_B64 is a per-environment secret (base64 kubeconfig).
+        # Cluster credentials never live in the repo.
+        run: |
+          mkdir -p "$HOME/.kube"
+          echo "${{ secrets.KUBE_CONFIG_B64 }}" | base64 -d > "$HOME/.kube/config"
+          kubectl config current-context
+
+      - name: Run database migrations
+        if: needs.resolve.outputs.run_migrations == 'true'
+        env:
+          NS: ${{ vars.K8S_NAMESPACE }}
+          TAG: ${{ needs.resolve.outputs.image_tag }}
+        run: |
+          set -euo pipefail
+          echo "Applying migrations Job with image tag $TAG"
+          kubectl -n "$NS" delete job db-migrate --ignore-not-found
+          kubectl -n "$NS" create job db-migrate \
+            --image="${IMAGE_PREFIX}/backend:${TAG}" -- \
+            sh -c "RUN_MIGRATIONS=1 alembic upgrade head"
+          kubectl -n "$NS" wait --for=condition=complete job/db-migrate --timeout=600s
+
+      - name: Pin image tags in overlay
+        env:
+          TAG: ${{ needs.resolve.outputs.image_tag }}
+          OVERLAY: ${{ needs.resolve.outputs.overlay }}
+        run: |
+          set -euo pipefail
+          cd "$OVERLAY"
+          for svc in backend worker scheduler frontend nginx; do
+            kustomize edit set image "ai-credit/${svc}=${IMAGE_PREFIX}/${svc}:${TAG}"
+          done
+
+      - name: Apply manifests
+        env:
+          OVERLAY: ${{ needs.resolve.outputs.overlay }}
+        run: kubectl apply -k "$OVERLAY"
+
+      - name: Wait for rollout
+        id: rollout
+        env:
+          NS: ${{ vars.K8S_NAMESPACE }}
+        run: |
+          set -euo pipefail
+          rc=0
+          for dep in backend worker scheduler frontend nginx; do
+            echo "::group::rollout status $dep"
+            kubectl -n "$NS" rollout status "deploy/$dep" --timeout=300s || rc=1
+            echo "::endgroup::"
+          done
+          exit $rc
+
+      - name: Rollback on failure
+        if: failure() && steps.rollout.conclusion == 'failure'
+        env:
+          NS: ${{ vars.K8S_NAMESPACE }}
+        run: |
+          echo "::error::Rollout failed — rolling back all workloads"
+          for dep in backend worker scheduler frontend nginx; do
+            kubectl -n "$NS" rollout undo "deploy/$dep" || true
+            kubectl -n "$NS" rollout status "deploy/$dep" --timeout=300s || true
+          done
+
+      - name: Smoke test
+        if: success()
+        run: |
+          URL="${{ vars.APP_URL }}"
+          if [ -n "$URL" ]; then
+            curl -fsS --retry 5 --retry-delay 10 --retry-connrefused "$URL/livez" && echo "livez OK"
+            curl -fsS --retry 5 --retry-delay 10 "$URL/readyz" && echo "readyz OK"
+          else
+            echo "APP_URL not set; skipping smoke test."
+          fi
+
+      - name: Deployment summary
+        if: always()
+        run: |
+          {
+            echo "### Deployment to ${{ needs.resolve.outputs.environment }}"
+            echo ""
+            echo "- **Image tag:** \`${{ needs.resolve.outputs.image_tag }}\`"
+            echo "- **Overlay:** \`${{ needs.resolve.outputs.overlay }}\`"
+            echo "- **Migrations:** ${{ needs.resolve.outputs.run_migrations }}"
+            echo "- **Result:** ${{ job.status }}"
+          } >> "$GITHUB_STEP_SUMMARY"

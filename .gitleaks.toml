@@ -1,0 +1,23 @@
+# Gitleaks configuration (Phase 11, M5).
+# Extends the upstream default ruleset and adds allowlists for the repository's
+# intentional example/placeholder credentials so they don't trip the HARD
+# secret-scan gate in .github/workflows/security.yml.
+title = "ai-credit-platform gitleaks config"
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Example/template files and known non-secret placeholders."
+paths = [
+  '''\.env\.example$''',
+  '''deploy/k8s/base/secret\.example\.yaml$''',
+  '''deploy/.*\.example\..*''',
+  '''docs/.*\.md$''',
+]
+regexes = [
+  # Placeholder tokens used throughout examples and docs.
+  '''(?i)(changeme|placeholder|example|your[-_]?(secret|token|key)|dummy|test[-_]?value)''',
+  # Local-dev Postgres credentials used only in compose/CI service containers.
+  '''credit:credit@''',
+]

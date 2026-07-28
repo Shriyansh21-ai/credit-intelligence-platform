@@ -1,0 +1,27 @@
+# syntax=docker/dockerfile:1.7
+# =============================================================================
+# AI Credit Intelligence Platform — nginx edge image (Phase 11, M2)
+# =============================================================================
+# Reverse proxy / edge for the web UI (SSR) and the backend API gateway.
+# Built on the unprivileged nginx image (runs as uid 101, no root), with
+# upstream hosts injected at start via envsubst templates.
+#
+#   docker build -f deploy/docker/Dockerfile.nginx -t ai-credit-nginx .
+#
+#   :8080  web edge     -> ${FRONTEND_UPSTREAM}
+#   :8081  API gateway  -> ${BACKEND_UPSTREAM}
+# -----------------------------------------------------------------------------
+FROM nginxinc/nginx-unprivileged:1.27-alpine
+
+# Overridable upstreams (compose/k8s service names by default).
+ENV BACKEND_UPSTREAM=api:8000 \
+    FRONTEND_UPSTREAM=frontend:3000
+
+# The base image runs `envsubst` over /etc/nginx/templates/*.template into
+# /etc/nginx/conf.d/ at container start, then launches nginx.
+COPY deploy/nginx/templates/default.conf.template /etc/nginx/templates/default.conf.template
+
+EXPOSE 8080 8081
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
+    CMD ["wget", "-q", "-O", "-", "http://localhost:8080/nginx-health"]

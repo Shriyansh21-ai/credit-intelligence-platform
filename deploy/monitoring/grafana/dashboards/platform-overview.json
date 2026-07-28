@@ -1,0 +1,92 @@
+{
+  "annotations": { "list": [] },
+  "editable": true,
+  "graphTooltip": 1,
+  "title": "AI Credit — Platform Overview",
+  "uid": "ai-credit-overview",
+  "tags": ["ai-credit", "platform"],
+  "timezone": "",
+  "schemaVersion": 39,
+  "version": 1,
+  "time": { "from": "now-6h", "to": "now" },
+  "templating": { "list": [] },
+  "panels": [
+    {
+      "id": 1,
+      "type": "stat",
+      "title": "API availability (5m)",
+      "gridPos": { "h": 4, "w": 6, "x": 0, "y": 0 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "unit": "percentunit", "min": 0, "max": 1, "thresholds": { "mode": "absolute", "steps": [ { "color": "red", "value": null }, { "color": "yellow", "value": 0.99 }, { "color": "green", "value": 0.999 } ] } } },
+      "targets": [ { "refId": "A", "expr": "job:aicredit_api_availability:ratio5m" } ]
+    },
+    {
+      "id": 2,
+      "type": "stat",
+      "title": "Request rate (req/s)",
+      "gridPos": { "h": 4, "w": 6, "x": 6, "y": 0 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [ { "refId": "A", "expr": "job:aicredit_http_requests:rate5m" } ]
+    },
+    {
+      "id": 3,
+      "type": "stat",
+      "title": "p99 latency (ms)",
+      "gridPos": { "h": 4, "w": 6, "x": 12, "y": 0 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "unit": "ms", "thresholds": { "mode": "absolute", "steps": [ { "color": "green", "value": null }, { "color": "yellow", "value": 500 }, { "color": "red", "value": 750 } ] } } },
+      "targets": [ { "refId": "A", "expr": "job:aicredit_http_latency_ms:p99" } ]
+    },
+    {
+      "id": 4,
+      "type": "stat",
+      "title": "Error rate (err/s)",
+      "gridPos": { "h": 4, "w": 6, "x": 18, "y": 0 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [ { "refId": "A", "expr": "job:aicredit_errors:rate5m" } ]
+    },
+    {
+      "id": 5,
+      "type": "timeseries",
+      "title": "HTTP requests by status",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 4 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [ { "refId": "A", "expr": "sum by (status) (rate(aicredit_http_requests[5m]))", "legendFormat": "{{status}}" } ]
+    },
+    {
+      "id": 6,
+      "type": "timeseries",
+      "title": "Request latency quantiles (ms)",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 4 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "unit": "ms" } },
+      "targets": [ { "refId": "A", "expr": "max by (quantile) (aicredit_http_latency_ms)", "legendFormat": "p{{quantile}}" } ]
+    },
+    {
+      "id": 7,
+      "type": "timeseries",
+      "title": "Database query latency (ms)",
+      "gridPos": { "h": 8, "w": 8, "x": 0, "y": 12 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "unit": "ms" } },
+      "targets": [ { "refId": "A", "expr": "max by (quantile) (aicredit_db_query_ms)", "legendFormat": "p{{quantile}}" }, { "refId": "B", "expr": "job:aicredit_db_slow_query:rate5m", "legendFormat": "slow/s" } ]
+    },
+    {
+      "id": 8,
+      "type": "timeseries",
+      "title": "ML inference latency (ms)",
+      "gridPos": { "h": 8, "w": 8, "x": 8, "y": 12 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "unit": "ms" } },
+      "targets": [ { "refId": "A", "expr": "max by (quantile,model) (aicredit_ml_inference_ms)", "legendFormat": "{{model}} p{{quantile}}" } ]
+    },
+    {
+      "id": 9,
+      "type": "timeseries",
+      "title": "Queue depth & WebSocket connections",
+      "gridPos": { "h": 8, "w": 8, "x": 16, "y": 12 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [ { "refId": "A", "expr": "sum by (queue) (aicredit_queue_depth)", "legendFormat": "queue {{queue}}" }, { "refId": "B", "expr": "aicredit_ws_active", "legendFormat": "ws active" } ]
+    }
+  ]
+}

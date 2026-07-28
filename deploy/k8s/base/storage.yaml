@@ -1,0 +1,35 @@
+# Shared document storage (Phase 11, M4).
+# When STORAGE_BACKEND=local and multiple replicas must share files, back it
+# with a ReadWriteMany volume (NFS / cloud file share). The static PV below is
+# an example for clusters without dynamic RWX provisioning; managed object
+# storage (S3/GCS/Azure) is preferred and needs no PV.
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: ai-credit-storage-pv
+  labels:
+    app.kubernetes.io/part-of: ai-credit-platform
+spec:
+  capacity:
+    storage: 50Gi
+  accessModes: ["ReadWriteMany"]
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: ""            # bind explicitly to the PVC below
+  nfs:
+    server: nfs.internal.example.com
+    path: /exports/ai-credit
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: ai-credit-storage
+  namespace: ai-credit
+  labels:
+    app.kubernetes.io/part-of: ai-credit-platform
+spec:
+  accessModes: ["ReadWriteMany"]
+  storageClassName: ""
+  volumeName: ai-credit-storage-pv
+  resources:
+    requests:
+      storage: 50Gi

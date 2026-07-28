@@ -1,6 +1,7 @@
 fastapi
 uvicorn
 pydantic
+pydantic-settings
 numpy
 scikit-learn
 joblib
@@ -19,3 +20,17 @@ httpx
 PyMuPDF
 Pillow
 pytesseract
+
+# Observability (Phase 11, M7). OpenTelemetry is imported defensively in
+# backend/app/core/telemetry.py — the app runs fine without these installed,
+# but they enable OTLP trace export + FastAPI/SQLAlchemy auto-instrumentation
+# when TRACING_ENABLED=1 and OTEL_EXPORTER_OTLP_ENDPOINT is set.
+opentelemetry-sdk
+opentelemetry-exporter-otlp
+opentelemetry-instrumentation-fastapi
+opentelemetry-instrumentation-sqlalchemy
+
+# Security (Phase 11, M8). Optional but preferred: when present, FieldCipher
+# uses AES-256-GCM. Without it, an authenticated stdlib (HMAC encrypt-then-MAC)
+# fallback is used, so the platform never depends on it to function.
+cryptography

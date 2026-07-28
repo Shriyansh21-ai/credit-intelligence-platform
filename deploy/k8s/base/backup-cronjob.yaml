@@ -1,0 +1,69 @@
+# Nightly database backup CronJob (Phase 11, M4; expanded in M12).
+# Dumps Postgres to the shared storage volume with a timestamped filename and
+# prunes dumps older than the retention window.
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: db-backup
+  namespace: ai-credit
+  labels:
+    app.kubernetes.io/name: db-backup
+    app.kubernetes.io/part-of: ai-credit-platform
+spec:
+  schedule: "0 2 * * *"        # 02:00 daily
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 7
+  failedJobsHistoryLimit: 3
+  startingDeadlineSeconds: 3600
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      ttlSecondsAfterFinished: 86400
+      template:
+        metadata:
+          labels:
+            app.kubernetes.io/name: db-backup
+            app.kubernetes.io/part-of: ai-credit-platform
+        spec:
+          restartPolicy: Never
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 999
+            fsGroup: 999
+            seccompProfile:
+              type: RuntimeDefault
+          containers:
+            - name: pg-dump
+              image: postgres:16-alpine
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  set -e
+                  ts=$(date +%Y%m%d-%H%M%S)
+                  out="/backups/credit-${ts}.sql.gz"
+                  echo "backing up to ${out}"
+                  pg_dump "$DATABASE_URL_LIBPQ" | gzip > "$out"
+                  # Retain 14 days of dumps.
+                  find /backups -name 'credit-*.sql.gz' -mtime +14 -delete
+                  echo "backup complete"
+              env:
+                # POSTGRES_PASSWORD must precede its use in the DSN below
+                # (k8s expands $(VAR) only for vars defined earlier).
+                - name: POSTGRES_PASSWORD
+                  valueFrom:
+                    secretKeyRef: {name: ai-credit-secrets, key: POSTGRES_PASSWORD, optional: true}
+                - name: DATABASE_URL_LIBPQ
+                  value: "postgresql://credit:$(POSTGRES_PASSWORD)@postgres:5432/credit"
+              resources:
+                requests: {cpu: "100m", memory: "128Mi"}
+                limits: {cpu: "500m", memory: "512Mi"}
+              securityContext:
+                allowPrivilegeEscalation: false
+                capabilities: {drop: ["ALL"]}
+              volumeMounts:
+                - {name: backups, mountPath: /backups}
+          volumes:
+            - name: backups
+              persistentVolumeClaim:
+                claimName: ai-credit-storage

@@ -1,0 +1,9 @@
+# Namespace for the platform (Phase 11, M4).
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ai-credit
+  labels:
+    app.kubernetes.io/part-of: ai-credit-platform
+    pod-security.kubernetes.io/enforce: restricted
+    pod-security.kubernetes.io/warn: restricted

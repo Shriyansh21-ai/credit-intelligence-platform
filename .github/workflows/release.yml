@@ -1,0 +1,190 @@
+# =============================================================================
+# Release — semantic-version tagging, image publish, GitHub Release (M5)
+# =============================================================================
+# Triggered by pushing a semver tag (vMAJOR.MINOR.PATCH[-prerelease]). Builds
+# and pushes all service images to GHCR tagged with the exact version, the
+# major/minor aliases, and the commit SHA (immutable), generates a changelog
+# from the commit history since the previous tag, and cuts a GitHub Release.
+#
+#   git tag v1.4.0 && git push origin v1.4.0
+#
+# Pre-release tags (e.g. v1.4.0-rc.1) are published but flagged as pre-releases
+# and are NOT aliased to the moving major/minor tags.
+name: Release
+
+on:
+  push:
+    tags:
+      - "v[0-9]+.[0-9]+.[0-9]+"
+      - "v[0-9]+.[0-9]+.[0-9]+-*"
+
+permissions:
+  contents: write # create releases / tags
+  packages: write # push to GHCR
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_PREFIX: ghcr.io/${{ github.repository }}
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # Validate the tag is well-formed semver and re-run the full test suite as a
+  # release gate before anything is published.
+  # ---------------------------------------------------------------------------
+  verify:
+    name: Verify release
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.v.outputs.version }}
+      major: ${{ steps.v.outputs.major }}
+      minor: ${{ steps.v.outputs.minor }}
+      prerelease: ${{ steps.v.outputs.prerelease }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Parse semantic version
+        id: v
+        run: |
+          set -euo pipefail
+          TAG="${GITHUB_REF_NAME}"
+          VER="${TAG#v}"
+          if ! echo "$VER" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$'; then
+            echo "::error::Tag '$TAG' is not valid semver"; exit 1
+          fi
+          MAJOR="${VER%%.*}"
+          REST="${VER#*.}"; MINOR="${REST%%.*}"
+          PRE="false"; case "$VER" in *-*) PRE="true";; esac
+          echo "version=$VER"   >> "$GITHUB_OUTPUT"
+          echo "major=$MAJOR"   >> "$GITHUB_OUTPUT"
+          echo "minor=$MAJOR.$MINOR" >> "$GITHUB_OUTPUT"
+          echo "prerelease=$PRE" >> "$GITHUB_OUTPUT"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: requirements.txt
+      - name: Install & test
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt pytest pytest-xdist
+          python -m pytest backend/tests -n auto -q
+
+  # ---------------------------------------------------------------------------
+  # Build + push every service image, multi-arch, with SBOM + provenance.
+  # ---------------------------------------------------------------------------
+  images:
+    name: Publish image (${{ matrix.target }})
+    needs: verify
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        target: [backend, worker, scheduler]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-qemu-action@v3
+      - uses: docker/setup-buildx-action@v3
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Derive tags
+        id: tags
+        run: |
+          IMG="${IMAGE_PREFIX}/${{ matrix.target }}"
+          TAGS="${IMG}:${{ needs.verify.outputs.version }},${IMG}:sha-${GITHUB_SHA::12}"
+          if [ "${{ needs.verify.outputs.prerelease }}" = "false" ]; then
+            TAGS="${TAGS},${IMG}:${{ needs.verify.outputs.minor }},${IMG}:${{ needs.verify.outputs.major }},${IMG}:latest"
+          fi
+          echo "tags=$TAGS" >> "$GITHUB_OUTPUT"
+      - name: Build & push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: Dockerfile
+          target: ${{ matrix.target }}
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ steps.tags.outputs.tags }}
+          sbom: true
+          provenance: mode=max
+          cache-from: type=gha,scope=${{ matrix.target }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.target }}
+          labels: |
+            org.opencontainers.image.version=${{ needs.verify.outputs.version }}
+            org.opencontainers.image.revision=${{ github.sha }}
+            org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
+
+  # ---------------------------------------------------------------------------
+  # Frontend build artifact, versioned and attached to the release.
+  # ---------------------------------------------------------------------------
+  frontend-artifact:
+    name: Build frontend artifact
+    needs: verify
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - name: Build
+        working-directory: frontend
+        run: |
+          bun install --frozen-lockfile
+          bun run build
+      - name: Package
+        run: |
+          tar -czf frontend-${{ needs.verify.outputs.version }}.tar.gz -C frontend/dist .
+      - uses: actions/upload-artifact@v4
+        with:
+          name: frontend-dist-${{ needs.verify.outputs.version }}
+          path: frontend-*.tar.gz
+          retention-days: 90
+
+  # ---------------------------------------------------------------------------
+  # Generate changelog + cut the GitHub Release.
+  # ---------------------------------------------------------------------------
+  release:
+    name: Publish GitHub Release
+    needs: [verify, images, frontend-artifact]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/download-artifact@v4
+        with:
+          name: frontend-dist-${{ needs.verify.outputs.version }}
+      - name: Generate changelog
+        id: changelog
+        run: |
+          set -euo pipefail
+          PREV=$(git describe --tags --abbrev=0 "${GITHUB_REF_NAME}^" 2>/dev/null || echo "")
+          echo "## AI Credit Intelligence Platform ${GITHUB_REF_NAME}" > CHANGELOG_RELEASE.md
+          echo "" >> CHANGELOG_RELEASE.md
+          if [ -n "$PREV" ]; then
+            echo "Changes since \`$PREV\`:" >> CHANGELOG_RELEASE.md
+            RANGE="$PREV..${GITHUB_REF_NAME}"
+          else
+            echo "Initial tagged release." >> CHANGELOG_RELEASE.md
+            RANGE="${GITHUB_REF_NAME}"
+          fi
+          echo "" >> CHANGELOG_RELEASE.md
+          git log --no-merges --pretty=format:'- %s (%h)' "$RANGE" >> CHANGELOG_RELEASE.md || true
+          echo "" >> CHANGELOG_RELEASE.md
+          echo "" >> CHANGELOG_RELEASE.md
+          echo "### Container images" >> CHANGELOG_RELEASE.md
+          for svc in backend worker scheduler; do
+            echo "- \`${IMAGE_PREFIX}/${svc}:${{ needs.verify.outputs.version }}\`" >> CHANGELOG_RELEASE.md
+          done
+      - name: Create release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: ${{ github.ref_name }}
+          body_path: CHANGELOG_RELEASE.md
+          prerelease: ${{ needs.verify.outputs.prerelease == 'true' }}
+          files: frontend-*.tar.gz
+          generate_release_notes: false

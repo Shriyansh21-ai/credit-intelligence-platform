@@ -1,0 +1,12 @@
+# Grafana dashboard provider (Phase 11, M3). Dashboard JSON added in M7.
+apiVersion: 1
+
+providers:
+  - name: ai-credit
+    orgId: 1
+    folder: AI Credit
+    type: file
+    disableDeletion: false
+    editable: true
+    options:
+      path: /var/lib/grafana/dashboards

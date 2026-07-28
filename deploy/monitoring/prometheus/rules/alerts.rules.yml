@@ -1,0 +1,88 @@
+# Prometheus alerting rules (Phase 11, M7).
+#
+# Two tiers:
+#   * SLO burn-rate alerts (multi-window) for the API availability objective —
+#     the Google SRE workbook pattern. A fast+slow burn pair fires page vs
+#     ticket, avoiding both alert storms and slow leaks.
+#   * Component health alerts for infra-level signals.
+#
+# Objective: 99.9% API availability over 30 days => 0.1% error budget.
+groups:
+  - name: ai-credit.slo.api-availability
+    rules:
+      # Fast burn: 14.4x budget over 1h AND 5m (page).
+      - alert: ApiErrorBudgetFastBurn
+        expr: |
+          (1 - job:aicredit_api_availability:ratio5m) > (14.4 * 0.001)
+          and
+          (1 - (
+            sum(rate(aicredit_http_requests{status=~"5.."}[1h]))
+            / clamp_min(sum(rate(aicredit_http_requests[1h])), 1)
+          )) > (14.4 * 0.001)
+        for: 2m
+        labels: { severity: page, slo: api-availability }
+        annotations:
+          summary: "API error budget fast burn (14.4x)"
+          description: "5xx error ratio is burning the 99.9% availability budget >14.4x over 1h/5m."
+
+      # Slow burn: 3x budget over 6h AND 30m (ticket).
+      - alert: ApiErrorBudgetSlowBurn
+        expr: |
+          (1 - (
+            sum(rate(aicredit_http_requests{status=~"5.."}[30m]))
+            / clamp_min(sum(rate(aicredit_http_requests[30m])), 1)
+          )) > (3 * 0.001)
+          and
+          (1 - (
+            sum(rate(aicredit_http_requests{status=~"5.."}[6h]))
+            / clamp_min(sum(rate(aicredit_http_requests[6h])), 1)
+          )) > (3 * 0.001)
+        for: 15m
+        labels: { severity: ticket, slo: api-availability }
+        annotations:
+          summary: "API error budget slow burn (3x)"
+          description: "5xx error ratio is burning the availability budget >3x over 6h/30m."
+
+  - name: ai-credit.slo.api-latency
+    rules:
+      - alert: ApiLatencyP99High
+        expr: job:aicredit_http_latency_ms:p99 > 750
+        for: 10m
+        labels: { severity: ticket, slo: api-latency }
+        annotations:
+          summary: "API p99 latency above 750ms objective"
+          description: "p99 request latency is {{ $value | printf \"%.0f\" }}ms (objective 750ms)."
+
+  - name: ai-credit.component-health
+    rules:
+      - alert: ApiTargetDown
+        expr: up{job="ai-credit-api"} == 0
+        for: 2m
+        labels: { severity: page }
+        annotations:
+          summary: "AI Credit API scrape target down"
+          description: "Prometheus cannot scrape {{ $labels.instance }}."
+
+      - alert: HighErrorRate
+        expr: job:aicredit_errors:rate5m > 1
+        for: 5m
+        labels: { severity: ticket }
+        annotations:
+          summary: "Application error rate elevated"
+          description: "Recorded application errors >1/s over 5m."
+
+      - alert: DatabaseSlowQuerySpike
+        expr: job:aicredit_db_slow_query:rate5m > 0.5
+        for: 10m
+        labels: { severity: ticket }
+        annotations:
+          summary: "Slow database queries spiking"
+          description: "Slow queries (>200ms) exceeding 0.5/s over 5m."
+
+      - alert: MlInferenceLatencyHigh
+        expr: job:aicredit_ml_inference_ms:p95 > 500
+        for: 10m
+        labels: { severity: ticket }
+        annotations:
+          summary: "ML inference p95 latency high"
+          description: "Model inference p95 is {{ $value | printf \"%.0f\" }}ms (objective 500ms)."

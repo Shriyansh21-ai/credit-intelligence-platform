@@ -1,0 +1,9 @@
+# AWS remote state backend (Phase 11, M6) — S3 + DynamoDB state locking.
+# Usage: terraform init -backend-config=../../backends/aws.s3.tfbackend
+# Create the bucket (versioned, encrypted) and lock table out-of-band first.
+# NO SECRETS: credentials come from the AWS CLI / OIDC, never this file.
+bucket         = "ai-credit-tfstate"
+key            = "platform/terraform.tfstate" # override per env, e.g. platform/dev.tfstate
+region         = "us-east-1"
+dynamodb_table = "ai-credit-tflock"
+encrypt        = true

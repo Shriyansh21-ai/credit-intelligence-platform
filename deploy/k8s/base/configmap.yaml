@@ -1,0 +1,24 @@
+# Non-secret runtime configuration (Phase 11, M4).
+# Secret values (SECRET_KEY, DATABASE_URL, CONNECTOR_MASTER_KEY, …) live in the
+# Secret, sourced from a real manager (Vault / External Secrets / cloud KMS).
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ai-credit-config
+  namespace: ai-credit
+  labels:
+    app.kubernetes.io/part-of: ai-credit-platform
+data:
+  APP_ENV: "production"
+  LOG_FORMAT: "json"
+  LOG_LEVEL: "INFO"
+  CACHE_BACKEND: "redis"
+  REDIS_URL: "redis://redis:6379/0"
+  JOB_BROKER: "in_process"
+  STORAGE_BACKEND: "s3"
+  OCR_ENGINE: "auto"
+  ML_DEFAULT_MODEL: "scorecard"
+  METRICS_ENABLED: "true"
+  TRACING_ENABLED: "true"
+  OTEL_EXPORTER_OTLP_ENDPOINT: "http://tempo:4317"
+  CORS_ORIGINS: "https://app.ai-credit.example.com"

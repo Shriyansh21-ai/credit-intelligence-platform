@@ -3,15 +3,21 @@ from datetime import datetime, timedelta
 from jose import jwt
 import bcrypt
 
+from backend.app.core.settings import get_settings
+
 # ----------------------------------------
 # Config
 # ----------------------------------------
+# Sourced from the centralized settings (Phase 11, M1) instead of hardcoded
+# constants. The module-level names are preserved for backward compatibility —
+# many modules do ``from backend.app.core.security import SECRET_KEY``.
+_settings = get_settings()
 
-SECRET_KEY = "SUPER_SECRET_KEY"
+SECRET_KEY = _settings.effective_jwt_secret
 
-ALGORITHM = "HS256"
+ALGORITHM = _settings.jwt_algorithm
 
-ACCESS_TOKEN_EXPIRE_MINUTES = 60
+ACCESS_TOKEN_EXPIRE_MINUTES = _settings.access_token_expire_minutes
 
 # ----------------------------------------
 # Normalize Password for bcrypt

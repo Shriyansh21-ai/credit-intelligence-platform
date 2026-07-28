@@ -84,8 +84,10 @@ def _keystream(key: bytes, salt: bytes, length: int) -> bytes:
 
 
 def _master_key(key: Optional[str] = None) -> bytes:
-    material = key or os.environ.get("CONNECTOR_MASTER_KEY", "dev-master-key-change-me")
-    return hashlib.sha256(material.encode("utf-8")).digest()
+    if key is None:
+        from backend.app.core.settings import get_settings
+        key = get_settings().connector_master_key
+    return hashlib.sha256(key.encode("utf-8")).digest()
 
 
 def encrypt_secret(plaintext: str, *, key: Optional[str] = None, salt: Optional[bytes] = None) -> str:

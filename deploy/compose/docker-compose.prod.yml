@@ -1,0 +1,160 @@
+# =============================================================================
+# AI Credit Intelligence Platform — PRODUCTION stack (Phase 11, M3)
+# =============================================================================
+# Runs pre-built, tagged images (no build), with replicas, resource limits,
+# restart policies and health-gated dependencies. Secrets and connection
+# strings come from the environment / an .env file — NOTHING sensitive is
+# hardcoded here (see docs/CONFIGURATION.md).
+#
+#   export IMAGE_REGISTRY=registry.example.com/ai-credit IMAGE_TAG=1.0.0
+#   docker compose -f deploy/compose/docker-compose.prod.yml --env-file .env up -d
+#
+# For real deployments, prefer managed Postgres/Redis and point DATABASE_URL /
+# REDIS_URL at them; the bundled data services below are for self-contained
+# single-host installs.
+# =============================================================================
+
+name: ai-credit
+
+x-app-env: &app-env
+  APP_ENV: production
+  DATABASE_URL: ${DATABASE_URL:?set DATABASE_URL}
+  SECRET_KEY: ${SECRET_KEY:?set SECRET_KEY}
+  CONNECTOR_MASTER_KEY: ${CONNECTOR_MASTER_KEY:?set CONNECTOR_MASTER_KEY}
+  CACHE_BACKEND: ${CACHE_BACKEND:-redis}
+  REDIS_URL: ${REDIS_URL:-redis://redis:6379/0}
+  JOB_BROKER: ${JOB_BROKER:-in_process}
+  RABBITMQ_URL: ${RABBITMQ_URL:-amqp://credit:credit@rabbitmq:5672/}
+  STORAGE_BACKEND: ${STORAGE_BACKEND:-local}
+  CORS_ORIGINS: ${CORS_ORIGINS:?set CORS_ORIGINS}
+  LOG_FORMAT: json
+  OTEL_EXPORTER_OTLP_ENDPOINT: ${OTEL_EXPORTER_OTLP_ENDPOINT:-}
+  TRACING_ENABLED: ${TRACING_ENABLED:-false}
+
+x-restart: &restart
+  restart: always
+
+services:
+  api:
+    image: ${IMAGE_REGISTRY:-ai-credit}/backend:${IMAGE_TAG:-latest}
+    build: {context: ., target: backend}
+    <<: *restart
+    environment:
+      <<: *app-env
+      RUN_MIGRATIONS: "1"
+    depends_on:
+      postgres: {condition: service_healthy}
+      redis: {condition: service_healthy}
+    deploy:
+      replicas: 3
+      resources:
+        limits: {cpus: "2", memory: 2G}
+        reservations: {cpus: "0.5", memory: 512M}
+
+  worker:
+    image: ${IMAGE_REGISTRY:-ai-credit}/worker:${IMAGE_TAG:-latest}
+    build: {context: ., target: worker}
+    <<: *restart
+    environment:
+      <<: *app-env
+      RUN_MIGRATIONS: "0"
+    depends_on:
+      api: {condition: service_started}
+    deploy:
+      replicas: 2
+      resources:
+        limits: {cpus: "2", memory: 2G}
+        reservations: {cpus: "0.5", memory: 512M}
+
+  scheduler:
+    image: ${IMAGE_REGISTRY:-ai-credit}/scheduler:${IMAGE_TAG:-latest}
+    build: {context: ., target: scheduler}
+    <<: *restart
+    environment:
+      <<: *app-env
+      RUN_MIGRATIONS: "0"
+    depends_on:
+      api: {condition: service_started}
+    deploy:
+      replicas: 1   # single writer of schedule next-run timestamps
+      resources:
+        limits: {cpus: "1", memory: 1G}
+
+  frontend:
+    image: ${IMAGE_REGISTRY:-ai-credit}/frontend:${IMAGE_TAG:-latest}
+    build:
+      context: ./frontend
+      args:
+        VITE_API_URL: ${PUBLIC_API_URL:?set PUBLIC_API_URL}
+    <<: *restart
+    deploy:
+      replicas: 2
+      resources:
+        limits: {cpus: "1", memory: 512M}
+
+  nginx:
+    image: ${IMAGE_REGISTRY:-ai-credit}/nginx:${IMAGE_TAG:-latest}
+    build: {context: ., dockerfile: deploy/docker/Dockerfile.nginx}
+    <<: *restart
+    environment:
+      BACKEND_UPSTREAM: api:8000
+      FRONTEND_UPSTREAM: frontend:3000
+    ports:
+      - "80:8080"     # web edge
+      - "8081:8081"   # API gateway (front with TLS-terminating LB in prod)
+    depends_on:
+      - api
+      - frontend
+
+  # ----------------------------- data services -----------------------------
+  postgres:
+    image: postgres:16-alpine
+    <<: *restart
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-credit}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB:-credit}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-credit}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    <<: *restart
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redisdata:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    <<: *restart
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER:-credit}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD:-credit}
+    volumes:
+      - rabbitmqdata:/var/lib/rabbitmq
+
+  minio:
+    image: minio/minio:latest
+    <<: *restart
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minio}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:?set MINIO_ROOT_PASSWORD}
+    volumes:
+      - miniodata:/data
+
+volumes:
+  pgdata:
+  redisdata:
+  rabbitmqdata:
+  miniodata:

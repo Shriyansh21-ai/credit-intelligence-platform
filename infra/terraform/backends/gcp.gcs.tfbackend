@@ -1,0 +1,6 @@
+# GCP remote state backend (Phase 11, M6) — Google Cloud Storage.
+# Usage (change the environment's terraform{} block to `backend "gcs" {}`):
+#   terraform init -backend-config=../../backends/gcp.gcs.tfbackend
+# NO SECRETS: auth via `gcloud auth application-default login` / workload identity.
+bucket = "ai-credit-tfstate"
+prefix = "platform/terraform.tfstate"
