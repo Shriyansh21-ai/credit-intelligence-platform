@@ -133,6 +133,29 @@ PERMISSIONS: List[Tuple[str, str, str]] = [
     ("workflowstudio.manage", "Banking OS", "Design, version and execute enterprise workflows"),
     ("marketplace.view", "Banking OS", "View the AI recommendation marketplace"),
     ("marketplace.manage", "Banking OS", "Install and configure recommendation plugins"),
+    # AI Intelligence Platform (Track 2)
+    ("aip.rag.view", "AI Intelligence Platform", "View knowledge sources, documents and RAG queries"),
+    ("aip.rag.query", "AI Intelligence Platform", "Run retrieval-augmented queries against knowledge"),
+    ("aip.rag.manage", "AI Intelligence Platform", "Register sources, ingest and re-index documents"),
+    ("aip.agents.run", "AI Intelligence Platform", "Run the multi-agent AI system"),
+    ("aip.memory.view", "AI Intelligence Platform", "View long-term AI memory"),
+    ("aip.memory.manage", "AI Intelligence Platform", "Write, summarise and forget AI memory"),
+    ("aip.prompts.view", "AI Intelligence Platform", "View prompts, versions and experiments"),
+    ("aip.prompts.manage", "AI Intelligence Platform", "Author, version, approve, deploy and A/B test prompts"),
+    ("aip.eval.run", "AI Intelligence Platform", "Run AI evaluations and produce scorecards"),
+    ("aip.investigate.run", "AI Intelligence Platform", "Run autonomous company investigations"),
+    ("aip.reports.generate", "AI Intelligence Platform", "Generate AI enterprise reports"),
+    ("aip.workflows.view", "AI Intelligence Platform", "View AI workflow designs and runs"),
+    ("aip.workflows.manage", "AI Intelligence Platform", "Design, version and execute AI workflows"),
+    ("aip.chat.use", "AI Intelligence Platform", "Use the enterprise conversational AI assistant"),
+    ("aip.research.run", "AI Intelligence Platform", "Run the autonomous AI research assistant"),
+    ("aip.learning.view", "AI Intelligence Platform", "View continuous-learning feedback and signals"),
+    ("aip.learning.manage", "AI Intelligence Platform", "Manage feedback, learning signals and training events"),
+    ("aip.governance.view", "AI Intelligence Platform", "View the AI asset governance registry and lineage"),
+    ("aip.governance.manage", "AI Intelligence Platform", "Register, validate, approve and deploy AI assets"),
+    ("aip.explain.view", "AI Intelligence Platform", "View explainability artifacts for AI decisions"),
+    ("aip.monitoring.view", "AI Intelligence Platform", "View AI monitoring metrics and incidents"),
+    ("aip.monitoring.manage", "AI Intelligence Platform", "Record AI metrics and manage AI incidents"),
     # Audit & compliance
     ("audit.view", "Audit", "View the audit log / dashboard"),
     # Administration
@@ -329,6 +352,40 @@ for _role in ("senior_analyst", "risk_manager"):
 ROLE_PERMISSIONS["risk_manager"].extend([
     "llm.manage", "fabric.manage", "marketplace.manage",
 ])
+
+# ---------------------------------------------------------------------------
+# Track 2 — AI Intelligence Platform grants.
+# The AI layer (RAG, agents, memory, prompts, eval, investigation, reports,
+# workflows, chat, research, learning, governance, explainability, monitoring)
+# is broadly readable/usable by credit-workflow roles; authoring, governance and
+# retraining are restricted by seniority.
+# ---------------------------------------------------------------------------
+_TRACK2_READ = [
+    "aip.rag.view", "aip.rag.query", "aip.chat.use", "aip.reports.generate",
+    "aip.explain.view", "aip.prompts.view", "aip.workflows.view",
+    "aip.memory.view", "aip.governance.view", "aip.monitoring.view",
+    "aip.learning.view",
+]
+for _role in ("relationship_manager", "credit_analyst", "senior_analyst",
+              "risk_manager", "compliance_officer", "auditor"):
+    ROLE_PERMISSIONS[_role].extend(_TRACK2_READ)
+
+# Analysts and above run the heavier AI engines and submit feedback.
+for _role in ("credit_analyst", "senior_analyst", "risk_manager"):
+    ROLE_PERMISSIONS[_role].extend([
+        "aip.agents.run", "aip.investigate.run", "aip.research.run",
+        "aip.eval.run", "aip.memory.manage", "aip.learning.manage",
+    ])
+# Senior analysts + risk managers author prompts/workflows and manage the RAG index.
+for _role in ("senior_analyst", "risk_manager"):
+    ROLE_PERMISSIONS[_role].extend([
+        "aip.rag.manage", "aip.prompts.manage", "aip.workflows.manage",
+    ])
+# Risk managers own AI governance + monitoring end-to-end.
+ROLE_PERMISSIONS["risk_manager"].extend(["aip.governance.manage", "aip.monitoring.manage"])
+# Oversight roles get read on governance/monitoring (already in _TRACK2_READ) plus eval.
+for _role in ("compliance_officer", "auditor"):
+    ROLE_PERMISSIONS[_role].extend(["aip.eval.run"])
 
 # The role backfilled onto pre-existing users so nobody is locked out after the
 # RBAC migration. Kept intentionally broad for continuity with single-tenant dev
