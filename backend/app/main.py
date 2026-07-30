@@ -59,12 +59,16 @@ from .models import saas_security as saas_security_models  # noqa: F401  (Phase 
 from .models import autonomous as autonomous_models  # noqa: F401  (Phase 9 AI-brain tables)
 from .models import banking_os as banking_os_models  # noqa: F401  (Phase 10 OS tables)
 from .models import ai_platform as ai_platform_models  # noqa: F401  (Track 2 AI platform tables)
+from .models import financial_intelligence as financial_intelligence_models  # noqa: F401  (Track 3 tables)
+from .models import enterprise_platform as enterprise_platform_models  # noqa: F401  (Track 4 tables)
 from .routes.ml_platform import ROUTERS as ML_PLATFORM_ROUTERS
 from .routes.integrations import ROUTERS as INTEGRATION_ROUTERS
 from .routes.saas import ROUTERS as SAAS_ROUTERS
 from .routes.autonomous import ROUTERS as AUTONOMOUS_ROUTERS
 from .routes.banking_os import ROUTERS as BANKING_OS_ROUTERS
 from .routes.ai_platform import ROUTERS as AI_PLATFORM_ROUTERS
+from .routes.financial_intelligence import ROUTERS as FINANCIAL_INTELLIGENCE_ROUTERS
+from .routes.enterprise_platform import ROUTERS as ENTERPRISE_PLATFORM_ROUTERS
 from .core.audit_middleware import AuditMiddleware
 from .core.tenant_middleware import TenantMiddleware
 from .core.api_versioning import APIVersionMiddleware
@@ -211,6 +215,14 @@ for _os_router in BANKING_OS_ROUTERS:
 # Track 2 — AI Intelligence Platform routers (/api/aip/*)
 for _aip_router in AI_PLATFORM_ROUTERS:
     app.include_router(_aip_router)
+
+# Track 3 — Advanced Financial Intelligence Platform routers (/api/fin/*)
+for _fin_router in FINANCIAL_INTELLIGENCE_ROUTERS:
+    app.include_router(_fin_router)
+
+# Track 4 — Enterprise Productization & Commercial Readiness routers (/api/ent/*)
+for _ent_router in ENTERPRISE_PLATFORM_ROUTERS:
+    app.include_router(_ent_router)
 
 # ========================================
 # AUDIT MIDDLEWARE (Phase 5, Milestone 4)

@@ -114,3 +114,40 @@ Follow [Coding Standards](CODING_STANDARDS.md): typed code, services over fat
 routers, additive migrations, structured logging. New code must pass the strict
 ruff rule set and `ruff format --check`. Commit style and PR flow are in
 [Contributing](CONTRIBUTING.md).
+
+## Track 4 — Enterprise Developer Platform (`/api/ent/developer`)
+
+An in-product developer platform for building against the API:
+
+- **API keys** — `POST /api/ent/developer/keys` returns the plaintext secret
+  **once** (`sk_test_…`/`sk_live_…`); only the SHA-256 hash + prefix are stored.
+  Revoke with `POST .../keys/{id}/revoke`; test limits with `.../keys/rate-limit-test`.
+- **Webhooks** — register (`POST .../webhooks {url, events[]}` → `whsec_…`
+  signing secret), simulate a signed delivery (`.../webhooks/test`), replay
+  (`.../webhooks/deliveries/{id}/replay`), and inspect history.
+- **Sandbox** — `POST .../sandbox {method, path, body?}` records into request
+  history and returns a deterministic echo; view history at `.../requests`.
+- **API explorer** — `GET .../explorer` summarises the OpenAPI surface
+  (`/openapi.json`, `/docs`), path groups and webhook events.
+
+## Building an additive module (the platform convention)
+
+Mirror this shape for new work — it is how Phases 1–11 and Tracks 1–4 are built:
+
+1. `models/<module>.py` — additive `<prefix>_*` tables (nullable `tenant_id`,
+   JSON payloads, `created_at`, `checksum` on computed results).
+2. `alembic/versions/<rev>_<module>.py` — metadata-derived, reversible; append to
+   the single head.
+3. `services/<module>/` — `common.py` (pure helpers) + `data_access.py` + one
+   module per feature; deterministic where possible.
+4. `schemas/<module>.py` — inbound Pydantic bodies only.
+5. `routes/<module>.py` — routers with `require_permission("<scope>")`, collected
+   into a `ROUTERS` list mounted in `main.py`.
+6. `services/rbac/catalog.py` — append permissions + role grants; bump the
+   `test_rbac.py` count.
+7. Frontend `features/<module>/` (api + hooks + index) + `routes/<prefix>-*.tsx`
+   + a sidebar section.
+8. `tests/test_<module>_*.py` + a helper mounting the module's `ROUTERS`.
+
+Never remove APIs, tables, migrations or permissions — the platform is
+additive-only.

@@ -156,6 +156,59 @@ PERMISSIONS: List[Tuple[str, str, str]] = [
     ("aip.explain.view", "AI Intelligence Platform", "View explainability artifacts for AI decisions"),
     ("aip.monitoring.view", "AI Intelligence Platform", "View AI monitoring metrics and incidents"),
     ("aip.monitoring.manage", "AI Intelligence Platform", "Record AI metrics and manage AI incidents"),
+    # Advanced Financial Intelligence Platform (Track 3)
+    ("fin.treasury.view", "Financial Intelligence Platform", "View treasury positions, liquidity, ALM/LCR/NSFR and KPIs"),
+    ("fin.treasury.manage", "Financial Intelligence Platform", "Manage funding sources and run treasury analytics/scenarios"),
+    ("fin.portfolio.view", "Financial Intelligence Platform", "View portfolios, concentration, loss and RAROC analytics"),
+    ("fin.portfolio.manage", "Financial Intelligence Platform", "Build portfolios and run optimization/simulation/migration"),
+    ("fin.regulatory.view", "Financial Intelligence Platform", "View Basel III / IFRS 9 calculations and regulatory dashboards"),
+    ("fin.regulatory.run", "Financial Intelligence Platform", "Run ECL, RWA, CAR, leverage and provisioning calculations"),
+    ("fin.economic.view", "Financial Intelligence Platform", "View macroeconomic indicators and scenarios"),
+    ("fin.economic.manage", "Financial Intelligence Platform", "Manage indicators and generate/propagate economic scenarios"),
+    ("fin.esg.view", "Financial Intelligence Platform", "View ESG scores, climate risk and ESG portfolio analytics"),
+    ("fin.esg.manage", "Financial Intelligence Platform", "Run ESG assessments and climate stress testing"),
+    ("fin.market.view", "Financial Intelligence Platform", "View market data, curves, news and sentiment"),
+    ("fin.market.manage", "Financial Intelligence Platform", "Ingest market instruments, quotes and news"),
+    ("fin.altdata.view", "Financial Intelligence Platform", "View alternative-data signals and derived risk signals"),
+    ("fin.altdata.manage", "Financial Intelligence Platform", "Ingest alternative data and derive risk signals"),
+    ("fin.forecast.view", "Financial Intelligence Platform", "View enterprise forecasts"),
+    ("fin.forecast.run", "Financial Intelligence Platform", "Run multi-horizon enterprise forecasts"),
+    ("fin.quant.view", "Financial Intelligence Platform", "View quantitative risk simulations"),
+    ("fin.quant.run", "Financial Intelligence Platform", "Run Monte Carlo, VaR, ES, stress and sensitivity models"),
+    ("fin.benchmark.view", "Financial Intelligence Platform", "View corporate benchmarking and peer rankings"),
+    ("fin.benchmark.run", "Financial Intelligence Platform", "Run corporate benchmarking and generate reports"),
+    ("fin.exec.view", "Financial Intelligence Platform", "View executive intelligence dashboards"),
+    ("fin.optimize.view", "Financial Intelligence Platform", "View decision-optimization results"),
+    ("fin.optimize.run", "Financial Intelligence Platform", "Run decision optimization (pricing, limits, allocation, capital)"),
+    ("fin.twin.view", "Financial Intelligence Platform", "View financial digital twins and simulations"),
+    ("fin.twin.manage", "Financial Intelligence Platform", "Build and simulate financial digital twins"),
+    ("fin.strategic.view", "Financial Intelligence Platform", "View strategic intelligence reports"),
+    ("fin.strategic.generate", "Financial Intelligence Platform", "Generate strategic intelligence reports and briefings"),
+    # Enterprise Productization & Commercial Readiness (Track 4)
+    ("ent.ux.view", "Enterprise Platform", "View UX preferences and saved layouts"),
+    ("ent.ux.manage", "Enterprise Platform", "Manage personalization, themes and saved layouts"),
+    ("ent.workspace.view", "Enterprise Platform", "View workspaces, collections and shared views"),
+    ("ent.workspace.manage", "Enterprise Platform", "Create and manage workspaces, members and items"),
+    ("ent.developer.view", "Enterprise Platform", "View the developer platform, API keys and request history"),
+    ("ent.developer.manage", "Enterprise Platform", "Manage API keys, webhooks and sandbox testing"),
+    ("ent.marketplace.view", "Enterprise Platform", "Browse the plugin marketplace and analytics"),
+    ("ent.marketplace.manage", "Enterprise Platform", "Publish, approve, version and install plugins"),
+    ("ent.integration.view", "Enterprise Platform", "View integration pipelines and runs"),
+    ("ent.integration.manage", "Enterprise Platform", "Build, schedule and run integration pipelines"),
+    ("ent.data.view", "Enterprise Platform", "View master data, golden records and quality results"),
+    ("ent.data.manage", "Enterprise Platform", "Manage MDM records, data rules and bulk jobs"),
+    ("ent.ops.view", "Enterprise Platform", "View the operations center, health and incidents"),
+    ("ent.ops.manage", "Enterprise Platform", "Manage incidents, runbooks and operations"),
+    ("ent.security.view", "Enterprise Platform", "View the security center, events and access reviews"),
+    ("ent.security.manage", "Enterprise Platform", "Manage security events, access reviews and key rotation"),
+    ("ent.success.view", "Enterprise Platform", "View customer success, health and adoption"),
+    ("ent.success.manage", "Enterprise Platform", "Manage customers, onboarding and lifecycle events"),
+    ("ent.deploy.view", "Enterprise Platform", "View environments, deployments and release history"),
+    ("ent.deploy.manage", "Enterprise Platform", "Manage environments, deployments, canaries and rollbacks"),
+    ("ent.monitoring.view", "Enterprise Platform", "View distributed tracing, SLAs and monitoring dashboards"),
+    ("ent.bi.view", "Enterprise Platform", "View executive business-intelligence dashboards and board reports"),
+    ("ent.launch.view", "Enterprise Platform", "View launch-readiness checklists and scores"),
+    ("ent.launch.manage", "Enterprise Platform", "Generate and manage launch-readiness checklists"),
     # Audit & compliance
     ("audit.view", "Audit", "View the audit log / dashboard"),
     # Administration
@@ -386,6 +439,81 @@ ROLE_PERMISSIONS["risk_manager"].extend(["aip.governance.manage", "aip.monitorin
 # Oversight roles get read on governance/monitoring (already in _TRACK2_READ) plus eval.
 for _role in ("compliance_officer", "auditor"):
     ROLE_PERMISSIONS[_role].extend(["aip.eval.run"])
+
+# ---------------------------------------------------------------------------
+# Track 3 — Advanced Financial Intelligence Platform grants.
+# Treasury, portfolio, regulatory, economic, ESG, market, alt-data, forecasting,
+# quant risk, benchmarking, executive, optimization, digital-twin and strategic
+# intelligence. Read/view surfaces are broadly available to credit-workflow and
+# oversight roles; execution and management are restricted by seniority.
+# ---------------------------------------------------------------------------
+_TRACK3_READ = [
+    "fin.treasury.view", "fin.portfolio.view", "fin.regulatory.view",
+    "fin.economic.view", "fin.esg.view", "fin.market.view", "fin.altdata.view",
+    "fin.forecast.view", "fin.quant.view", "fin.benchmark.view", "fin.exec.view",
+    "fin.optimize.view", "fin.twin.view", "fin.strategic.view",
+]
+for _role in ("relationship_manager", "credit_analyst", "senior_analyst",
+              "risk_manager", "compliance_officer", "auditor"):
+    ROLE_PERMISSIONS[_role].extend(_TRACK3_READ)
+
+# Analysts and above run the analytical engines (read-heavy, non-destructive).
+for _role in ("credit_analyst", "senior_analyst", "risk_manager"):
+    ROLE_PERMISSIONS[_role].extend([
+        "fin.regulatory.run", "fin.forecast.run", "fin.quant.run",
+        "fin.benchmark.run", "fin.optimize.run", "fin.esg.manage",
+        "fin.strategic.generate",
+    ])
+# Senior analysts + risk managers manage the treasury, portfolio and twin surfaces.
+for _role in ("senior_analyst", "risk_manager"):
+    ROLE_PERMISSIONS[_role].extend([
+        "fin.treasury.manage", "fin.portfolio.manage", "fin.twin.manage",
+    ])
+# Risk managers own market/economic/alt-data ingestion end-to-end.
+ROLE_PERMISSIONS["risk_manager"].extend([
+    "fin.economic.manage", "fin.market.manage", "fin.altdata.manage",
+])
+
+# ---------------------------------------------------------------------------
+# Track 4 — Enterprise Productization & Commercial Readiness grants.
+# The productization surfaces (UX, workspaces, developer platform, marketplace,
+# integration, data management, operations, security, customer success,
+# deployment, monitoring, BI, launch readiness) are broadly viewable by every
+# workflow role; platform/operations management is restricted to admins and the
+# platform_admin persona.
+# ---------------------------------------------------------------------------
+_TRACK4_READ = [
+    "ent.ux.view", "ent.ux.manage", "ent.workspace.view", "ent.workspace.manage",
+    "ent.developer.view", "ent.marketplace.view", "ent.integration.view",
+    "ent.data.view", "ent.ops.view", "ent.security.view", "ent.success.view",
+    "ent.deploy.view", "ent.monitoring.view", "ent.bi.view", "ent.launch.view",
+]
+for _role in ("relationship_manager", "credit_analyst", "senior_analyst",
+              "risk_manager", "compliance_officer", "auditor"):
+    ROLE_PERMISSIONS[_role].extend(_TRACK4_READ)
+
+# Senior analysts + risk managers run integration, developer and data surfaces.
+for _role in ("senior_analyst", "risk_manager"):
+    ROLE_PERMISSIONS[_role].extend([
+        "ent.developer.manage", "ent.integration.manage", "ent.data.manage",
+        "ent.success.manage", "ent.launch.manage",
+    ])
+# Risk managers additionally own operations, security and the marketplace.
+ROLE_PERMISSIONS["risk_manager"].extend([
+    "ent.ops.manage", "ent.security.manage", "ent.marketplace.manage",
+])
+# The SaaS platform_admin persona owns the full enterprise-platform surface.
+_TRACK4_ALL = [
+    "ent.ux.view", "ent.ux.manage", "ent.workspace.view", "ent.workspace.manage",
+    "ent.developer.view", "ent.developer.manage", "ent.marketplace.view",
+    "ent.marketplace.manage", "ent.integration.view", "ent.integration.manage",
+    "ent.data.view", "ent.data.manage", "ent.ops.view", "ent.ops.manage",
+    "ent.security.view", "ent.security.manage", "ent.success.view", "ent.success.manage",
+    "ent.deploy.view", "ent.deploy.manage", "ent.monitoring.view", "ent.bi.view",
+    "ent.launch.view", "ent.launch.manage",
+]
+ROLE_PERMISSIONS["platform_admin"].extend(_TRACK4_ALL)
+# Compliance/audit get read on security + access reviews (already via _TRACK4_READ).
 
 # The role backfilled onto pre-existing users so nobody is locked out after the
 # RBAC migration. Kept intentionally broad for continuity with single-tenant dev

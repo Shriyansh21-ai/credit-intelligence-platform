@@ -6,6 +6,43 @@ the project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html
 Per-release notes are generated automatically by `.github/workflows/release.yml`
 from the commit history and published to GitHub Releases.
 
+## [1.0.0] — Commercial GA
+
+The platform reaches commercial general availability. Tracks 2–4 add the
+Enterprise AI Intelligence, Advanced Financial Intelligence and Enterprise
+Productization layers on top of Phases 1–11 / Track 1. Every addition is
+strictly additive — no API, table, migration, auth or RBAC grant was removed.
+
+### Added — Track 4: Enterprise Productization & Commercial Readiness
+- **Enterprise Platform module** (`/api/ent/*`, `ent_*` tables): Enterprise UX
+  (global ⌘K command palette, personalization, saved layouts), Workspaces,
+  Developer Platform (API keys/webhooks/sandbox), Plugin Marketplace, Integration
+  Studio, Data Management (MDM), Operations Center, Security Center (zero-trust),
+  Customer Success, Deployment Platform (blue-green/canary/rollback), Monitoring
+  (tracing/SLA/cost), Business Intelligence and Launch Readiness.
+- 29 `ent_*` tables (migration head `b2c3d4e5f6a7`), 104 routes, 24 `ent.*` RBAC
+  permissions, 13 frontend pages + a global command palette, 17 final reports.
+
+### Added — Track 3: Advanced Financial Intelligence Platform
+- **Financial Intelligence module** (`/api/fin/*`, `fin_*` tables): Treasury,
+  Portfolio, Basel III/IFRS 9, Economic Scenarios, ESG/Climate, Market
+  Intelligence, Alternative Data, Forecasting, Quantitative Risk, Benchmarking,
+  Executive Center, Decision Optimization, Financial Digital Twin and Strategic
+  Intelligence. 21 `fin_*` tables (migration head `a1b2c3d4e5f6`), 109 routes,
+  27 `fin.*` permissions, 14 frontend pages.
+
+### Added — Track 2: Enterprise AI Intelligence Platform
+- **AI Platform module** (`/api/aip/*`, `aip_*` tables): RAG, multi-agent,
+  long-term memory, prompt engineering, evaluation, investigation, reports,
+  workflows, conversational AI, research, continuous learning, governance,
+  explainability and monitoring. Migration head `f3a4b5c6d7e8`, 22 `aip.*`
+  permissions, 14 frontend pages.
+
+### Platform totals at 1.0.0
+- RBAC: **175 permissions** across all categories.
+- Migrations: single linear head `b2c3d4e5f6a7`, every migration reversible.
+- Tests: full backend suite green; zero regressions across tracks.
+
 ## [Unreleased]
 
 ### Added
