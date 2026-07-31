@@ -4,8 +4,9 @@ Thanks for contributing to the **AI Credit Intelligence Platform**. This guide
 covers the branch model, commit and PR conventions, required checks, and the
 backward-compatibility rules that keep a large, multi-phase codebase stable.
 
-See also: [Branch Protection](BRANCH_PROTECTION.md) · [CI/CD](CICD.md) ·
-[Developer Guide](DEVELOPER_GUIDE.md) · [Coding Standards](CODING_STANDARDS.md).
+See also: [Branch Protection](docs/development/BRANCH_PROTECTION.md) · [CI/CD](docs/deployment/CICD.md) ·
+[Developer Guide](docs/development/DEVELOPER_GUIDE.md) · [Coding Standards](docs/development/CODING_STANDARDS.md) ·
+[Code of Conduct](CODE_OF_CONDUCT.md).
 
 ## Branch model
 
@@ -17,7 +18,7 @@ See also: [Branch Protection](BRANCH_PROTECTION.md) · [CI/CD](CICD.md) ·
 
 Both long-lived branches enforce protection rules (required reviews, Code Owner
 review, required status checks, linear history). Details in
-[Branch Protection](BRANCH_PROTECTION.md).
+[Branch Protection](docs/development/BRANCH_PROTECTION.md).
 
 ## Commit conventions
 
@@ -71,7 +72,7 @@ Key implementation notes and trade-offs.
 ## Backward compatibility
 - [ ] No breaking API changes (or documented + versioned)
 - [ ] Migrations are additive and reversible
-- [ ] Config changes documented in docs/CONFIGURATION.md
+- [ ] Config changes documented in docs/deployment/CONFIGURATION.md
 
 ## Testing
 How it was verified; new/updated tests.
@@ -87,7 +88,7 @@ status check. It gates on:
 
 - **Backend lint & format** — repo-wide correctness-core `ruff check backend`
   plus the strict full-rule gate on changed files (see
-  [ADR 0002](adr/0002-two-tier-lint-adoption.md)).
+  [ADR 0002](docs/architecture/adr/0002-two-tier-lint-adoption.md)).
 - **Backend tests** — pytest across the OS × Python matrix.
 - **Migration round-trip** — upgrade → downgrade → re-upgrade on real Postgres,
   single-head assertion.
@@ -121,12 +122,12 @@ The platform grows in additive phases; existing behavior must keep working.
 
 - **Never break existing APIs.** Add new fields/endpoints; do not remove or
   repurpose existing ones. Breaking changes require a new version and a
-  deprecation path — see [API Platform](API_PLATFORM.md).
+  deprecation path — see [API Platform](docs/api/API_PLATFORM.md).
 - **Migrations are additive and reversible.** No destructive column drops/renames
   while live code reads them; every migration must downgrade cleanly. Keep a
   single Alembic head.
 - **Config is additive.** New settings get safe defaults in
   `backend/app/core/settings.py`; document them in
-  [Configuration](CONFIGURATION.md).
+  [Configuration](docs/deployment/CONFIGURATION.md).
 - **Prefer new modules over rewrites** of prior-phase code; hold new code to the
   full lint standard without mass-rewriting history.

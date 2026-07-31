@@ -59,4 +59,4 @@ pipeline.
 - [ ] `kubectl rollout undo deploy/<name>` (Deploy workflow auto-rolls-back on failure).
 - [ ] Redeploy previous immutable image tag.
 - [ ] If schema changed: apply the migration `downgrade` (only if safe/reversible).
-- [ ] Post-incident note recorded (see [INCIDENT_RESPONSE.md](INCIDENT_RESPONSE.md)).
+- [ ] Post-incident note recorded (see [INCIDENT_RESPONSE.md](../operations/INCIDENT_RESPONSE.md)).

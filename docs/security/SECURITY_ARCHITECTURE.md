@@ -97,7 +97,7 @@ All controls are configurable (`core/settings.py`): `SECURITY_HEADERS_ENABLED`,
 
 SAST (bandit, semgrep, CodeQL), dependency audit (pip-audit, bun audit), secret
 scanning (gitleaks — hard gate), and IaC scanning (trivy) run in CI. See
-[CICD.md](CICD.md).
+[CICD.md](../deployment/CICD.md).
 
 ## 8. Threat-model coverage (summary)
 

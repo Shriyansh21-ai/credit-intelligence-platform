@@ -5,8 +5,8 @@ make changes to it. Backend is FastAPI + SQLAlchemy + Alembic on Python 3.13;
 frontend is TanStack/React + Vite managed with bun.
 
 See also: [Coding Standards](CODING_STANDARDS.md) ·
-[Configuration](CONFIGURATION.md) · [Architecture](ARCHITECTURE.md) ·
-[Contributing](CONTRIBUTING.md).
+[Configuration](../deployment/CONFIGURATION.md) · [Architecture](../architecture/ARCHITECTURE.md) ·
+[Contributing](../../CONTRIBUTING.md).
 
 ## Local setup
 
@@ -41,7 +41,7 @@ docker compose up -d --build
 ```
 
 Brings up api + worker + scheduler + frontend + nginx and all backing services.
-See [Containers](CONTAINERS.md) and [Deployment](DEPLOYMENT.md).
+See [Containers](../deployment/CONTAINERS.md) and [Deployment](../deployment/DEPLOYMENT.md).
 
 ## Project layout
 
@@ -105,7 +105,7 @@ ruff format backend                     # formatter
 ```
 
 CI additionally applies the strict full-rule ruff gate to changed files only
-(see [ADR 0002](adr/0002-two-tier-lint-adoption.md)). Markers (`integration`,
+(see [ADR 0002](../architecture/adr/0002-two-tier-lint-adoption.md)). Markers (`integration`,
 `ml`, `security`, `migration`, …) are defined in `pyproject.toml`.
 
 ## Conventions
@@ -113,7 +113,7 @@ CI additionally applies the strict full-rule ruff gate to changed files only
 Follow [Coding Standards](CODING_STANDARDS.md): typed code, services over fat
 routers, additive migrations, structured logging. New code must pass the strict
 ruff rule set and `ruff format --check`. Commit style and PR flow are in
-[Contributing](CONTRIBUTING.md).
+[Contributing](../../CONTRIBUTING.md).
 
 ## Track 4 — Enterprise Developer Platform (`/api/ent/developer`)
 

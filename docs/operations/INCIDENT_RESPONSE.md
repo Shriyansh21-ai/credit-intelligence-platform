@@ -47,7 +47,7 @@ When unsure, round **up**; a Sev can be downgraded once scope is understood.
 ## Mitigation
 
 - **Bad deploy:** `kubectl -n <ns> rollout undo deploy/<svc>` (see
-  [Deployment](DEPLOYMENT.md)).
+  [Deployment](../deployment/DEPLOYMENT.md)).
 - **Overload:** scale replicas / raise HPA max; shed load.
 - **Bad config or flag:** revert the ConfigMap/flag and
   `rollout restart`.
@@ -56,7 +56,7 @@ When unsure, round **up**; a Sev can be downgraded once scope is understood.
   plan there.
 - **Security incident:** rotate the affected secret
   (`SECRET_KEY`/`CONNECTOR_MASTER_KEY`/tokens), revoke sessions, follow
-  [Security](SECURITY.md).
+  [Security](../security/SECURITY_ARCHITECTURE.md).
 
 Step-by-step procedures for specific failure modes live in the
 [Runbook](RUNBOOK.md).
@@ -67,7 +67,7 @@ Step-by-step procedures for specific failure modes live in the
   (S1: every 30 min) with current impact, actions, and next update time.
 - Keep a running timeline (UTC) — detection, decisions, actions, effects.
 - Notify stakeholders/customers per severity and any regulatory obligations
-  ([Compliance](COMPLIANCE.md)).
+  ([Compliance](../security/COMPLIANCE.md)).
 
 ## Escalation
 

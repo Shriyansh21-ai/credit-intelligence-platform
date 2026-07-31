@@ -6,7 +6,7 @@ worker/scheduler processes, packaged as containers and deployed to Kubernetes
 via Kustomize.
 
 See also: [CI/CD](CICD.md) · [Containers](CONTAINERS.md) ·
-[Disaster Recovery](DISASTER_RECOVERY.md) · [Configuration](CONFIGURATION.md).
+[Disaster Recovery](../operations/DISASTER_RECOVERY.md) · [Configuration](CONFIGURATION.md).
 
 ## Prerequisites
 
@@ -28,7 +28,7 @@ See also: [CI/CD](CICD.md) · [Containers](CONTAINERS.md) ·
 | production  | `deploy/k8s/overlays/production`  | Postgres (HA) | HA + HPA | manual dispatch, required reviewers |
 
 GitHub Environment protection rules (reviewers, wait timers, allowed branches)
-gate production — see [Branch Protection](BRANCH_PROTECTION.md).
+gate production — see [Branch Protection](../development/BRANCH_PROTECTION.md).
 
 ## Docker build — three targets
 
@@ -54,7 +54,7 @@ stages run as unprivileged UID 10001 and carry no compilers.
   ```
 - `deploy/compose/docker-compose.prod.yml` — production-shaped single-host stack.
 - `deploy/compose/docker-compose.monitoring.yml` — observability side-stack
-  (see [Observability](OBSERVABILITY.md)).
+  (see [Observability](../operations/OBSERVABILITY.md)).
 
 ## Kubernetes via Kustomize
 
@@ -134,4 +134,4 @@ curl -fsS "$APP_URL/readyz"  # dependencies (DB) reachable
 
 Probes are served by the app: `/livez`, `/readyz`, `/healthz`, plus `/metrics`.
 For backup/restore and RTO/RPO during a failed deploy, see
-[Disaster Recovery](DISASTER_RECOVERY.md).
+[Disaster Recovery](../operations/DISASTER_RECOVERY.md).

@@ -2,7 +2,7 @@
 
 Welcome to the **AI Credit Intelligence Platform**. This gets a new engineer
 from zero to a merged first PR in about a week. Read alongside the
-[Developer Guide](DEVELOPER_GUIDE.md) and [Architecture](ARCHITECTURE.md).
+[Developer Guide](DEVELOPER_GUIDE.md) and [Architecture](../architecture/ARCHITECTURE.md).
 
 ## Day 1 — accounts & access
 
@@ -32,36 +32,36 @@ cd frontend && bun install && bun run dev  # :3000
 
 Or the whole stack: `docker compose up -d --build`. With no env set the backend
 uses SQLite + in-process backends, so it just works. Full detail:
-[Developer Guide](DEVELOPER_GUIDE.md), [Containers](CONTAINERS.md).
+[Developer Guide](DEVELOPER_GUIDE.md), [Containers](../deployment/CONTAINERS.md).
 
 ## Week 1 — orientation
 
-- [ ] Read [Architecture](ARCHITECTURE.md) for the module map and request flow.
+- [ ] Read [Architecture](../architecture/ARCHITECTURE.md) for the module map and request flow.
 - [ ] Skim `backend/app/`: `core` (settings/security/telemetry), `models`,
       `routes`, `services`, `ml`, `db`, `workers`.
 - [ ] Run the suite: `pytest backend/tests`; run `ruff check backend`.
 - [ ] Read [Coding Standards](CODING_STANDARDS.md) and
-      [Contributing](CONTRIBUTING.md).
+      [Contributing](../../CONTRIBUTING.md).
 - [ ] Trace one real endpoint (e.g. `routes/applications.py` →
       `services/…` → `models/…`) end to end.
 - [ ] Bring up the monitoring stack and find the dashboards
-      ([Observability](OBSERVABILITY.md)).
+      ([Observability](../operations/OBSERVABILITY.md)).
 
 ## Key docs index
 
 | Topic | Doc |
 |-------|-----|
-| System design & module map | [Architecture](ARCHITECTURE.md) |
+| System design & module map | [Architecture](../architecture/ARCHITECTURE.md) |
 | Local dev & how-to | [Developer Guide](DEVELOPER_GUIDE.md) |
-| Contributing / PRs | [Contributing](CONTRIBUTING.md) |
+| Contributing / PRs | [Contributing](../../CONTRIBUTING.md) |
 | Coding standards | [Coding Standards](CODING_STANDARDS.md) |
-| Config & env vars | [Configuration](CONFIGURATION.md) |
-| Build & release | [CI/CD](CICD.md), [Containers](CONTAINERS.md) |
-| Deploy & rollback | [Deployment](DEPLOYMENT.md) |
-| Run in prod | [Operator Guide](OPERATOR_GUIDE.md), [Runbook](RUNBOOK.md) |
-| When it breaks | [Incident Response](INCIDENT_RESPONSE.md), [Disaster Recovery](DISASTER_RECOVERY.md) |
-| Security & compliance | [Security](SECURITY.md), [Compliance](COMPLIANCE.md) |
-| API & performance | [API Platform](API_PLATFORM.md), [Performance](PERFORMANCE.md) |
+| Config & env vars | [Configuration](../deployment/CONFIGURATION.md) |
+| Build & release | [CI/CD](../deployment/CICD.md), [Containers](../deployment/CONTAINERS.md) |
+| Deploy & rollback | [Deployment](../deployment/DEPLOYMENT.md) |
+| Run in prod | [Operator Guide](../operations/OPERATOR_GUIDE.md), [Runbook](../operations/RUNBOOK.md) |
+| When it breaks | [Incident Response](../operations/INCIDENT_RESPONSE.md), [Disaster Recovery](../operations/DISASTER_RECOVERY.md) |
+| Security & compliance | [Security](../security/SECURITY_ARCHITECTURE.md), [Compliance](../security/COMPLIANCE.md) |
+| API & performance | [API Platform](../api/API_PLATFORM.md), [Performance](../operations/PERFORMANCE.md) |
 | Decisions | [ADRs](adr/) |
 
 ## First PR walkthrough
@@ -77,7 +77,7 @@ uses SQLite + in-process backends, so it just works. Full detail:
    (`git commit -s -m "feat(...): ..."`).
 6. Open the PR, fill the template, get Code Owner approval, land it green.
 
-Full rules: [Contributing](CONTRIBUTING.md).
+Full rules: [Contributing](../../CONTRIBUTING.md).
 
 ## Who owns what
 

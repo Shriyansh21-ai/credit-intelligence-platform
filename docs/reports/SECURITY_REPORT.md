@@ -6,7 +6,7 @@ _AI Credit Intelligence Platform — Phase 11 (M8, with M5/M12). Date: 2026-07-2
 
 Defense-in-depth across pipeline, transport, application, data, and identity.
 Bank-grade controls implemented and tested (26 M8 tests + integration). Full
-detail in [SECURITY.md](SECURITY.md); compliance mapping in [COMPLIANCE.md](COMPLIANCE.md).
+detail in [SECURITY.md](../security/SECURITY_ARCHITECTURE.md); compliance mapping in [COMPLIANCE.md](../security/COMPLIANCE.md).
 
 ## Controls by layer
 

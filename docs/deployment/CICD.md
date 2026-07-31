@@ -35,7 +35,7 @@ change.
      PIE,RUF,PLE,PLC,PLW,S,DTZ,ASYNC,LOG,G,T20,ARG,PTH`) runs only on the Python
      files changed in the PR, plus `ruff format --check`. New code meets the
      full standard without rewriting prior phases. See
-     [CODING_STANDARDS.md](CODING_STANDARDS.md).
+     [CODING_STANDARDS.md](../development/CODING_STANDARDS.md).
 2. **Unit tests** (`backend-test`) — matrix of `{ubuntu, windows} × {3.12, 3.13}`
    (windows limited to 3.13 to trim the matrix). Runs `pytest -n auto` with
    coverage; uploads JUnit XML and `coverage.xml` artifacts.
@@ -69,7 +69,7 @@ Gate policy (enterprise adoption posture):
 Deployments flow through **GitHub Environments**: `development`, `staging`,
 `production`. Protection rules (reviewers, wait timers, allowed branches) are
 configured per environment in repo settings (see
-[BRANCH_PROTECTION.md](BRANCH_PROTECTION.md)); production's manual approval is
+[BRANCH_PROTECTION.md](../development/BRANCH_PROTECTION.md)); production's manual approval is
 enforced by the platform, not workflow code.
 
 Per environment the `deploy` job:

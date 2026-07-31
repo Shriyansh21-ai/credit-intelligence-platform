@@ -130,20 +130,20 @@ Three container images from one multi-stage `Dockerfile` (`backend`, `worker`,
 `scheduler`), orchestrated on Kubernetes (`deploy/k8s`) with per-environment
 Kustomize overlays, fronted by nginx + ingress, backed by managed Postgres/Redis/
 object storage provisioned by Terraform (`infra/terraform`, AWS/Azure/GCP). See
-[DEPLOYMENT.md](DEPLOYMENT.md) and [CONTAINERS.md](CONTAINERS.md).
+[DEPLOYMENT.md](../deployment/DEPLOYMENT.md) and [CONTAINERS.md](../deployment/CONTAINERS.md).
 
 ## 7. Cross-cutting concerns → docs
 
 | Concern | Doc |
 |---------|-----|
-| Observability / SLOs | [OBSERVABILITY.md](OBSERVABILITY.md) |
-| Security | [SECURITY.md](SECURITY.md) |
-| Performance | [PERFORMANCE.md](PERFORMANCE.md) |
-| API platform | [API_PLATFORM.md](API_PLATFORM.md) |
-| Disaster recovery | [DISASTER_RECOVERY.md](DISASTER_RECOVERY.md) |
-| Compliance | [COMPLIANCE.md](COMPLIANCE.md) |
-| CI/CD | [CICD.md](CICD.md) |
-| Configuration | [CONFIGURATION.md](CONFIGURATION.md) |
+| Observability / SLOs | [OBSERVABILITY.md](../operations/OBSERVABILITY.md) |
+| Security | [SECURITY.md](../security/SECURITY_ARCHITECTURE.md) |
+| Performance | [PERFORMANCE.md](../operations/PERFORMANCE.md) |
+| API platform | [API_PLATFORM.md](../api/API_PLATFORM.md) |
+| Disaster recovery | [DISASTER_RECOVERY.md](../operations/DISASTER_RECOVERY.md) |
+| Compliance | [COMPLIANCE.md](../security/COMPLIANCE.md) |
+| CI/CD | [CICD.md](../deployment/CICD.md) |
+| Configuration | [CONFIGURATION.md](../deployment/CONFIGURATION.md) |
 
 ## 8. Architecture Decision Records
 

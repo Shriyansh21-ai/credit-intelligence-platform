@@ -4,7 +4,7 @@
 # Callable from ci.yml (workflow_call) so every PR gets scanned, and also runs
 # on a weekly schedule to catch newly-disclosed CVEs in unchanged dependencies.
 #
-# Gate policy (enterprise adoption posture, documented in docs/CICD.md):
+# Gate policy (enterprise adoption posture, documented in docs/deployment/CICD.md):
 #   * HARD gate: leaked secrets (gitleaks). A credential in the diff blocks.
 #   * SOFT gate: SAST / IaC findings upload SARIF to the Security tab for
 #     triage but do not block, so adoption on a large legacy tree is possible.

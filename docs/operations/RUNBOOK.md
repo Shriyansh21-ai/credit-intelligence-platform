@@ -106,7 +106,7 @@ Scheduled by the backup CronJob. To validate / restore see
 
 Config is env-driven (`core/settings.py`); change via the environment/ConfigMap
 and restart. Secrets come from the secret manager (never the repo); rotate via
-`KeyRing`/`JwtKeyRing` (see [SECURITY.md](SECURITY.md)). `GET /readyz` reports
+`KeyRing`/`JwtKeyRing` (see [SECURITY.md](../security/SECURITY_ARCHITECTURE.md)). `GET /readyz` reports
 config validation status.
 
 ## 11. Escalation

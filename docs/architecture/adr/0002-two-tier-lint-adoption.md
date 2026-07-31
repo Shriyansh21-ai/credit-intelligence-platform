@@ -84,4 +84,4 @@ history from earlier phases is not rewritten.
 - `pyproject.toml` (`[tool.ruff]`, `[tool.ruff.lint]`,
   `[tool.ruff.lint.per-file-ignores]`).
 - `.github/workflows/ci.yml` (`backend-lint` job).
-- [Coding Standards](../CODING_STANDARDS.md), [Contributing](../CONTRIBUTING.md).
+- [Coding Standards](../../development/CODING_STANDARDS.md), [Contributing](../../../CONTRIBUTING.md).

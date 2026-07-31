@@ -1,7 +1,7 @@
 # CODEOWNERS (Phase 11, M5)
 # -----------------------------------------------------------------------------
 # Required reviewers per path. Combined with the "Require review from Code
-# Owners" branch-protection rule (see docs/BRANCH_PROTECTION.md), a PR touching
+# Owners" branch-protection rule (see docs/development/BRANCH_PROTECTION.md), a PR touching
 # a path here cannot merge without approval from its owner(s).
 #
 # Replace the placeholder @org/* team handles with your GitHub org's real teams.

@@ -5,8 +5,8 @@ Kubernetes. Covers health, metrics, scaling, background processing, backups,
 configuration, logs, and routine tasks.
 
 See also: [Observability](OBSERVABILITY.md) ·
-[Disaster Recovery](DISASTER_RECOVERY.md) · [Configuration](CONFIGURATION.md) ·
-[Deployment](DEPLOYMENT.md) · [Incident Response](INCIDENT_RESPONSE.md).
+[Disaster Recovery](DISASTER_RECOVERY.md) · [Configuration](../deployment/CONFIGURATION.md) ·
+[Deployment](../deployment/DEPLOYMENT.md) · [Incident Response](INCIDENT_RESPONSE.md).
 
 ## Health & probes
 
@@ -82,7 +82,7 @@ kubectl -n <ns> rollout restart deploy/backend      # pods re-read at startup
 ```
 
 Staging/production reject insecure secrets, SQLite, wildcard CORS, and
-mis-wired backends (fatal at startup). See [Configuration](CONFIGURATION.md).
+mis-wired backends (fatal at startup). See [Configuration](../deployment/CONFIGURATION.md).
 
 ## Log access
 
@@ -100,7 +100,7 @@ Ship logs to your aggregator and correlate with traces
 
 ## Common operational tasks
 
-- **Roll out a new version / roll back:** [Deployment](DEPLOYMENT.md).
+- **Roll out a new version / roll back:** [Deployment](../deployment/DEPLOYMENT.md).
 - **Run an ad-hoc migration:** `kubectl create job --from=cronjob/... ` or a
   one-shot Job from the backend image running `alembic upgrade head`.
 - **Drain a node:** rely on PDBs; verify replicas stay above the budget.

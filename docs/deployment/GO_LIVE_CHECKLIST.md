@@ -9,7 +9,7 @@ first (per environment).
 ## 1. Engineering readiness
 
 - [ ] Full test suite green (**1212 tests**); CI required checks enforced.
-- [ ] No high-severity technical debt open ([TECHNICAL_DEBT_REPORT.md](TECHNICAL_DEBT_REPORT.md)).
+- [ ] No high-severity technical debt open ([TECHNICAL_DEBT_REPORT.md](../reports/TECHNICAL_DEBT_REPORT.md)).
 - [ ] Production images built, scanned, signed (SBOM + provenance), in GHCR.
 - [ ] Database migrations validated (single head; round-trip tested).
 - [ ] Feature flags for the launch scope configured.
@@ -19,17 +19,17 @@ first (per environment).
 - [ ] Terraform-provisioned prod infra reviewed (HA Postgres/Redis, storage, LB, CDN, DNS).
 - [ ] Kubernetes prod overlay applied; HPA/PDB/NetworkPolicy in place.
 - [ ] GitHub Environments configured; **production requires reviewer approval**.
-- [ ] Branch protection applied to `main`/`develop` ([BRANCH_PROTECTION.md](BRANCH_PROTECTION.md)).
+- [ ] Branch protection applied to `main`/`develop` ([BRANCH_PROTECTION.md](../development/BRANCH_PROTECTION.md)).
 - [ ] Observability live: Prometheus scraping, Grafana dashboards, Alertmanager
       routing to pager; SLOs + burn-rate alerts armed.
 - [ ] Log pipeline (Loki) + tracing (Tempo/Jaeger) receiving data.
-- [ ] On-call rotation + escalation set ([INCIDENT_RESPONSE.md](INCIDENT_RESPONSE.md)).
-- [ ] Runbook reviewed by on-call ([RUNBOOK.md](RUNBOOK.md)).
+- [ ] On-call rotation + escalation set ([INCIDENT_RESPONSE.md](../operations/INCIDENT_RESPONSE.md)).
+- [ ] Runbook reviewed by on-call ([RUNBOOK.md](../operations/RUNBOOK.md)).
 
 ## 3. Reliability / DR
 
 - [ ] Backups scheduled and running (DB/storage/config/secret-refs).
-- [ ] **Full restore drill executed in staging and validated** ([DISASTER_RECOVERY.md](DISASTER_RECOVERY.md)).
+- [ ] **Full restore drill executed in staging and validated** ([DISASTER_RECOVERY.md](../operations/DISASTER_RECOVERY.md)).
 - [ ] PITR window confirmed; RTO/RPO objectives agreed and achievable.
 - [ ] Cross-region/BCP plan documented.
 
@@ -43,7 +43,7 @@ first (per environment).
 
 ## 5. Compliance / legal
 
-- [ ] Control mapping reviewed; evidence bundle collected ([COMPLIANCE.md](COMPLIANCE.md)).
+- [ ] Control mapping reviewed; evidence bundle collected ([COMPLIANCE.md](../security/COMPLIANCE.md)).
 - [ ] Data residency policy configured for the deployment region(s).
 - [ ] Consent flows + DSAR (export/erasure) procedures verified.
 - [ ] Retention schedule approved; audit export tested.

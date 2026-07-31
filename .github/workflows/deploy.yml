@@ -4,7 +4,7 @@
 # Deployment is driven through GitHub Environments (development / staging /
 # production). Protection rules (required reviewers, wait timers, allowed
 # branches) are configured per environment in repo settings — see
-# docs/BRANCH_PROTECTION.md — so the "manual approval" for production is
+# docs/development/BRANCH_PROTECTION.md — so the "manual approval" for production is
 # enforced by the platform, not by workflow logic.
 #
 # Flow per environment:

@@ -30,7 +30,7 @@ _Phase 11, M13 — engineering standards for the AI Credit Intelligence Platform
 ## 3. Linting & formatting — two-tier ruff
 
 The platform adopts ruff on a large pre-existing codebase without mass-rewriting
-prior phases (see [ADR-0002](adr/0002-two-tier-lint-adoption.md)):
+prior phases (see [ADR-0002](../architecture/adr/0002-two-tier-lint-adoption.md)):
 
 1. **Repo-wide correctness-core gate** — `pyproject.toml` selects `E9, F, PLE`
    (syntax/runtime errors, Pyflakes, Pylint errors). `ruff check backend` is
@@ -52,7 +52,7 @@ Test modules are exempt from security/path/redefinition lints (asserts, fixture
 secrets, local imports are idiomatic in tests) via `per-file-ignores`.
 
 The pre-existing `F401`/`F841` occurrences are ignored repo-wide and tracked in
-[TECHNICAL_DEBT_REPORT.md](TECHNICAL_DEBT_REPORT.md) as gradual-adoption debt.
+[TECHNICAL_DEBT_REPORT.md](../reports/TECHNICAL_DEBT_REPORT.md) as gradual-adoption debt.
 
 ## 4. Tests
 
@@ -73,7 +73,7 @@ The pre-existing `F401`/`F841` occurrences are ignored repo-wide and tracked in
 
 ## 6. API
 
-- Follow the conventions in [API_PLATFORM.md](API_PLATFORM.md): versioned public
+- Follow the conventions in [API_PLATFORM.md](../api/API_PLATFORM.md): versioned public
   routes, pagination on every list endpoint, consistent error bodies, correlation
   IDs, rate-limit headers.
 
@@ -81,9 +81,9 @@ The pre-existing `F401`/`F841` occurrences are ignored repo-wide and tracked in
 
 - No secrets in code or VCS (gitleaks hard-gates the pipeline).
 - Encrypt sensitive fields (`core/crypto`), mask PII in logs/exports, honour
-  retention. See [SECURITY.md](SECURITY.md).
+  retention. See [SECURITY.md](../security/SECURITY_ARCHITECTURE.md).
 
 ## 8. Commits & reviews
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) — Conventional Commits, PR template,
+See [CONTRIBUTING.md](../../CONTRIBUTING.md) — Conventional Commits, PR template,
 Code Owner review, green `CI / CI success` required to merge.

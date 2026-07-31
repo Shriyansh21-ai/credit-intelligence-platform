@@ -79,4 +79,4 @@ required status check.
 
 - Phase 11 M1–M4 restructuring.
 - `.github/CODEOWNERS`, `.github/workflows/ci.yml`.
-- [Architecture](../ARCHITECTURE.md), [CI/CD](../CICD.md).
+- [Architecture](../ARCHITECTURE.md), [CI/CD](../../deployment/CICD.md).

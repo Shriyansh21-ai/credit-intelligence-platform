@@ -4,5 +4,5 @@ contact_links:
     url: https://github.com/Shriyansh21-ai/ai_credit_system/security/advisories/new
     about: Report security issues privately via a GitHub Security Advisory — do not open a public issue.
   - name: Operations runbook
-    url: https://github.com/Shriyansh21-ai/ai_credit_system/blob/main/docs/RUNBOOK.md
+    url: https://github.com/Shriyansh21-ai/ai_credit_system/blob/main/docs/operations/RUNBOOK.md
     about: Incident response and operational procedures.

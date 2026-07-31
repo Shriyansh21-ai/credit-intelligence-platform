@@ -91,5 +91,5 @@ export_audit_ndjson(audit_rows)   # hand-off format for external auditors
   point-in-time evidence.
 - Evidence collection runs on a schedule and before each audit window.
 - Gaps (`status != implemented`) are tracked in
-  [TECHNICAL_DEBT_REPORT.md](TECHNICAL_DEBT_REPORT.md) with owners and dates.
+  [TECHNICAL_DEBT_REPORT.md](../reports/TECHNICAL_DEBT_REPORT.md) with owners and dates.
 - Data-subject requests (export/erasure) are logged, RBAC-gated, and identity-verified.

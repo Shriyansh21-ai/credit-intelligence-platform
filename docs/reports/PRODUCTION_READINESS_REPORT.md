@@ -5,7 +5,7 @@ _AI Credit Intelligence Platform — Phase 11 (M5–M15). Date: 2026-07-28._
 ## Verdict
 
 **READY for controlled production rollout**, conditional on the operator
-completing the environment-specific items in [GO_LIVE_CHECKLIST.md](GO_LIVE_CHECKLIST.md)
+completing the environment-specific items in [GO_LIVE_CHECKLIST.md](../deployment/GO_LIVE_CHECKLIST.md)
 (real secrets, cloud credentials/OIDC, DNS/TLS, branch-protection application).
 
 Phase 11 added the enterprise operational, security, and reliability layer on top
@@ -43,13 +43,13 @@ changes** and full backward compatibility.
 
 ## Conditions before go-live
 
-1. Apply branch protection + GitHub Environments ([BRANCH_PROTECTION.md](BRANCH_PROTECTION.md)).
+1. Apply branch protection + GitHub Environments ([BRANCH_PROTECTION.md](../development/BRANCH_PROTECTION.md)).
 2. Provision infra via Terraform per environment; set real secrets in the secret manager.
 3. Configure OTLP endpoint + ship logs to Loki; import Grafana dashboards.
 4. Set strong `SECRET_KEY`/`JWT_SECRET_KEY`/`ENCRYPTION_KEY`/`CONNECTOR_MASTER_KEY`
    (startup validation enforces this in staging/prod).
 5. Run a full DR restore drill in staging.
-6. Complete [DEPLOYMENT_CHECKLIST.md](DEPLOYMENT_CHECKLIST.md) and [GO_LIVE_CHECKLIST.md](GO_LIVE_CHECKLIST.md).
+6. Complete [DEPLOYMENT_CHECKLIST.md](../deployment/DEPLOYMENT_CHECKLIST.md) and [GO_LIVE_CHECKLIST.md](../deployment/GO_LIVE_CHECKLIST.md).
 
 ## Residual risk
 
