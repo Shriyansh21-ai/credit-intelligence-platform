@@ -1,0 +1,28 @@
+# Build context excludes for the frontend image (Phase 11, M2).
+# node_modules and build output are regenerated inside the image; never copy
+# the host copies in.
+
+.git
+.gitignore
+node_modules
+dist
+.output
+.nitro
+.vinxi
+.tanstack
+.vscode
+.idea
+
+# Caches / logs
+*.log
+.cache
+.eslintcache
+
+# Never ship local env into the image
+.env
+.env.*
+
+# Editor/OS cruft
+.DS_Store
+Thumbs.db
+temp_root.html
