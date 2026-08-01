@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🏦 AI Credit Intelligence Platform
+#  AI Credit Intelligence Platform
 
 ### The AI-native operating system for enterprise credit, risk & lending
 

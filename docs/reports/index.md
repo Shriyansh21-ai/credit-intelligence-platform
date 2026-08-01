@@ -18,6 +18,7 @@
 | --- | --- |
 | [ARCHITECTURE_SCORECARD](ARCHITECTURE_SCORECARD.md) | Architecture quality scorecard and assessment. |
 | [COMMERCIAL_READINESS_REPORT](COMMERCIAL_READINESS_REPORT.md) | Commercial go-to-market readiness assessment. |
+| [STAGE3_PRODUCTION_CERTIFICATION](STAGE3_PRODUCTION_CERTIFICATION.md) | Stage 3 production-readiness certification (M1–M15) with verification evidence. |
 | [PERFORMANCE_REPORT](PERFORMANCE_REPORT.md) | Performance benchmarking and analysis. |
 | [PRODUCTION_READINESS_REPORT](PRODUCTION_READINESS_REPORT.md) | Production-readiness evaluation. |
 | [SECURITY_REPORT](SECURITY_REPORT.md) | Security posture assessment. |

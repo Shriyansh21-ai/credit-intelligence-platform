@@ -24,10 +24,17 @@ modules.
 `financial-intelligence`, `integrations`, `ml-platform`, `operations`,
 `risk-intelligence`.
 
+## Design system
+
+| Document | Description |
+| --- | --- |
+| [DESIGN_SYSTEM](DESIGN_SYSTEM.md) | The enterprise design language — theme tokens, the risk/status tone system (`@/lib/status`), and shared primitives (`PageHeader`, `RiskBadge`, `StatusBadge`, shadcn/ui). |
+
 ## Core libraries
 
 - **TanStack Query** — server-state management and data fetching.
-- **Tailwind CSS** — utility-first styling.
+- **Tailwind CSS v4** — utility-first styling with an OKLCH, token-driven theme.
+- **shadcn/ui + Radix** — accessible component primitives.
 - **Recharts** — data visualization and charting.
 - **Framer Motion** — animation and transitions.
 

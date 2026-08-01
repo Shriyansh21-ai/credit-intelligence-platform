@@ -78,17 +78,21 @@ class RbacSeedingTest(RbacTestBase):
         sync_rbac(db)  # second run
         from backend.app.models.rbac import Permission, Role
 
+        from backend.app.services.rbac.catalog import ALL_PERMISSION_CODES
+
         self.assertEqual(db.query(Role).count(), 9)
-        self.assertEqual(db.query(Permission).count(), 175)
+        self.assertEqual(db.query(Permission).count(), len(ALL_PERMISSION_CODES))
         db.close()
 
     def test_admin_has_all_permissions(self):
         uid = self._make_user("admin@x.com", "administrator")
         db = self.Session()
         user = db.query(User).filter(User.id == uid).first()
+        from backend.app.services.rbac.catalog import ALL_PERMISSION_CODES
+
         self.assertTrue(has_permission(db, user, "users.manage"))
         self.assertTrue(has_permission(db, user, "config.manage"))
-        self.assertEqual(len(user_permission_codes(db, user)), 175)
+        self.assertEqual(len(user_permission_codes(db, user)), len(ALL_PERMISSION_CODES))
         db.close()
 
     def test_viewer_is_restricted(self):

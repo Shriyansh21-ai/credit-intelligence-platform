@@ -61,6 +61,7 @@ from .models import banking_os as banking_os_models  # noqa: F401  (Phase 10 OS 
 from .models import ai_platform as ai_platform_models  # noqa: F401  (Track 2 AI platform tables)
 from .models import financial_intelligence as financial_intelligence_models  # noqa: F401  (Track 3 tables)
 from .models import enterprise_platform as enterprise_platform_models  # noqa: F401  (Track 4 tables)
+from .models import security_compliance as security_compliance_models  # noqa: F401  (Stage 4 security tables)
 from .routes.ml_platform import ROUTERS as ML_PLATFORM_ROUTERS
 from .routes.integrations import ROUTERS as INTEGRATION_ROUTERS
 from .routes.saas import ROUTERS as SAAS_ROUTERS
@@ -69,6 +70,7 @@ from .routes.banking_os import ROUTERS as BANKING_OS_ROUTERS
 from .routes.ai_platform import ROUTERS as AI_PLATFORM_ROUTERS
 from .routes.financial_intelligence import ROUTERS as FINANCIAL_INTELLIGENCE_ROUTERS
 from .routes.enterprise_platform import ROUTERS as ENTERPRISE_PLATFORM_ROUTERS
+from .routes.security_compliance import ROUTERS as SECURITY_COMPLIANCE_ROUTERS
 from .core.audit_middleware import AuditMiddleware
 from .core.tenant_middleware import TenantMiddleware
 from .core.api_versioning import APIVersionMiddleware
@@ -223,6 +225,10 @@ for _fin_router in FINANCIAL_INTELLIGENCE_ROUTERS:
 # Track 4 — Enterprise Productization & Commercial Readiness routers (/api/ent/*)
 for _ent_router in ENTERPRISE_PLATFORM_ROUTERS:
     app.include_router(_ent_router)
+
+# Stage 4 — Enterprise Security & Compliance Platform routers (/api/sec/*)
+for _sec_router in SECURITY_COMPLIANCE_ROUTERS:
+    app.include_router(_sec_router)
 
 # ========================================
 # AUDIT MIDDLEWARE (Phase 5, Milestone 4)

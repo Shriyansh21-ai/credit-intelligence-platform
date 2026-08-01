@@ -209,6 +209,27 @@ PERMISSIONS: List[Tuple[str, str, str]] = [
     ("ent.bi.view", "Enterprise Platform", "View executive business-intelligence dashboards and board reports"),
     ("ent.launch.view", "Enterprise Platform", "View launch-readiness checklists and scores"),
     ("ent.launch.manage", "Enterprise Platform", "Generate and manage launch-readiness checklists"),
+    # Enterprise Security & Compliance Platform (Stage 4)
+    ("sec.dashboard.view", "Security & Compliance", "View the enterprise security posture dashboard"),
+    ("sec.threat.view", "Security & Compliance", "View threat models, STRIDE analysis and attack surface"),
+    ("sec.owasp.view", "Security & Compliance", "View OWASP Top 10 / ASVS / API security assessments"),
+    ("sec.authz.view", "Security & Compliance", "View authentication & authorization hardening audits"),
+    ("sec.tenant.view", "Security & Compliance", "View multi-tenant isolation security audits"),
+    ("sec.secrets.view", "Security & Compliance", "View the secret inventory and rotation status"),
+    ("sec.data.view", "Security & Compliance", "View data classification, PII catalog and protection controls"),
+    ("sec.supplychain.view", "Security & Compliance", "View SBOM, dependency and license reports"),
+    ("sec.container.view", "Security & Compliance", "View container/Kubernetes hardening assessments"),
+    ("sec.aisec.view", "Security & Compliance", "View AI security posture (prompt injection, RAG, agents)"),
+    ("sec.mlsec.view", "Security & Compliance", "View ML security posture (pipeline, registry, integrity)"),
+    ("sec.privacy.view", "Security & Compliance", "View privacy engineering controls and DSAR queue"),
+    ("sec.privacy.manage", "Security & Compliance", "Manage consent, retention and right-to-erasure requests"),
+    ("sec.compliance.view", "Security & Compliance", "View compliance matrix, gap analysis and readiness"),
+    ("sec.compliance.manage", "Security & Compliance", "Run and record compliance assessments"),
+    ("sec.findings.view", "Security & Compliance", "View security scan findings"),
+    ("sec.findings.manage", "Security & Compliance", "Run security scans and triage / resolve findings"),
+    ("sec.risk.view", "Security & Compliance", "View the enterprise security risk register"),
+    ("sec.risk.manage", "Security & Compliance", "Manage risk register entries and treatments"),
+    ("sec.admin", "Security & Compliance", "Full security & compliance administration"),
     # Audit & compliance
     ("audit.view", "Audit", "View the audit log / dashboard"),
     # Administration
@@ -514,6 +535,40 @@ _TRACK4_ALL = [
 ]
 ROLE_PERMISSIONS["platform_admin"].extend(_TRACK4_ALL)
 # Compliance/audit get read on security + access reviews (already via _TRACK4_READ).
+
+# ---------------------------------------------------------------------------
+# Stage 4 — Enterprise Security & Compliance Platform grants.
+# Security posture, threat model, OWASP, compliance, secrets, data protection,
+# supply chain, container hardening, AI/ML security, privacy, findings and the
+# risk register. Read surfaces are broadly available to oversight roles; the
+# compliance_officer and risk_manager personas are the natural owners of the
+# security programme (separation of duties from the credit workflow).
+# ---------------------------------------------------------------------------
+_STAGE4_READ = [
+    "sec.dashboard.view", "sec.threat.view", "sec.owasp.view", "sec.authz.view",
+    "sec.tenant.view", "sec.secrets.view", "sec.data.view", "sec.supplychain.view",
+    "sec.container.view", "sec.aisec.view", "sec.mlsec.view", "sec.privacy.view",
+    "sec.compliance.view", "sec.findings.view", "sec.risk.view",
+]
+# Every oversight / workflow role can view the security posture read surfaces.
+for _role in ("relationship_manager", "credit_analyst", "senior_analyst",
+              "risk_manager", "compliance_officer", "auditor"):
+    ROLE_PERMISSIONS[_role].extend(_STAGE4_READ)
+
+# Senior analysts + risk managers triage findings and own the risk register.
+for _role in ("senior_analyst", "risk_manager"):
+    ROLE_PERMISSIONS[_role].extend(["sec.findings.manage", "sec.risk.manage"])
+
+# The compliance officer runs compliance assessments and privacy (DSAR) workflows.
+ROLE_PERMISSIONS["compliance_officer"].extend([
+    "sec.compliance.manage", "sec.privacy.manage",
+])
+# The risk manager additionally owns compliance execution end-to-end.
+ROLE_PERMISSIONS["risk_manager"].extend(["sec.compliance.manage", "sec.privacy.manage"])
+
+# The SaaS platform_admin persona sees the security programme read-only for
+# cross-tenant oversight (management stays with the security owners above).
+ROLE_PERMISSIONS["platform_admin"].extend(_STAGE4_READ)
 
 # The role backfilled onto pre-existing users so nobody is locked out after the
 # RBAC migration. Kept intentionally broad for continuity with single-tenant dev
