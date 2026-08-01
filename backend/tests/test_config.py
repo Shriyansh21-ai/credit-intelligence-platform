@@ -1,4 +1,4 @@
-"""Phase 5, Milestone 13 tests: DB-driven system configuration."""
+""" tests: DB-driven system configuration."""
 
 import unittest
 

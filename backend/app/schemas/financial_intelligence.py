@@ -1,7 +1,7 @@
-"""Inbound Pydantic schemas for the Advanced Financial Intelligence APIs (Track 3).
+"""Inbound Pydantic schemas for the Advanced Financial Intelligence APIs.
 
 Request bodies only — responses are plain JSON dicts assembled by the services
-(mirroring the Phase 9/10 / Track 2 convention). Grouped by milestone.
+(mirroring the /10 / convention). Grouped by milestone.
 """
 
 from __future__ import annotations

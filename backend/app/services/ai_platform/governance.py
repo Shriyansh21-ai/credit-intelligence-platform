@@ -1,18 +1,18 @@
 """M12 — AI governance.
 
-A registry + lifecycle for every AI asset (prompts, models, datasets, agents,
+A registry + lifecycle for every AI asset (prompts, models, datasets, agents
 workflows, RAG indexes, reports) so that every AI decision is reproducible.
 Each asset carries a version, a content checksum and a lineage bundle; every
 state change and every use is recorded as an immutable event, giving a full
 audit trail from a decision back to the exact prompt/model/dataset that produced
 it.
 
-Assets move through a governed state machine:
+Assets move through a governed state machine
 
     registered → validated → approved → deployed → retired
 
-This layer is complementary to (not a replacement for) the Phase 6 ML model
-registry and the Phase 9 model-governance events — it governs the *AI platform*
+This layer is complementary to (not a replacement for) the ML model
+registry and the model-governance events — it governs the *AI platform*
 artifacts specifically.
 """
 

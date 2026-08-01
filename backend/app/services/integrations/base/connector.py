@@ -1,15 +1,15 @@
-"""The universal connector base class (Milestone 1).
+"""The universal connector base class.
 
 Every external system — GST, MCA, Account Aggregator, bureau, ERP, payment rail
 — is reached through a subclass of :class:`BaseConnector`. Subclasses implement
-only the thin, provider-specific bits:
+only the thin, provider-specific bits
 
 * :meth:`_authenticate` — validate/obtain credentials (mock providers no-op).
-* :meth:`_execute`       — perform one operation and return raw data (or raise a
+* :meth:`_execute` — perform one operation and return raw data (or raise a
   :class:`ConnectorError`).
-* :attr:`category`       — the :class:`ConnectorCategory` this provider serves.
+* :attr:`category` — the :class:`ConnectorCategory` this provider serves.
 
-Everything cross-cutting is handled here, once, for all connectors:
+Everything cross-cutting is handled here, once, for all connectors
 authentication, **retries**, **rate limiting**, **timeouts**, a **circuit
 breaker**, **caching**, **audit logging**, **metrics** and **health checks**.
 The result is that adding a real provider is a small, focused amount of code.
@@ -49,7 +49,7 @@ from backend.app.services.integrations.base.types import (
 
 
 class BaseConnector(ABC):
-    #: Overridden by each concrete connector.
+    # Overridden by each concrete connector.
     category: ConnectorCategory = ConnectorCategory.BANKING
 
     def __init__(
@@ -211,7 +211,7 @@ class BaseConnector(ABC):
     def _run_with_timeout(self, req: ConnectorRequest) -> Any:
         """Execute the provider call, enforcing a soft timeout budget.
 
-        Real network providers pass ``timeout_seconds`` to their HTTP client;
+        Real network providers pass ``timeout_seconds`` to their HTTP client
         here we additionally measure wall time and raise if a (mock-simulated)
         call blew the budget, so timeout handling is exercised end-to-end.
         """

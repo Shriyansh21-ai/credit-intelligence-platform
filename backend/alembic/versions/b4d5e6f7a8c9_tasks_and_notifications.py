@@ -1,4 +1,4 @@
-"""Task management and notification tables (Phase 5, M9 & M10)
+"""Task management and notification tables
 
 Revision ID: b4d5e6f7a8c9
 Revises: a3c4d5e6f7b8

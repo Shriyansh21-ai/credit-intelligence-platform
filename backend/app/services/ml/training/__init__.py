@@ -1,4 +1,4 @@
-"""Modular ML training pipeline (Phase 6, Milestone 2)."""
+"""Modular ML training pipeline."""
 
 from . import estimators, evaluation
 from .pipeline import TrainingResult, train

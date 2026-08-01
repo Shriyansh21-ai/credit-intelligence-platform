@@ -1,7 +1,7 @@
-"""White-label branding service (Phase 8, Milestone 3).
+"""White-label branding service.
 
 Resolves and mutates a tenant's :class:`TenantBranding` row. A code-defined
-default theme guarantees every tenant renders sensibly before any customisation;
+default theme guarantees every tenant renders sensibly before any customisation
 ``get_branding`` deep-merges the stored overrides onto that default so the
 frontend always receives a complete, ready-to-apply theme.
 """

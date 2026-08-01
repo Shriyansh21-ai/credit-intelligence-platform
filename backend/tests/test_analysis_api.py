@@ -1,4 +1,4 @@
-"""Milestone 5 tests: Financial Analysis API routes.
+""" tests: Financial Analysis API routes.
 
 Uses an isolated FastAPI app mounting only the analysis router with overridden
 DB and auth dependencies, so the suite stays fast and hermetic.

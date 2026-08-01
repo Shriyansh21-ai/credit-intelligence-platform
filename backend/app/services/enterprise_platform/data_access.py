@@ -1,6 +1,6 @@
-"""Read-only platform reads for Track 4 (Enterprise Productization).
+"""Read-only platform reads for (Enterprise Productization).
 
-Track 4's operations, monitoring, security and BI surfaces roll up *real* signals
+'s operations, monitoring, security and BI surfaces roll up *real* signals
 from across the platform (assessments, tenants, AI/ML usage). This module is the
 single defensive read layer. Every helper tolerates a missing table / empty DB so
 targeted unit tests and fresh installs keep working.

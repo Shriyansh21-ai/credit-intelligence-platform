@@ -1,9 +1,9 @@
-"""Startup seeding for the SaaS platform (Phase 8).
+"""Startup seeding for the SaaS platform.
 
-Idempotent bootstrap run on app startup (and in tests). It:
+Idempotent bootstrap run on app startup (and in tests). It
 
-* syncs the billing plan catalog into ``billing_plans``,
-* syncs the feature-flag registry into ``feature_flags``,
+* syncs the billing plan catalog into ``billing_plans``
+* syncs the feature-flag registry into ``feature_flags``
 * ensures a **default organization + tenant** exists so single-tenant / legacy
   deployments have a home tenant without any manual setup — every pre-Phase-8
   code path keeps working, now under an implicit default tenant.
@@ -46,7 +46,7 @@ def ensure_default_tenant(db: Session) -> Optional[Tenant]:
 
 
 def seed_saas(db: Session) -> dict:
-    """Run all Phase 8 seeding. Returns a small summary."""
+    """Run all seeding. Returns a small summary."""
     from backend.app.services.saas.billing import service as billing_svc
     from backend.app.services.saas.flags import service as flag_svc
 

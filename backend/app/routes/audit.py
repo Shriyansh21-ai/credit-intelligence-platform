@@ -1,8 +1,8 @@
-"""Audit dashboard API (Phase 5, Milestone 4).
+"""Audit dashboard API.
 
-    GET  /api/audit            searchable, filterable, paginated audit log
-    GET  /api/audit/stats      aggregate counts for the dashboard header
-    GET  /api/audit/actions    distinct action names (for filter dropdowns)
+    GET /api/audit searchable, filterable, paginated audit log
+    GET /api/audit/stats aggregate counts for the dashboard header
+    GET /api/audit/actions distinct action names (for filter dropdowns)
 
 All endpoints require the ``audit.view`` permission.
 """

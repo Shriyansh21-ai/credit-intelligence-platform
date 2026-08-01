@@ -1,14 +1,14 @@
-"""Fraud ML engine service (Phase 6, Milestone 10).
+"""Fraud ML engine service.
 
 Fits an unsupervised :class:`FraudEnsemble` on the historical applicant
 population and scores entities for anomaly / fraud risk. Beyond a single fraud
-probability it produces:
+probability it produces
 
 * **method scores** — Isolation Forest, LOF and reconstruction (autoencoder)
-  scores side by side;
+  scores side by side
 * **dimension anomalies** — behavioural, transaction and network views computed
-  over feature subsets;
-* **contributing factors** — the features that deviate most from the population;
+  over feature subsets
+* **contributing factors** — the features that deviate most from the population
 * **risk clustering** — a KMeans cluster assignment and per-cluster profiles.
 
 Results persist to :class:`MLFraudResult`. The detector is fitted lazily on the

@@ -1,18 +1,18 @@
 """M3 — Enterprise long-term memory.
 
-Unifies three storage modalities behind one API:
+Unifies three storage modalities behind one API
 
-* **SQL memory**   — the durable ``aip_memories`` table (typed, scoped, audited).
+* **SQL memory** — the durable ``aip_memories`` table (typed, scoped, audited).
 * **Vector memory**— every memory is embedded and indexed for semantic recall.
-* **Graph memory** — memories can reference related memories (``related_ids``),
+* **Graph memory** — memories can reference related memories (``related_ids``)
   giving a lightweight associative graph traversable from any node.
 
-Memory types (``semantic``, ``episodic``, ``procedural``, ``organization``,
-``tenant``, ``user``, ``conversation``, ``project``, ``banking_case``,
+Memory types (``semantic``, ``episodic``, ``procedural``, ``organization``
+``tenant``, ``user``, ``conversation``, ``project``, ``banking_case``
 ``committee``, ``customer``) and scopes are advisory strings, so new kinds need
 no schema change.
 
-Retrieval is scored by a blend of semantic similarity, curated importance,
+Retrieval is scored by a blend of semantic similarity, curated importance
 recency and reinforcement (access count). Summaries compress a scope; a decay-
 based forgetting strategy prunes stale, low-value memories — all deterministic.
 """

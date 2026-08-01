@@ -1,4 +1,4 @@
-"""Phase 8 — Multi-tenant architecture + organization management (M1, M2)."""
+""" Multi-tenant architecture + organization management (M1, M2)."""
 
 import unittest
 import warnings

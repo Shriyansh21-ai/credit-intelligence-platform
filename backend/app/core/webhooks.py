@@ -1,15 +1,15 @@
-"""Webhook delivery robustness (Phase 11, M10).
+"""Webhook delivery robustness.
 
 Complements the Phase-7 webhook subscription/emit store
 (`services/integrations/apiplatform/webhooks.py`) with the delivery-robustness
-primitives an enterprise webhook system needs:
+primitives an enterprise webhook system needs
 
 * **Replay-proof signing** — Stripe-style `t=<ts>,v1=<hmac>` signatures over
   ``<timestamp>.<body>``; verification enforces a timestamp tolerance so a
   captured request cannot be replayed later.
 * **Retry with exponential backoff** — a deterministic backoff schedule with a
   cap and max attempts.
-* **Dispatcher** — drives send → retry-on-failure over a pluggable transport,
+* **Dispatcher** — drives send → retry-on-failure over a pluggable transport
   records every attempt, and supports **replay** of a past event.
 
 Transport is injected, so this is fully unit-testable and has no network

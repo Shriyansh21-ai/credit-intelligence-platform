@@ -1,4 +1,4 @@
-"""Phase 8 — Subscription & billing engine (M4)."""
+""" Subscription & billing engine (M4)."""
 
 import unittest
 import warnings

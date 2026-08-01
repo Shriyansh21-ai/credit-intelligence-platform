@@ -1,4 +1,4 @@
-"""Phase 11, M14 — expanded security tests (crypto, authn, PII, retention).
+""" expanded security tests (crypto, authn, PII, retention).
 
 Deepens M8 coverage with edge cases, rotation matrices, and adversarial inputs.
 """

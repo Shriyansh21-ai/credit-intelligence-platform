@@ -1,4 +1,4 @@
-"""Track 4 M5 (Integration) + M6 (Data Management) tests."""
+""" M5 (Integration) + M6 (Data Management) tests."""
 
 from backend.tests._enterprise_platform_helpers import admin_client
 

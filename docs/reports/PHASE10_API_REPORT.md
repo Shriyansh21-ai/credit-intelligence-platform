@@ -1,4 +1,4 @@
-# Phase 10 — API Report
+# API Report
 
 **12 routers, 83 routes**, all under `/api/os/*`, versioned and additive. Every route
 enforces RBAC via `require_permission(...)`; mutating routes validate typed Pydantic

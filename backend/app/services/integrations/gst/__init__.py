@@ -1,6 +1,6 @@
-"""GST integration (Phase 7, Milestone 2).
+"""GST integration.
 
-A provider-agnostic GST connector plus a service that stores versioned,
+A provider-agnostic GST connector plus a service that stores versioned
 refresh-scheduled snapshots of GST profiles, returns, sales history and
 compliance signals.
 """

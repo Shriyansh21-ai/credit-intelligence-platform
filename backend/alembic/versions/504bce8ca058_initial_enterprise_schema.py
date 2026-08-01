@@ -1,7 +1,7 @@
 """initial enterprise schema
 
 Revision ID: 504bce8ca058
-Revises: 
+Revises
 Create Date: 2026-07-18 23:02:09.991155
 
 """

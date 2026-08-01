@@ -1,4 +1,4 @@
-"""System Configuration service (Phase 5, Milestone 13).
+"""System Configuration service.
 
 Database-driven configuration with a seeded default catalog. Nothing the admin
 can tune is hardcoded in route logic — callers read via ``get_config``.

@@ -1,7 +1,7 @@
 """Algorithm factory — maps an algorithm name to a fitted-ready estimator.
 
 The training pipeline is decoupled from any specific library: it asks this
-factory for an estimator by name. scikit-learn algorithms are always available;
+factory for an estimator by name. scikit-learn algorithms are always available
 the gradient-boosting libraries (XGBoost, LightGBM, CatBoost) are used when
 installed and *degrade gracefully* otherwise — exactly the optional-dependency
 pattern the platform already uses for report rendering. A caller can check

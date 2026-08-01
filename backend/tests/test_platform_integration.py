@@ -1,7 +1,7 @@
-"""Phase 11, M14 — integration tests over the real application.
+""" integration tests over the real application.
 
-Exercises the full middleware stack (security headers, API-version, gzip,
-observability), the probes, and the Prometheus /metrics endpoint end-to-end,
+Exercises the full middleware stack (security headers, API-version, gzip
+observability), the probes, and the Prometheus /metrics endpoint end-to-end
 plus telemetry render edge cases.
 """
 

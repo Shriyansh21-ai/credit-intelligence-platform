@@ -1,4 +1,4 @@
-"""Track 2 M1 — Enterprise RAG platform tests."""
+""" M1 — Enterprise RAG platform tests."""
 
 import unittest
 

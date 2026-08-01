@@ -1,12 +1,12 @@
-"""Collaboration API (Phase 5, Milestone 8).
+"""Collaboration API.
 
-    GET    /api/collaboration/applications/{app_id}/notes      threaded notes (pinned first)
-    POST   /api/collaboration/applications/{app_id}/notes      add a note / reply
-    PATCH  /api/collaboration/notes/{id}                        edit a note
-    DELETE /api/collaboration/notes/{id}                        soft-delete a note
-    POST   /api/collaboration/notes/{id}/pin                    pin / unpin
-    POST   /api/collaboration/notes/{id}/attachments           upload an attachment
-    GET    /api/collaboration/applications/{app_id}/activity    unified activity feed
+    GET /api/collaboration/applications/{app_id}/notes threaded notes (pinned first)
+    POST /api/collaboration/applications/{app_id}/notes add a note / reply
+    PATCH /api/collaboration/notes/{id} edit a note
+    DELETE /api/collaboration/notes/{id} soft-delete a note
+    POST /api/collaboration/notes/{id}/pin pin / unpin
+    POST /api/collaboration/notes/{id}/attachments upload an attachment
+    GET /api/collaboration/applications/{app_id}/activity unified activity feed
 """
 
 from __future__ import annotations

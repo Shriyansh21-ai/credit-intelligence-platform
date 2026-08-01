@@ -1,4 +1,4 @@
-"""Phase 4 Milestone 3 tests: the Explainable AI layer."""
+""" tests: the Explainable AI layer."""
 
 import unittest
 

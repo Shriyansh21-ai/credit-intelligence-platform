@@ -1,4 +1,4 @@
-"""RBAC persistence models (Phase 5, Milestone 3).
+"""RBAC persistence models.
 
 Roles and permissions are stored in the database and linked many-to-many via
 association tables, so access control is fully data-driven rather than hardcoded.

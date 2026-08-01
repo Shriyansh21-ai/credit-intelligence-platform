@@ -1,10 +1,10 @@
 """Enterprise feature store: lineage, point-in-time retrieval and reuse (M1).
 
-The Phase 4 feature store already persists versioned feature vectors. This module
-adds the enterprise-store capabilities the Phase 6 brief calls for on top of that
-substrate, without changing how vectors are produced or stored:
+The feature store already persists versioned feature vectors. This module
+adds the enterprise-store capabilities the brief calls for on top of that
+substrate, without changing how vectors are produced or stored
 
-* **Lineage** — for any feature: its definition, category, data source, unit,
+* **Lineage** — for any feature: its definition, category, data source, unit
   version, plus the models that were trained on it. This is the provenance trail
   auditors and the governance layer rely on.
 * **Point-in-time retrieval** — the exact feature vector that was current for an

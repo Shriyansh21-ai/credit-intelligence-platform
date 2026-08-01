@@ -3,7 +3,7 @@
 An internal developer platform: API-key management (create/rotate/revoke with
 one-time secrets stored only as hashes), webhook registration + delivery testing
 + replay, a request-history log, a sandbox request runner, rate-limit testing and
-an OpenAPI-backed API explorer. Backed by ``ent_api_keys``, ``ent_webhooks``,
+an OpenAPI-backed API explorer. Backed by ``ent_api_keys``, ``ent_webhooks``
 ``ent_webhook_deliveries`` and ``ent_api_requests``.
 """
 

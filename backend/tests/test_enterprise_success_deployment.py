@@ -1,4 +1,4 @@
-"""Track 4 M9 (Customer Success) + M10 (Deployment) tests."""
+""" M9 (Customer Success) + M10 (Deployment) tests."""
 
 from backend.tests._enterprise_platform_helpers import admin_client
 

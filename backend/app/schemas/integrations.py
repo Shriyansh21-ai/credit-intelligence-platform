@@ -1,4 +1,4 @@
-"""Request/response schemas for the Integration Platform APIs (Phase 7)."""
+"""Request/response schemas for the Integration Platform APIs."""
 
 from __future__ import annotations
 

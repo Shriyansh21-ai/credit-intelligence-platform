@@ -1,4 +1,4 @@
-"""Phase 5, Milestone 12 tests: enterprise search filters, sort, paginate, facets."""
+""" tests: enterprise search filters, sort, paginate, facets."""
 
 import unittest
 

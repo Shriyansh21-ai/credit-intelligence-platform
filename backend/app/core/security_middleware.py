@@ -1,4 +1,4 @@
-"""Security headers middleware (Phase 11, M8).
+"""Security headers middleware.
 
 Adds OWASP-recommended response headers (HSTS, CSP, anti-clickjacking, MIME
 sniffing protection, referrer + permissions policy). Configurable via settings

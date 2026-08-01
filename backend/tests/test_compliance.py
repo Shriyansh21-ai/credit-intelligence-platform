@@ -1,4 +1,4 @@
-"""Phase 11, M12 — compliance toolkit tests."""
+""" compliance toolkit tests."""
 
 import json
 import unittest

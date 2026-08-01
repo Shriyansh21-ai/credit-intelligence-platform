@@ -1,6 +1,6 @@
 """Portfolio data access — assessments -> positions.
 
-Reads the current user's enterprise assessments (each a portfolio exposure),
+Reads the current user's enterprise assessments (each a portfolio exposure)
 applies optional filters, and maps them into positions for the aggregation
 engine. Only the latest assessment per company is counted, so re-assessing a
 client updates rather than duplicates its exposure.

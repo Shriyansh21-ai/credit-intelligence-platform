@@ -1,16 +1,16 @@
-"""Portfolio ML (Phase 6, Milestone 11).
+"""Portfolio ML.
 
 Aggregates model-scored positions into portfolio-level risk analytics driven by
-the trained model rather than a fixed formula:
+the trained model rather than a fixed formula
 
-* portfolio default rate (exposure-weighted expected PD),
-* expected loss and unexpected loss (independent-obligor approximation),
-* sector concentration (Herfindahl–Hirschman Index over exposures),
-* exposure risk (largest expected-loss contributors),
-* rating-migration probability (grade distribution + downgrade likelihood),
+* portfolio default rate (exposure-weighted expected PD)
+* expected loss and unexpected loss (independent-obligor approximation)
+* sector concentration (Herfindahl–Hirschman Index over exposures)
+* exposure risk (largest expected-loss contributors)
+* rating-migration probability (grade distribution + downgrade likelihood)
 * risk clustering of the book.
 
-This complements — and never replaces — the deterministic Phase 4 portfolio
+This complements — and never replaces — the deterministic portfolio
 engine (:mod:`portfolio_intelligence`); both remain available.
 """
 

@@ -1,4 +1,4 @@
-"""OWASP assessment engine (Milestone 2).
+"""OWASP assessment engine.
 
 Evaluates the platform against OWASP Top 10 (2021), OWASP API Security Top 10
 (2023) and an ASVS chapter checklist, turning control status into findings and a

@@ -1,4 +1,4 @@
-"""Enterprise collateral management (Phase 7, Milestone 9)."""
+"""Enterprise collateral management."""
 
 from backend.app.services.integrations.collateral.catalog import (
     COLLATERAL_TYPES,

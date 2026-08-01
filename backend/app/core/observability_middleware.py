@@ -1,4 +1,4 @@
-"""Observability middleware (Phase 8, Milestone 9).
+"""Observability middleware.
 
 Assigns / propagates a correlation id per request, times the request, records a
 root trace span + latency metrics, and echoes the correlation id back on the

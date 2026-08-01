@@ -1,31 +1,45 @@
-# ======================
 # Python
-# ======================
-
 .venv/
 venv/
-
+env/
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
+*.egg-info/
+.eggs/
 
-# Database
+# Test, lint, and type-check caches
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.tox/
+
+# Coverage
+.coverage
+.coverage.*
+coverage.xml
+coverage/
+htmlcov/
+
+# Databases (managed by migrations; never committed)
 *.db
+*.db.bak
+*.sqlite
 *.sqlite3
 
-# Environment Variables
+# Environment and secrets
 .env
 .env.*
+!.env.example
+*.pem
+*.key
 
-# ======================
 # Frontend
-# ======================
-
 node_modules/
 dist/
 dist-ssr/
-
+build/
 .output/
 .vinxi/
 .tanstack/
@@ -39,38 +53,31 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
-# ======================
-# IDE
-# ======================
-
+# IDE and editor
 .vscode/
 .idea/
+*.swp
+*.swo
 
-# ======================
-# OS Files
-# ======================
-
+# Operating system
 .DS_Store
 Thumbs.db
 
-# ======================
-# Build Files
-# ======================
-
-coverage/
-build/
-
-# ======================
-# ML Platform (Phase 6)
-# ======================
-# Trained model artifacts are binary and reproducible from the registry +
-# dataset spec; never commit them.
-backend/app/services/ml/artifacts/
-*.joblib
-
-# ======================
-# Temporary
-# ======================
-
+# Temporary and cache
+tmp/
+.cache/
 *.tmp
 *.temp
+
+# Infrastructure state
+*.tfstate
+*.tfstate.*
+.terraform/
+kubeconfig
+*.kubeconfig
+
+# Machine-learning artifacts
+# Trained models are binary and reproducible from the registry and dataset
+# specification; never commit them.
+backend/app/services/ml/artifacts/
+*.joblib

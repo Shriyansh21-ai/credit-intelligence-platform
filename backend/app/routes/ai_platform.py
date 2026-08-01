@@ -1,24 +1,24 @@
-"""AI Intelligence Platform APIs (Track 2).
+"""AI Intelligence Platform APIs.
 
 Additive routers exposing the whole AI layer under ``/api/aip/*``. Every route is
-new; no existing route is modified. RBAC is enforced with the Track 2 permission
+new; no existing route is modified. RBAC is enforced with the permission
 catalog (``aip.*``). Routers are collected into ``ROUTERS`` and mounted in
 ``main.py``; each milestone appends its router here.
 
-    /api/aip/rag            enterprise RAG platform (M1)
-    /api/aip/agents         multi-agent AI system (M2)
-    /api/aip/memory         long-term memory (M3)
-    /api/aip/prompts        prompt engineering platform (M4)
-    /api/aip/eval           AI evaluation framework (M5)
-    /api/aip/investigate    autonomous investigation (M6)
-    /api/aip/reports        AI report generation (M7)
-    /api/aip/workflows      AI workflow builder (M8)
-    /api/aip/chat           enterprise conversational AI (M9)
-    /api/aip/research       AI research assistant (M10)
-    /api/aip/learning       continuous learning (M11)
-    /api/aip/governance     AI governance (M12)
-    /api/aip/explain        explainable enterprise AI (M13)
-    /api/aip/monitoring     AI monitoring (M14)
+    /api/aip/rag enterprise RAG platform (M1)
+    /api/aip/agents multi-agent AI system (M2)
+    /api/aip/memory long-term memory (M3)
+    /api/aip/prompts prompt engineering platform (M4)
+    /api/aip/eval AI evaluation framework (M5)
+    /api/aip/investigate autonomous investigation (M6)
+    /api/aip/reports AI report generation (M7)
+    /api/aip/workflows AI workflow builder (M8)
+    /api/aip/chat enterprise conversational AI (M9)
+    /api/aip/research AI research assistant (M10)
+    /api/aip/learning continuous learning (M11)
+    /api/aip/governance AI governance (M12)
+    /api/aip/explain explainable enterprise AI (M13)
+    /api/aip/monitoring AI monitoring (M14)
 """
 
 from __future__ import annotations

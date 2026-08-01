@@ -1,7 +1,7 @@
 """M5 — AI evaluation framework.
 
 Produces deterministic, reproducible **AI scorecards** across the dimensions a
-bank's model-risk team cares about:
+bank's model-risk team cares about
 
     factual_accuracy · hallucination · groundedness · consistency ·
     policy_compliance · reasoning · latency · cost · token_usage · business_correctness

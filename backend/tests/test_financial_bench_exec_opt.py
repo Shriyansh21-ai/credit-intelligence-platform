@@ -1,4 +1,4 @@
-"""Track 3 M10 (Benchmarking) + M11 (Executive) + M12 (Optimization) tests."""
+""" M10 (Benchmarking) + M11 (Executive) + M12 (Optimization) tests."""
 
 from backend.tests._financial_intelligence_helpers import admin_client, seed_company, seed_portfolio_companies
 

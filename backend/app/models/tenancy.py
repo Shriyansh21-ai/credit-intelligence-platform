@@ -1,20 +1,20 @@
-"""Multi-tenant SaaS core persistence (Phase 8, Milestones 1-3).
+"""Multi-tenant SaaS core persistence.
 
 All tables are **additive** — nothing from Phases 1-7 is modified. Schema is
 created by the Alembic migration ``c9d0e1f2a3b4_saas_platform_phase8`` (never
 ``create_all`` in the app).
 
-Tenancy hierarchy (top to bottom)::
+Tenancy hierarchy (top to bottom)
 
-    Organization              legal / billing entity (the SaaS customer, e.g. a bank)
-      └── Tenant              isolation boundary — the primary scoping key
-            ├── BusinessUnit  optional org sub-structure
-            │     └── Department
-            │           └── Team
+    Organization legal / billing entity (the SaaS customer, e.g. a bank)
+      └── Tenant isolation boundary — the primary scoping key
+            ├── BusinessUnit optional org sub-structure
+            │ └── Department
+            │ └── Team
             └── Workspace
                   └── Project
 
-Every Phase 8 domain row carries a ``tenant_id``. ``Tenant`` is the single
+Every domain row carries a ``tenant_id``. ``Tenant`` is the single
 isolation key enforced by the tenant-aware middleware, repositories and cache.
 Users are linked to tenants through :class:`TenantMembership` (a user may belong
 to several tenants); the legacy single-tenant ``users`` table is untouched.
@@ -136,7 +136,7 @@ class TenantMembership(Base):
     """Links a legacy :class:`~backend.app.models.user.User` to a tenant.
 
     ``org_role`` is a coarse tenant-level role (owner|admin|member|billing|
-    viewer) distinct from the fine-grained RBAC roles in Phase 5 — it governs
+    viewer) distinct from the fine-grained RBAC roles in — it governs
     *organization* actions (invite users, manage billing) rather than credit
     workflow permissions.
     """
@@ -162,7 +162,7 @@ class TenantInvitation(Base):
     tenant_id = Column(Integer, ForeignKey("tenants.id"), nullable=False, index=True)
     email = Column(String, nullable=False, index=True)
     org_role = Column(String, nullable=False, default="member")
-    rbac_role = Column(String, nullable=True)  # Phase 5 role to grant on acceptance
+    rbac_role = Column(String, nullable=True)  # role to grant on acceptance
     token = Column(String, nullable=False, unique=True, index=True)
     status = Column(String, nullable=False, default="pending", index=True)  # pending|accepted|revoked|expired
     invited_by = Column(String, nullable=True)

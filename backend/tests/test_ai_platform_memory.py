@@ -1,4 +1,4 @@
-"""Track 2 M3 — Long-term memory tests."""
+""" M3 — Long-term memory tests."""
 
 import unittest
 

@@ -1,7 +1,7 @@
-"""Enterprise Explainable AI (Phase 6, Milestone 5).
+"""Enterprise Explainable AI.
 
-Extends the Phase 4 explanation builder to trained models and adds the
-enterprise-grade explainability surface the brief requires:
+Extends the explanation builder to trained models and adds the
+enterprise-grade explainability surface the brief requires
 
 * SHAP — genuine mean-|SHAP| global importance for tree models, with a
   documented fall-back to native importances when SHAP is unavailable.
@@ -43,7 +43,7 @@ def explain_model(features: Mapping[str, Any], model: BaseRiskModel) -> Explanat
     """Build an :class:`Explanation` for any model (trained or deterministic).
 
     Trained models are attributed with their own baseline-relative log-odds
-    decomposition (the ``_local_contributions`` substrate) and, where possible,
+    decomposition (the ``_local_contributions`` substrate) and, where possible
     their SHAP global importances; deterministic models fall through to the exact
     additive estimator contributions.
     """

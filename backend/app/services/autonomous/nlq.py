@@ -6,7 +6,7 @@ No LLM is required — a transparent, auditable rule parser handles the supporte
 question families and logs every query. (The M4 LLM adapter can optionally phrase
 the results, but the numbers always come from this deterministic path.)
 
-Supported families::
+Supported families
 
     "Show high-risk textile companies."
     "Which customers deteriorated this month?"

@@ -1,4 +1,4 @@
-"""Compliance framework engine (Milestone 7).
+"""Compliance framework engine.
 
 Assesses the platform against SOC 2, ISO 27001, GDPR, PCI DSS, RBI Digital
 Lending, RBI Cyber Security, RBI Outsourcing and NIST CSF, producing a readiness

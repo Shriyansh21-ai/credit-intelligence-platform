@@ -1,8 +1,8 @@
 """Covenant service — creation, measurement/evaluation, trend, auto-alerts.
 
-Evaluation applies the covenant's operator to a measured value:
-    - "min":  breach when value < threshold; warning when within 5% above.
-    - "max":  breach when value > threshold; warning when within 5% below.
+Evaluation applies the covenant's operator to a measured value
+    - "min": breach when value < threshold; warning when within 5% above.
+    - "max": breach when value > threshold; warning when within 5% below.
 A breach automatically raises a :class:`CovenantAlert`.
 """
 

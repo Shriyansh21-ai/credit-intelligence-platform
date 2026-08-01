@@ -72,10 +72,10 @@ def train_and_persist_model(data_path: str | None = None, artifacts_dir: str | N
     })
     save_metadata(metadata)
 
-    print(f"\n✅ Accuracy: {accuracy:.2f}\n")
+    print(f"\nAccuracy: {accuracy:.2f}\n")
     print("Classification Report:\n")
     print(classification_report(y_test, predictions))
-    print("\n✅ Model and artifacts saved successfully")
+    print("\nModel and artifacts saved successfully")
 
     return {
         "accuracy": round(float(accuracy), 4),

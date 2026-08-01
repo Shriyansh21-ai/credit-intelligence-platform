@@ -50,7 +50,7 @@ deploying team:
   developer, marketplace, integration, data, ops, security, success, deploy,
   monitoring, BI, launch) on top of the Banking OS, AI and Financial platforms.
   No placeholder pages; every dashboard uses real data.
-- **Enterprise UX** — global ⌘K command palette, personalization, saved layouts,
+- **Enterprise UX** — global K command palette, personalization, saved layouts,
   consistent design system, responsive, theme-aware.
 - **Security & compliance** — RBAC (175 perms), zero-trust, access reviews, key
   rotation, audit middleware, secret scanning in CI.

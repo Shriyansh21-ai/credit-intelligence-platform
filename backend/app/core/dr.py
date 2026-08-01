@@ -1,10 +1,10 @@
-"""Disaster recovery toolkit (Phase 11, M11).
+"""Disaster recovery toolkit.
 
 Provider-agnostic backup / restore / point-in-time-recovery abstractions with a
 real, file-based default implementation so the whole flow is exercisable in
 tests and local/dev without any cloud dependency. In production the same
 :class:`BackupTarget` interface is implemented by cloud-native adapters (RDS
-snapshots, S3 versioning, Secrets Manager) — the manager, catalog, retention,
+snapshots, S3 versioning, Secrets Manager) — the manager, catalog, retention
 drill, and validation logic are identical.
 
 Design
@@ -79,7 +79,7 @@ class BackupTarget(Protocol):
 class DatabaseBackupTarget:
     """Backs up a database via an injected dump/restore pair.
 
-    ``dump`` returns the logical backup bytes (e.g. `pg_dump`/`.sql`/sqlite copy);
+    ``dump`` returns the logical backup bytes (e.g. `pg_dump`/`.sql`/sqlite copy)
     ``load`` applies them. Injecting these keeps the target engine-agnostic and
     unit-testable.
     """
@@ -172,7 +172,7 @@ class ConfigBackupTarget:
         )
 
     def restore(self, artifact: BackupArtifact) -> bool:  # noqa: ARG002 - config is applied out of band
-        # Configuration is 12-factor (env-driven); restore = re-materialise env,
+        # Configuration is 12-factor (env-driven); restore = re-materialise env
         # so this target is snapshot-only. Returning True signals "no action".
         return True
 

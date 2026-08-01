@@ -1,4 +1,4 @@
-"""Default feature-flag registry (Phase 8, Milestone 5).
+"""Default feature-flag registry.
 
 Pure data seeded into ``feature_flags`` on startup. Flags added here appear for
 every tenant with the given default; per-tenant behaviour is layered on via

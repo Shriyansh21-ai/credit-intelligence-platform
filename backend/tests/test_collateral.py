@@ -1,4 +1,4 @@
-"""Phase 7 — collateral management tests (M9)."""
+""" collateral management tests (M9)."""
 
 import unittest
 import warnings

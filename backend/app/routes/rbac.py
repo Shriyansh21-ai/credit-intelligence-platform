@@ -1,11 +1,11 @@
-"""RBAC administration API (Phase 5, Milestone 3).
+"""RBAC administration API.
 
-    GET   /api/rbac/permissions           list all permissions (grouped-ready)
-    GET   /api/rbac/roles                  list roles with their permission codes
-    GET   /api/rbac/me                     current user's roles + effective permissions
-    GET   /api/rbac/users/{user_id}/roles  a user's roles + permissions
-    POST  /api/rbac/users/{user_id}/roles  assign a role (users.manage)
-    PUT   /api/rbac/users/{user_id}/roles  replace a user's role set (users.manage)
+    GET /api/rbac/permissions list all permissions (grouped-ready)
+    GET /api/rbac/roles list roles with their permission codes
+    GET /api/rbac/me current user's roles + effective permissions
+    GET /api/rbac/users/{user_id}/roles a user's roles + permissions
+    POST /api/rbac/users/{user_id}/roles assign a role (users.manage)
+    PUT /api/rbac/users/{user_id}/roles replace a user's role set (users.manage)
 """
 
 from __future__ import annotations

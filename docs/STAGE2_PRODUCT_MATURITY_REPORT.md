@@ -1,4 +1,4 @@
-# Stage 2 — Product Maturity Report
+# Product Maturity Report
 
 _Transforming the AI Credit Intelligence Platform frontend from an engineering
 project into a polished, commercial Enterprise Banking SaaS experience._
@@ -83,7 +83,7 @@ change propagates correctly across the whole app:
 
 ## Performance improvements
 
-- **Full-page reloads eliminated** on navigation (sidebar + ⌘K palette now use
+- **Full-page reloads eliminated** on navigation (sidebar + K palette now use
   client-side routing) — the largest perceived-performance win.
 - Route-level **code-splitting** confirmed (128 client chunks); the heavy Recharts
   bundle is isolated and loaded only on chart pages.

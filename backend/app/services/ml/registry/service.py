@@ -1,15 +1,15 @@
-"""Enterprise Model Registry (Phase 6, Milestone 3).
+"""Enterprise Model Registry.
 
-The registry is the system of record for every trained model version. It:
+The registry is the system of record for every trained model version. It
 
-* assigns monotonic versions per ``model_key`` and marks the latest current;
+* assigns monotonic versions per ``model_key`` and marks the latest current
 * persists the training report, metrics, hyperparameters, dataset lineage and
   the serialised artifact path — everything needed to reproduce and audit a
-  model;
+  model
 * drives two governance state machines — an **approval** flow
   (draft → pending → approved / rejected) and a **production** flow
   (none → staging → production → archived / rolled_back) — with an append-only
-  deployment history behind every transition;
+  deployment history behind every transition
 * supports rollback to a previously-promoted version.
 
 The registry never trains; it records the output of :mod:`training.pipeline`.

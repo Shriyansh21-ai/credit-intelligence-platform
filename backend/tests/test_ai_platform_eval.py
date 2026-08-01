@@ -1,4 +1,4 @@
-"""Track 2 M5 — AI evaluation framework tests."""
+""" M5 — AI evaluation framework tests."""
 
 import unittest
 

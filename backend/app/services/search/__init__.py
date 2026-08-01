@@ -1,7 +1,7 @@
-"""Enterprise Search (Phase 5, Milestone 12).
+"""Enterprise Search.
 
 A single, filterable, sortable, paginated search over credit applications by
-company, GSTIN, PAN, application/loan id, industry, rating, status, risk grade,
+company, GSTIN, PAN, application/loan id, industry, rating, status, risk grade
 relationship manager and date range, with facet counts.
 """
 

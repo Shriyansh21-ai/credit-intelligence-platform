@@ -1,10 +1,10 @@
-"""Autonomous AI Banking Intelligence persistence (Phase 9).
+"""Autonomous AI Banking Intelligence persistence.
 
 Every table here is **additive** — nothing from Phases 1-8 is altered or dropped.
 Schema is created by the Alembic migration ``d0e1f2a3b4c5_autonomous_intelligence_phase9``
 (the app never calls ``create_all``).
 
-The Phase 9 "AI Brain" layers sit on top of the existing deterministic engines,
+The "AI Brain" layers sit on top of the existing deterministic engines
 ML platform, connectors and SaaS platform. To stay loosely coupled (and to avoid
 cross-model FK-ordering pain in targeted test schemas) most rows reference a
 company by a stable ``company_ref`` string (company name / GSTIN / PAN / CIN) and
@@ -12,22 +12,22 @@ optionally carry an ``assessment_id`` when they were derived from a concrete
 :class:`EnterpriseAssessment`. Multi-tenancy is preserved by an optional
 ``tenant_id`` column (nullable → legacy single-tenant flows keep working).
 
-Table groups:
+Table groups
 
-* Knowledge Graph (M1)      — ``kg_entities``, ``kg_relationships``
-* Monitoring (M2)           — ``monitoring_signals``
+* Knowledge Graph (M1) — ``kg_entities``, ``kg_relationships``
+* Monitoring (M2) — ``monitoring_signals``
 * Unified alerting (M2/3/11)— ``intelligence_alerts``
-* Early Warning (M3)        — ``ews_assessments``
-* AI Copilot (M4)           — ``copilot_conversations``, ``copilot_messages``
-* Scenario simulation (M5)  — ``simulation_runs``
-* Stress testing (M6)       — ``stress_test_runs``
+* Early Warning (M3) — ``ews_assessments``
+* AI Copilot (M4) — ``copilot_conversations``, ``copilot_messages``
+* Scenario simulation (M5) — ``simulation_runs``
+* Stress testing (M6) — ``stress_test_runs``
 * Portfolio optimization(M7)— ``portfolio_optimizations``
-* RM workspace (M8)         — ``rm_interactions``, ``rm_opportunities``
-* NL analytics (M10)        — ``nl_query_logs``
-* Recommendations (M11)     — ``recommendations``
+* RM workspace (M8) — ``rm_interactions``, ``rm_opportunities``
+* NL analytics (M10) — ``nl_query_logs``
+* Recommendations (M11) — ``recommendations``
 * Workflow intelligence(M12)— ``workflow_actions``
-* Model governance (M13)    — ``model_governance_events``, ``model_validations``
-* Data lake (M14)           — ``datalake_datasets``, ``datalake_objects``
+* Model governance (M13) — ``model_governance_events``, ``model_validations``
+* Data lake (M14) — ``datalake_datasets``, ``datalake_objects``
 """
 
 from __future__ import annotations
@@ -48,8 +48,8 @@ from backend.app.db.database import Base
 class KGEntity(Base):
     """A node in the enterprise knowledge graph.
 
-    ``entity_type`` is one of the taxonomy kinds (company, director, promoter,
-    subsidiary, supplier, customer, lender, guarantor, shareholder, sector,
+    ``entity_type`` is one of the taxonomy kinds (company, director, promoter
+    subsidiary, supplier, customer, lender, guarantor, shareholder, sector
     region, collateral, connected_entity). ``ref`` is a stable external key
     (GSTIN / PAN / CIN / name) unique per tenant + type.
     """
@@ -353,7 +353,7 @@ class WorkflowAction(Base):
 # M13 — Model Governance Platform
 # ===========================================================================
 class ModelGovernanceEvent(Base):
-    """An auditable governance action over a Phase 6 registered model."""
+    """An auditable governance action over a registered model."""
 
     __tablename__ = "model_governance_events"
 
@@ -410,7 +410,7 @@ class DataLakeDataset(Base):
 class DataLakeObject(Base):
     """An immutable, content-hashed analytical record in the data lake.
 
-    Append-only and read-optimized: transactional workloads are untouched;
+    Append-only and read-optimized: transactional workloads are untouched
     analytics read from here. Idempotent on ``(namespace, partition, content_hash)``.
     """
 

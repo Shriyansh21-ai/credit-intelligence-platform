@@ -1,4 +1,4 @@
-"""Phase 11, Milestone 1 — tests for the production configuration system.
+""" tests for the production configuration system.
 
 Covers the typed settings, profile-aware validation, backward-compatible
 facades, and the fail-fast startup hook. Tests build ``AppSettings`` with

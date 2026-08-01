@@ -1,10 +1,10 @@
-"""Subscription & billing persistence (Phase 8, Milestone 4).
+"""Subscription & billing persistence.
 
 Additive tables. The plan *catalog* is code-driven (see
 ``services/saas/billing/catalog.py``) and seeded into ``billing_plans`` on
 startup; subscriptions, metered usage, and invoices are per-organization data.
 
-Payment-provider integration (Stripe / Razorpay) is deliberately abstracted:
+Payment-provider integration (Stripe / Razorpay) is deliberately abstracted
 :class:`Subscription` carries ``provider`` + ``provider_ref`` columns and the
 service layer talks to a ``PaymentGateway`` interface, so wiring a real gateway
 never touches the schema.
@@ -36,7 +36,7 @@ class BillingPlan(Base):
     base_price = Column(Float, nullable=False, default=0.0)
     currency = Column(String, nullable=False, default="INR")
     billing_interval = Column(String, nullable=False, default="monthly")  # monthly|annual
-    # Quotas / entitlements (seats, storage_gb, api_calls, ml_predictions, ocr_pages,
+    # Quotas / entitlements (seats, storage_gb, api_calls, ml_predictions, ocr_pages
     # connector_calls, …). Absent key = unlimited.
     limits = Column(JSON, nullable=False, default=dict)
     # Per-unit prices for usage-based / overage billing, keyed by meter.
@@ -85,7 +85,7 @@ class SubscriptionEvent(Base):
 class UsageRecord(Base):
     """One metered usage row. Aggregated into invoices and analytics.
 
-    ``meter`` ∈ {seats, storage_gb, api_calls, ml_predictions, ocr_pages,
+    ``meter`` ∈ {seats, storage_gb, api_calls, ml_predictions, ocr_pages
     connector_calls, …}. ``period`` is a ``YYYY-MM`` billing month for cheap
     grouping.
     """

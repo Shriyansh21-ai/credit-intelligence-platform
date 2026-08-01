@@ -1,4 +1,4 @@
-# Phase 10 — Deployment Report
+# Deployment Report
 
 ## Readiness summary
 - **Backend:** all 15 milestones implemented; full suite **961 passed / 0 failed**; zero

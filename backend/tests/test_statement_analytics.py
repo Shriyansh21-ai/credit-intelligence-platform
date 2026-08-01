@@ -1,4 +1,4 @@
-"""Phase 7 — Account Aggregator + bank statement analytics tests (M4, M5)."""
+""" Account Aggregator + bank statement analytics tests (M4, M5)."""
 
 import unittest
 import warnings

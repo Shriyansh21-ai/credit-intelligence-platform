@@ -1,26 +1,26 @@
-"""Autonomous AI Banking Intelligence Platform APIs (Phase 9).
+"""Autonomous AI Banking Intelligence Platform APIs.
 
 Focused, additive routers exposing the whole "AI Brain" under ``/api/ai/*``.
 Every route is new; no existing route is modified. RBAC is enforced with the
-Phase 9 permission catalog (``intelligence.*``, ``copilot.use``, ``simulation.run``,
-``portfolio.optimize``, ``rm.workspace``, ``command.center``, ``recommendations.*``,
+ permission catalog (``intelligence.*``, ``copilot.use``, ``simulation.run``
+``portfolio.optimize``, ``rm.workspace``, ``command.center``, ``recommendations.*``
 ``governance.*``, ``datalake.*``).
 
-    /api/ai/graph            knowledge graph (M1)
-    /api/ai/monitoring       real-time monitoring (M2)
-    /api/ai/ews              early-warning signals (M3)
-    /api/ai/alerts           unified intelligence alerts (M2/3/11)
-    /api/ai/copilot          AI Credit Copilot (M4)
-    /api/ai/simulation       scenario simulation (M5)
-    /api/ai/stress           stress testing (M6)
-    /api/ai/portfolio        portfolio optimization (M7)
-    /api/ai/rm               relationship-manager workspace (M8)
-    /api/ai/command          executive command center (M9)
-    /api/ai/nlq              natural-language analytics (M10)
-    /api/ai/recommendations  recommendation engine (M11)
-    /api/ai/workflow         autonomous workflow intelligence (M12)
-    /api/ai/governance       model governance (M13)
-    /api/ai/datalake         enterprise data lake (M14)
+    /api/ai/graph knowledge graph (M1)
+    /api/ai/monitoring real-time monitoring (M2)
+    /api/ai/ews early-warning signals (M3)
+    /api/ai/alerts unified intelligence alerts (M2/3/11)
+    /api/ai/copilot AI Credit Copilot (M4)
+    /api/ai/simulation scenario simulation (M5)
+    /api/ai/stress stress testing (M6)
+    /api/ai/portfolio portfolio optimization (M7)
+    /api/ai/rm relationship-manager workspace (M8)
+    /api/ai/command executive command center (M9)
+    /api/ai/nlq natural-language analytics (M10)
+    /api/ai/recommendations recommendation engine (M11)
+    /api/ai/workflow autonomous workflow intelligence (M12)
+    /api/ai/governance model governance (M13)
+    /api/ai/datalake enterprise data lake (M14)
 """
 
 from __future__ import annotations

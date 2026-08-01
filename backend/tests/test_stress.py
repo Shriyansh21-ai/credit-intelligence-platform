@@ -1,4 +1,4 @@
-"""Phase 4 Milestone 5 tests: enterprise stress testing."""
+""" tests: enterprise stress testing."""
 
 import unittest
 

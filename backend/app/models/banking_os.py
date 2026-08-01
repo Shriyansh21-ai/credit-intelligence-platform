@@ -1,23 +1,23 @@
-"""Enterprise Banking Operating System persistence (Phase 10).
+"""Enterprise Banking Operating System persistence.
 
 Every table here is **additive** — nothing from Phases 1-9 is altered or dropped.
 Schema is created by the Alembic migration ``e2f3a4b5c6d7_banking_os_phase10`` (the
 app never calls ``create_all`` outside tests).
 
-Phase 10 turns the platform into an AI-native *operating system* for enterprise
-banking. Like Phase 9, rows reference a company/subject by a stable string
+ turns the platform into an AI-native *operating system* for enterprise
+banking. Like , rows reference a company/subject by a stable string
 ``*_ref`` (company name / GSTIN / PAN / CIN / application id) and preserve
 multi-tenancy via a nullable ``tenant_id`` (legacy single-tenant flows keep
 working with ``tenant_id = None``).
 
-Table groups (this migration):
+Table groups (this migration)
 
-* Policy Engine (M7)        — ``os_policies``, ``os_policy_versions``, ``os_policy_evaluations``
-* Committee Workspace (M4)  — ``os_committees``, ``os_committee_meetings``,
+* Policy Engine (M7) — ``os_policies``, ``os_policy_versions``, ``os_policy_evaluations``
+* Committee Workspace (M4) — ``os_committees``, ``os_committee_meetings``
                               ``os_agenda_items``, ``os_committee_votes``
-* Enterprise Search (M2)    — ``os_search_documents``, ``os_saved_searches``, ``os_search_history``
-* Prompt Management (M8)    — ``os_prompt_templates``, ``os_prompt_versions``, ``os_prompt_evaluations``
-* Multi-LLM Layer (M9)      — ``os_llm_providers``, ``os_llm_invocations``
+* Enterprise Search (M2) — ``os_search_documents``, ``os_saved_searches``, ``os_search_history``
+* Prompt Management (M8) — ``os_prompt_templates``, ``os_prompt_versions``, ``os_prompt_evaluations``
+* Multi-LLM Layer (M9) — ``os_llm_providers``, ``os_llm_invocations``
 """
 
 from __future__ import annotations
@@ -204,8 +204,8 @@ class CommitteeVote(Base):
 class SearchDocument(Base):
     """A denormalized, indexable record for universal search.
 
-    One row per searchable platform object (company, application, document,
-    report, alert, task, policy, model, …). ``terms`` caches the tokenized,
+    One row per searchable platform object (company, application, document
+    report, alert, task, policy, model, …). ``terms`` caches the tokenized
     lowercased term list so ranking can run in-memory without re-tokenizing.
     """
 
@@ -469,9 +469,9 @@ class DataQualityRun(Base):
 class WorkflowDefinition(Base):
     """A visual, versioned BPMN-like workflow (nodes + edges) — unique per key.
 
-    ``graph`` is ``{nodes:[{id,type,name,config}], edges:[{from,to,condition}]}``;
+    ``graph`` is ``{nodes:[{id,type,name,config}], edges:[{from,to,condition}]}``
     node types: start, task, decision, approval, automation, notification, end.
-    Executed deterministically by the Phase 10 workflow engine.
+    Executed deterministically by the workflow engine.
     """
 
     __tablename__ = "os_workflow_definitions"

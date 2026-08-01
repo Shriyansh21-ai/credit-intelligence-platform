@@ -1,7 +1,7 @@
 """Scenario engine — recompute the full risk picture under adjustments.
 
-Reuses the established, explainable engines:
-* the Phase-1 enterprise scorecard (score, PD, LGD, EL, health, recommendation,
+Reuses the established, explainable engines
+* the Phase-1 enterprise scorecard (score, PD, LGD, EL, health, recommendation
   loan sizing and pricing), and
 * the Phase-4 ML estimator (a second, feature-based PD signal + contributions).
 

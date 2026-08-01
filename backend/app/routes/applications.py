@@ -1,15 +1,15 @@
-"""Application lifecycle API (Phase 5, Milestone 1).
+"""Application lifecycle API.
 
-    POST   /api/applications                 create (Draft)
-    GET    /api/applications                 list (filter + paginate)
-    GET    /api/applications/statuses         status catalog + transition graph
-    GET    /api/applications/{id}             detail (with timeline)
-    PATCH  /api/applications/{id}             edit fields
-    POST   /api/applications/{id}/submit      Draft -> Submitted
-    POST   /api/applications/{id}/transition  validated status change
-    POST   /api/applications/{id}/rollback    revert to previous status
-    POST   /api/applications/{id}/cancel      cancel
-    GET    /api/applications/{id}/history      status history timeline
+    POST /api/applications create (Draft)
+    GET /api/applications list (filter + paginate)
+    GET /api/applications/statuses status catalog + transition graph
+    GET /api/applications/{id} detail (with timeline)
+    PATCH /api/applications/{id} edit fields
+    POST /api/applications/{id}/submit Draft -> Submitted
+    POST /api/applications/{id}/transition validated status change
+    POST /api/applications/{id}/rollback revert to previous status
+    POST /api/applications/{id}/cancel cancel
+    GET /api/applications/{id}/history status history timeline
 """
 
 from __future__ import annotations

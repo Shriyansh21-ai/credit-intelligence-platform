@@ -1,4 +1,4 @@
-"""Phase 11, M10 — API platform tests (versioning + webhook robustness)."""
+""" API platform tests (versioning + webhook robustness)."""
 
 import unittest
 from datetime import date

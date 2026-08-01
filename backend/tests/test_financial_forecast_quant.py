@@ -1,4 +1,4 @@
-"""Track 3 M8 (Forecasting) + M9 (Quantitative Risk) tests."""
+""" M8 (Forecasting) + M9 (Quantitative Risk) tests."""
 
 from backend.tests._financial_intelligence_helpers import admin_client, seed_company
 

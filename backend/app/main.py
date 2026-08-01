@@ -47,21 +47,21 @@ from .models.financial_analysis import FinancialAnalysis
 from .models.feature_vector import FeatureVector
 from .models.risk_explanation import RiskExplanation
 from .models.risk_alert import RiskAlert
-from .models import rbac as rbac_models  # noqa: F401  (register RBAC tables)
-from .models import audit as audit_models  # noqa: F401  (register audit table)
-from .models import ml_platform as ml_platform_models  # noqa: F401  (Phase 6 ML tables)
-from .models import integrations as integrations_models  # noqa: F401  (Phase 7 integration tables)
-from .models import tenancy as tenancy_models  # noqa: F401  (Phase 8 tenancy tables)
-from .models import billing as billing_models  # noqa: F401  (Phase 8 billing tables)
-from .models import feature_flags as feature_flag_models  # noqa: F401  (Phase 8 flags)
-from .models import platform_ops as platform_ops_models  # noqa: F401  (Phase 8 jobs/storage/realtime/obs)
-from .models import saas_security as saas_security_models  # noqa: F401  (Phase 8 security)
-from .models import autonomous as autonomous_models  # noqa: F401  (Phase 9 AI-brain tables)
-from .models import banking_os as banking_os_models  # noqa: F401  (Phase 10 OS tables)
-from .models import ai_platform as ai_platform_models  # noqa: F401  (Track 2 AI platform tables)
-from .models import financial_intelligence as financial_intelligence_models  # noqa: F401  (Track 3 tables)
-from .models import enterprise_platform as enterprise_platform_models  # noqa: F401  (Track 4 tables)
-from .models import security_compliance as security_compliance_models  # noqa: F401  (Stage 4 security tables)
+from .models import rbac as rbac_models  # noqa: F401 (register RBAC tables)
+from .models import audit as audit_models  # noqa: F401 (register audit table)
+from .models import ml_platform as ml_platform_models  # noqa: F401
+from .models import integrations as integrations_models  # noqa: F401
+from .models import tenancy as tenancy_models  # noqa: F401
+from .models import billing as billing_models  # noqa: F401
+from .models import feature_flags as feature_flag_models  # noqa: F401
+from .models import platform_ops as platform_ops_models  # noqa: F401
+from .models import saas_security as saas_security_models  # noqa: F401
+from .models import autonomous as autonomous_models  # noqa: F401
+from .models import banking_os as banking_os_models  # noqa: F401
+from .models import ai_platform as ai_platform_models  # noqa: F401
+from .models import financial_intelligence as financial_intelligence_models  # noqa: F401
+from .models import enterprise_platform as enterprise_platform_models  # noqa: F401
+from .models import security_compliance as security_compliance_models  # noqa: F401 (Stage 4 security tables)
 from .routes.ml_platform import ROUTERS as ML_PLATFORM_ROUTERS
 from .routes.integrations import ROUTERS as INTEGRATION_ROUTERS
 from .routes.saas import ROUTERS as SAAS_ROUTERS
@@ -86,7 +86,7 @@ app = FastAPI(
     title=_settings.app_name,
     version=_settings.app_version,
     debug=_settings.debug,
-    # OpenAPI enrichment (Phase 11, M10) — additive metadata for the generated
+    # OpenAPI enrichment — additive metadata for the generated
     # spec / developer portal / SDK generation. Does not change any route.
     description=(
         "Enterprise AI credit intelligence platform API. "
@@ -105,7 +105,7 @@ app = FastAPI(
 # CORS MIDDLEWARE
 # ========================================
 # Allowed origins, credentials and headers come from the centralized settings
-# (Phase 11, M1). The default origin list preserves the historical localhost
+#. The default origin list preserves the historical localhost
 # development ports; set CORS_ORIGINS in staging/production.
 
 app.add_middleware(
@@ -190,39 +190,39 @@ app.include_router(config_routes.router)
 app.include_router(dashboards_routes.router)
 app.include_router(jobs_routes.router)
 
-# Root-level Prometheus scrape endpoint (Phase 11, M7). Additive; the scrape
+# Root-level Prometheus scrape endpoint. Additive; the scrape
 # target is already declared in deploy/monitoring/prometheus.
 app.include_router(_metrics_router)
 
-# Phase 6 — Enterprise ML Platform routers (all under /api/ml/*)
+# Enterprise ML Platform routers (all under /api/ml/*)
 for _ml_router in ML_PLATFORM_ROUTERS:
     app.include_router(_ml_router)
 
-# Phase 7 — Banking Ecosystem Integration Platform routers
+# Banking Ecosystem Integration Platform routers
 for _int_router in INTEGRATION_ROUTERS:
     app.include_router(_int_router)
 
-# Phase 8 — Multi-Tenant Enterprise SaaS Platform routers (/api/saas/* + probes)
+# Multi-Tenant Enterprise SaaS Platform routers (/api/saas/* + probes)
 for _saas_router in SAAS_ROUTERS:
     app.include_router(_saas_router)
 
-# Phase 9 — Autonomous AI Banking Intelligence Platform routers (/api/ai/*)
+# Autonomous AI Banking Intelligence Platform routers (/api/ai/*)
 for _ai_router in AUTONOMOUS_ROUTERS:
     app.include_router(_ai_router)
 
-# Phase 10 — Enterprise Banking Operating System routers (/api/os/*)
+# Enterprise Banking Operating System routers (/api/os/*)
 for _os_router in BANKING_OS_ROUTERS:
     app.include_router(_os_router)
 
-# Track 2 — AI Intelligence Platform routers (/api/aip/*)
+# AI Intelligence Platform routers (/api/aip/*)
 for _aip_router in AI_PLATFORM_ROUTERS:
     app.include_router(_aip_router)
 
-# Track 3 — Advanced Financial Intelligence Platform routers (/api/fin/*)
+# Advanced Financial Intelligence Platform routers (/api/fin/*)
 for _fin_router in FINANCIAL_INTELLIGENCE_ROUTERS:
     app.include_router(_fin_router)
 
-# Track 4 — Enterprise Productization & Commercial Readiness routers (/api/ent/*)
+# Enterprise Productization & Commercial Readiness routers (/api/ent/*)
 for _ent_router in ENTERPRISE_PLATFORM_ROUTERS:
     app.include_router(_ent_router)
 
@@ -231,7 +231,7 @@ for _sec_router in SECURITY_COMPLIANCE_ROUTERS:
     app.include_router(_sec_router)
 
 # ========================================
-# AUDIT MIDDLEWARE (Phase 5, Milestone 4)
+# AUDIT MIDDLEWARE
 # ========================================
 # Records one audit row per mutating API request. Best-effort and self-contained
 # (never breaks a request); read-heavy/static paths are skipped internally.
@@ -239,7 +239,7 @@ for _sec_router in SECURITY_COMPLIANCE_ROUTERS:
 app.add_middleware(AuditMiddleware)
 
 # ========================================
-# PHASE 8 MIDDLEWARE
+# MIDDLEWARE
 # ========================================
 # Tenant resolution establishes the ambient tenant context (best-effort, never
 # rejects). Observability is added last so it is the outermost layer and every
@@ -249,23 +249,23 @@ app.add_middleware(AuditMiddleware)
 app.add_middleware(TenantMiddleware)
 app.add_middleware(ObservabilityMiddleware)
 
-# Security response headers (Phase 11, M8). Added last so it is the outermost
+# Security response headers. Added last so it is the outermost
 # layer and stamps OWASP headers on every fully-formed response. Additive: only
 # sets headers not already present, and is togglable via SECURITY_HEADERS_ENABLED.
 app.add_middleware(SecurityHeadersMiddleware)
 
-# Response compression (Phase 11, M9). Gzips responses above a threshold. Uses
+# Response compression. Gzips responses above a threshold. Uses
 # Starlette's built-in middleware; togglable via COMPRESSION_ENABLED.
 if _settings.compression_enabled:
     app.add_middleware(GZipMiddleware, minimum_size=_settings.compression_min_size)
 
-# API lifecycle headers (Phase 11, M10). Stamps X-API-Version and, for
+# API lifecycle headers. Stamps X-API-Version and, for
 # deprecated versions, Deprecation/Sunset/Link headers. Additive and inert for
 # unversioned routes.
 app.add_middleware(APIVersionMiddleware)
 
 # ========================================
-# STARTUP: RBAC catalog sync (Phase 5, Milestone 3)
+# STARTUP: RBAC catalog sync
 # ========================================
 # Idempotently reconciles the DB with the RBAC catalog on boot so catalog
 # changes take effect without a bespoke migration. Best-effort: a missing schema
@@ -274,9 +274,9 @@ app.add_middleware(APIVersionMiddleware)
 
 @app.on_event("startup")
 def _validate_configuration_on_startup() -> None:
-    """Validate configuration before serving traffic (Phase 11, M1).
+    """Validate configuration before serving traffic.
 
-    Fails fast in staging/production if a fatal misconfiguration is present;
+    Fails fast in staging/production if a fatal misconfiguration is present
     warns only in development/testing so the zero-config flow is preserved.
     """
     from .core.startup import validate_configuration
@@ -286,12 +286,12 @@ def _validate_configuration_on_startup() -> None:
 
 @app.on_event("startup")
 def _init_telemetry_on_startup() -> None:
-    """Wire structured logging + OpenTelemetry tracing (Phase 11, M7).
+    """Wire structured logging + OpenTelemetry tracing.
 
     Best-effort: telemetry initialisation never blocks serving traffic.
     """
     _instrument_app(app)
-    # Attach the SQLAlchemy query profiler when explicitly enabled (Phase 11,
+    # Attach the SQLAlchemy query profiler when explicitly enabled (
     # M9). Off by default so it never adds overhead to the hot path.
     if _settings.query_profiling_enabled:
         try:
@@ -321,7 +321,7 @@ def _sync_rbac_on_startup() -> None:
         ensure_default_workflow(db)
         sync_config(db)
         sync_connector_configs(db)
-        seed_saas(db)  # Phase 8: plans, feature flags, default tenant
+        seed_saas(db)  # plans, feature flags, default tenant
     except Exception:
         db.rollback()
     finally:
@@ -335,5 +335,5 @@ def _sync_rbac_on_startup() -> None:
 def root():
 
     return {
-        "message": "AI Credit Backend Running 🚀"
+        "message": "AI Credit Backend Running"
     }

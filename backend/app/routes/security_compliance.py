@@ -2,7 +2,7 @@
 
 Additive routers under ``/api/sec/*``. Every route is new; nothing from Stages
 1-3 is modified. RBAC is enforced with the Stage 4 permission catalog
-(``sec.*``). Read surfaces require a ``*.view`` permission; scans, triage,
+(``sec.*``). Read surfaces require a ``*.view`` permission; scans, triage
 compliance runs and privacy actions require the corresponding manage permission.
 """
 

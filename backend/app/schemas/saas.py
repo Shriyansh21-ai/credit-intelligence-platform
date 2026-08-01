@@ -1,4 +1,4 @@
-"""Request schemas for the Phase 8 SaaS platform APIs."""
+"""Request schemas for the SaaS platform APIs."""
 
 from __future__ import annotations
 

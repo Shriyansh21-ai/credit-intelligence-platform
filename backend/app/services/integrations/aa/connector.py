@@ -1,10 +1,10 @@
-"""Account Aggregator connector interface + providers (Milestone 4).
+"""Account Aggregator connector interface + providers.
 
 Implements the AA flow — consent request, account discovery, and financial
 information (bank statement) fetch — behind the common connector interface. The
 mock produces a realistic, seeded transaction stream (salary credits, vendor
 payments, EMIs, tax, collections, occasional cheque bounces, recurring debits)
-that the statement-analytics engine (Milestone 5) consumes.
+that the statement-analytics engine consumes.
 """
 
 from __future__ import annotations

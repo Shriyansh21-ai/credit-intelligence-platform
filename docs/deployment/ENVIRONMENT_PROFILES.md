@@ -90,7 +90,7 @@ Two complementary mechanisms:
   `TRACING_ENABLED`, `METRICS_ENABLED`, `SECURITY_HEADERS_ENABLED`,
   `COMPRESSION_ENABLED`, `RUN_MIGRATIONS`).
 - **Dynamic, per-tenant** feature flags are served by the SaaS `flags` module
-  (Phase 8) for runtime product gating without a redeploy.
+ for runtime product gating without a redeploy.
 
 ---
 

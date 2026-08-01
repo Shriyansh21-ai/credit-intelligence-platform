@@ -1,11 +1,11 @@
-"""Automated Retraining (Phase 6, Milestone 9).
+"""Automated Retraining.
 
 Orchestrates the retraining lifecycle by composing the training pipeline, the
-model registry and drift detection:
+model registry and drift detection
 
 * **Triggers** — manual, scheduled and drift-triggered (a breached drift report
   recommends retraining).
-* **Dataset snapshotting** — every retrain trains on a freshly snapshotted,
+* **Dataset snapshotting** — every retrain trains on a freshly snapshotted
   reproducible dataset registered in the registry.
 * **Champion / challenger** — the new model (challenger) is compared to the live
   production model (champion) on held-out ROC-AUC; the winner is reported.

@@ -1,11 +1,11 @@
 """Report builders — turn platform data into a normalised report document.
 
-A report document is:
+A report document is
     {type, title, subtitle, generated_at, meta, sections: [section, ...]}
-where each section is one of:
-    {"heading", "kind": "kv",    "items": [{"label","value"}, ...]}
+where each section is one of
+    {"heading", "kind": "kv", "items": [{"label","value"}, ...]}
     {"heading", "kind": "table", "columns": [...], "rows": [[...], ...]}
-    {"heading", "kind": "text",  "text": "..."}
+    {"heading", "kind": "text", "text": "..."}
 
 Builders are defensive: missing linked data yields an informative placeholder
 section rather than an error, so a report can always be produced.

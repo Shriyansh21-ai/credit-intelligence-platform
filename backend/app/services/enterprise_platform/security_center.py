@@ -1,11 +1,11 @@
 """M8 — Enterprise Security Center.
 
-A zero-trust security console: session monitoring, threat & anomaly detection,
-device trust, behaviour analytics, privilege-escalation detection, access reviews,
+A zero-trust security console: session monitoring, threat & anomaly detection
+device trust, behaviour analytics, privilege-escalation detection, access reviews
 key rotation and a consolidated compliance/security dashboard. Detection is
 deterministic (rule + score based) so results are reproducible and auditable.
 Backed by ``ent_security_events`` and ``ent_access_reviews``; complements the
-Phase 8 SaaS security module.
+ SaaS security module.
 """
 
 from __future__ import annotations

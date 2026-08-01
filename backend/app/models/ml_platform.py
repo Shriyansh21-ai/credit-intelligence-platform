@@ -1,15 +1,15 @@
-"""Enterprise ML Platform persistence models (Phase 6).
+"""Enterprise ML Platform persistence models.
 
-These tables give the MLOps layer durable, auditable, reproducible state:
+These tables give the MLOps layer durable, auditable, reproducible state
 
-* :class:`MLDataset`        — reproducible training-dataset snapshots (by spec).
-* :class:`MLModel`          — the model registry: one row per trained version.
+* :class:`MLDataset` — reproducible training-dataset snapshots (by spec).
+* :class:`MLModel` — the model registry: one row per trained version.
 * :class:`MLDeploymentEvent`— append-only deployment/approval/rollback history.
-* :class:`MLPredictionLog`  — every inference, with latency and outcome.
-* :class:`MLExplanation`    — stored explainability outputs (SHAP / reason codes).
-* :class:`MLDriftReport`    — drift-detection runs and their verdicts.
+* :class:`MLPredictionLog` — every inference, with latency and outcome.
+* :class:`MLExplanation` — stored explainability outputs (SHAP / reason codes).
+* :class:`MLDriftReport` — drift-detection runs and their verdicts.
 * :class:`MLPerformanceRecord` — model performance evaluated over time.
-* :class:`MLFraudResult`    — ML fraud/anomaly scoring outputs.
+* :class:`MLFraudResult` — ML fraud/anomaly scoring outputs.
 
 Everything is additive: no existing table is touched. Schema is created by an
 Alembic migration (never ``create_all`` in the app), matching the platform
@@ -28,7 +28,7 @@ from backend.app.db.database import Base
 class MLDataset(Base):
     """A reproducible training-dataset snapshot.
 
-    Synthetic datasets are fully determined by their ``spec`` + ``content_hash``,
+    Synthetic datasets are fully determined by their ``spec`` + ``content_hash``
     so a model can be retrained on byte-identical data years later.
     """
 
@@ -77,9 +77,9 @@ class MLModel(Base):
 
     # Governance state machines.
     approval_status = Column(String, nullable=False, default="draft", index=True)
-    #  draft -> pending -> approved / rejected
+    # draft -> pending -> approved / rejected
     production_status = Column(String, nullable=False, default="none", index=True)
-    #  none / staging / production / archived / rolled_back
+    # none / staging / production / archived / rolled_back
 
     trained_at = Column(String, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow, index=True)
@@ -94,7 +94,7 @@ class MLDeploymentEvent(Base):
     id = Column(Integer, primary_key=True, index=True)
     model_id = Column(Integer, ForeignKey("ml_models.id"), nullable=False, index=True)
     action = Column(String, nullable=False, index=True)
-    #  register / submit_for_approval / approve / reject / promote / rollback / archive
+    # register / submit_for_approval / approve / reject / promote / rollback / archive
     from_status = Column(String, nullable=True)
     to_status = Column(String, nullable=True)
     actor = Column(String, nullable=True)
@@ -113,7 +113,7 @@ class MLPredictionLog(Base):
     model_version = Column(Integer, nullable=True)
 
     inference_type = Column(String, nullable=False, default="realtime", index=True)
-    #  realtime / batch / portfolio / async
+    # realtime / batch / portfolio / async
     request_id = Column(String, nullable=True, index=True)
     entity_type = Column(String, nullable=True, index=True)
     entity_id = Column(Integer, nullable=True, index=True)
@@ -172,7 +172,7 @@ class MLDriftReport(Base):
     model_id = Column(Integer, ForeignKey("ml_models.id"), nullable=True, index=True)
     model_key = Column(String, nullable=True, index=True)
     report_type = Column(String, nullable=False, default="overall", index=True)
-    #  feature / target / schema / overall
+    # feature / target / schema / overall
     reference_dataset_id = Column(Integer, ForeignKey("ml_datasets.id"), nullable=True)
 
     psi_overall = Column(Float, nullable=True)
@@ -216,7 +216,7 @@ class MLFraudResult(Base):
     entity_type = Column(String, nullable=True, index=True)
     entity_id = Column(Integer, nullable=True, index=True)
     method = Column(String, nullable=False, default="ensemble", index=True)
-    #  isolation_forest / lof / autoencoder / ensemble
+    # isolation_forest / lof / autoencoder / ensemble
 
     anomaly_score = Column(Float, nullable=True)
     fraud_probability = Column(Float, nullable=True)

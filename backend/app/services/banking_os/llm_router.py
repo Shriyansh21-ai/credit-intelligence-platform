@@ -9,7 +9,7 @@ backend. Every routing decision is explainable (``routed_reason``) and every
 invocation is logged for cost/latency/quality analytics.
 
 Actual network calls to hosted vendors are intentionally *not* performed here
-(no credentials, deterministic tests). :func:`complete` uses the Phase 9
+(no credentials, deterministic tests). :func:`complete` uses the
 deterministic ``local`` engine and records realistic economics; wiring a real
 vendor SDK is a drop-in at the ``_invoke`` boundary.
 """

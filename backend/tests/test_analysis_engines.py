@@ -1,4 +1,4 @@
-"""Milestone 3 tests: health, insight, risk-flag and recommendation engines."""
+""" tests: health, insight, risk-flag and recommendation engines."""
 
 import unittest
 

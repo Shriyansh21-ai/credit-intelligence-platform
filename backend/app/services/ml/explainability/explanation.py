@@ -1,7 +1,7 @@
 """Explanation data structures.
 
 A single :class:`Explanation` captures everything a credit analyst needs to
-understand *why* a borrower received its risk assessment, in a stable,
+understand *why* a borrower received its risk assessment, in a stable
 serialisable shape shared by the service, the persistence layer and the API.
 """
 
@@ -21,7 +21,7 @@ class FeatureContribution:
     unit: str
     # Signed contribution in log-odds space (risk-increasing > 0).
     contribution: float
-    # Signed change in probability of default attributed to this feature,
+    # Signed change in probability of default attributed to this feature
     # expressed in percentage points (risk-increasing > 0).
     impact_pp: float
     direction: str          # "increases_risk" | "reduces_risk" | "neutral"

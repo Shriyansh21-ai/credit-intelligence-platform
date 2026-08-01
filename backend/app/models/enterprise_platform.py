@@ -1,28 +1,28 @@
-"""Enterprise Productization & Commercial Readiness persistence (Track 4).
+"""Enterprise Productization & Commercial Readiness persistence.
 
 Every table here is **additive** — nothing from Phases 1-11 / Tracks 1-3 is
 altered or dropped. Schema is created by the Alembic migration
 ``b2c3d4e5f6a7_enterprise_platform_track4`` (the app never calls ``create_all``
 at import time).
 
-Rows reference domain objects by stable string refs (``user_ref``, ``tenant_id``,
+Rows reference domain objects by stable string refs (``user_ref``, ``tenant_id``
 ``subject_ref``) to stay loosely coupled. Multi-tenancy is preserved by an
 optional nullable ``tenant_id`` column so legacy single-tenant flows keep working.
 
-Table groups (all prefixed ``ent_``):
-    M1  UX            — ent_user_preferences, ent_saved_layouts
-    M2  Workspaces    — ent_workspaces, ent_workspace_members, ent_workspace_items
-    M3  Developer     — ent_api_keys, ent_webhooks, ent_webhook_deliveries, ent_api_requests
-    M4  Marketplace   — ent_plugins, ent_plugin_versions, ent_plugin_installs
-    M5  Integration   — ent_pipelines, ent_pipeline_runs
-    M6  Data Mgmt     — ent_mdm_records, ent_data_rules, ent_data_jobs
-    M7  Operations    — ent_ops_incidents, ent_runbooks
-    M8  Security      — ent_security_events, ent_access_reviews
-    M9  Cust. Success — ent_customers, ent_customer_events
-    M10 Deployment    — ent_environments, ent_deployments
-    M11 Monitoring    — ent_traces, ent_sla_records
-    M12 BI            — ent_bi_dashboards
-    M13 Launch        — ent_checklists
+Table groups (all prefixed ``ent_``)
+    M1 UX — ent_user_preferences, ent_saved_layouts
+    M2 Workspaces — ent_workspaces, ent_workspace_members, ent_workspace_items
+    M3 Developer — ent_api_keys, ent_webhooks, ent_webhook_deliveries, ent_api_requests
+    M4 Marketplace — ent_plugins, ent_plugin_versions, ent_plugin_installs
+    M5 Integration — ent_pipelines, ent_pipeline_runs
+    M6 Data Mgmt — ent_mdm_records, ent_data_rules, ent_data_jobs
+    M7 Operations — ent_ops_incidents, ent_runbooks
+    M8 Security — ent_security_events, ent_access_reviews
+    M9 Cust. Success — ent_customers, ent_customer_events
+    M10 Deployment — ent_environments, ent_deployments
+    M11 Monitoring — ent_traces, ent_sla_records
+    M12 BI — ent_bi_dashboards
+    M13 Launch — ent_checklists
 """
 
 from __future__ import annotations

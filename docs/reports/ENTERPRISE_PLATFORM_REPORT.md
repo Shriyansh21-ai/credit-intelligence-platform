@@ -1,4 +1,4 @@
-# Track 4 — Enterprise Productization & Commercial Readiness · Work Summary
+# Enterprise Productization & Commercial Readiness · Work Summary
 
 Track 4 makes the platform look, behave and scale like a commercial enterprise
 product deployable inside Tier-1 banks, NBFCs, regulators and fintechs. All 14
@@ -8,7 +8,7 @@ layer — nothing from Phases 1–11 / Tracks 1–3 was removed or rewritten.
 ## Executive summary
 
 The `enterprise_platform` module adds the productization surfaces that turn a
-capable engine into a product: a polished UX with a global ⌘K command palette,
+capable engine into a product: a polished UX with a global K command palette,
 workspaces, a developer platform, a plugin marketplace, a visual integration
 studio, master-data management, an operations center, a zero-trust security
 center, customer success, a deployment platform, an observability platform,
@@ -19,7 +19,7 @@ multi-tenant, grounded in real data and deterministic.
 
 | # | Milestone | Prefix | Highlights |
 |---|-----------|--------|-----------|
-| M1 | Enterprise UX | `/api/ent/ux` | ⌘K command palette (global), personalization (theme/density/accent), saved layouts |
+| M1 | Enterprise UX | `/api/ent/ux` | K command palette (global), personalization (theme/density/accent), saved layouts |
 | M2 | Workspaces | `/api/ent/workspaces` | personal→org workspaces, members, pinned/collections/bookmarks/templates, analytics |
 | M3 | Developer Platform | `/api/ent/developer` | API keys (hash-stored, one-time secret), webhooks + test + replay, sandbox, rate-limit test, API explorer |
 | M4 | Plugin Marketplace | `/api/ent/marketplace` | publish→approve→publish lifecycle, semver, deps/compatibility, installs, billing readiness, analytics |
@@ -82,7 +82,7 @@ altered or dropped. Upgrade/downgrade verified (29 up / 0 down).
 
 ## UI improvements
 
-Global ⌘K command palette + global search; personalization (theme/density/
+Global K command palette + global search; personalization (theme/density/
 accent) with backend persistence; saved layouts; 13 polished enterprise pages
 using the shared design system (OpsLayout/SectionCard/StateWrap); consistent
 loading/empty states; theme-aware.

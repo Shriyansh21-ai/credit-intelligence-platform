@@ -1,4 +1,4 @@
-"""Track 4 M1 (UX) + M2 (Workspaces) tests."""
+""" M1 (UX) + M2 (Workspaces) tests."""
 
 from backend.tests._enterprise_platform_helpers import admin_client
 

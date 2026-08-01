@@ -1,6 +1,6 @@
-"""Bank statement analytics engine (Milestone 5).
+"""Bank statement analytics engine.
 
-Turns raw imported transactions into lending-grade signals:
+Turns raw imported transactions into lending-grade signals
 
 * **Cash flow** — monthly inflow/outflow/net and totals.
 * **Salary detection** / **vendor payments** / **collections** — categorised flows.

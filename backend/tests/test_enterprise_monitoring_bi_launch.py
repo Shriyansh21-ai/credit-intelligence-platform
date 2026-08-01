@@ -1,4 +1,4 @@
-"""Track 4 M11 (Monitoring) + M12 (BI) + M13 (Launch Readiness) tests."""
+""" M11 (Monitoring) + M12 (BI) + M13 (Launch Readiness) tests."""
 
 from backend.tests._enterprise_platform_helpers import admin_client, fresh_session, seed_rbac, make_user, client_for, seed_company
 

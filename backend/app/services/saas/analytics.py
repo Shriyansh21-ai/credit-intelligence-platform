@@ -1,8 +1,8 @@
-"""SaaS analytics platform (Phase 8, Milestone 13).
+"""SaaS analytics platform.
 
-Cross-cutting, read-only aggregations for executive dashboards: tenant growth,
+Cross-cutting, read-only aggregations for executive dashboards: tenant growth
 revenue (MRR / ARR), usage per meter, feature adoption and per-tenant activity.
-Everything is computed from the durable Phase 8 tables so no separate ETL is
+Everything is computed from the durable tables so no separate ETL is
 required for the platform to report on itself.
 """
 

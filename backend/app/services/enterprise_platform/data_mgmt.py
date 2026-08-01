@@ -1,6 +1,6 @@
 """M6 — Enterprise Data Management (MDM).
 
-Master Data Management: golden records, reference data, data-quality rules,
+Master Data Management: golden records, reference data, data-quality rules
 duplicate detection, entity resolution, data stewardship and bulk import/export.
 Deterministic string-similarity (token Jaccard + normalized edit ratio) drives
 duplicate detection and entity resolution so results are reproducible. Backed by

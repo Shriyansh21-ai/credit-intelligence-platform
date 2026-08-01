@@ -1,6 +1,6 @@
-"""Collaboration System (Phase 5, Milestone 8).
+"""Collaboration System.
 
-Internal notes, threaded comments, @mentions (with notifications), pinned notes,
+Internal notes, threaded comments, @mentions (with notifications), pinned notes
 file attachments, and a unified activity feed aggregated across the platform.
 """
 

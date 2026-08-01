@@ -1,4 +1,4 @@
-"""Phase 5, Milestone 4 tests: audit recording and searchable dashboard."""
+""" tests: audit recording and searchable dashboard."""
 
 import unittest
 

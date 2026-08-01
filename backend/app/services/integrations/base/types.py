@@ -26,7 +26,7 @@ class ProviderMode(str, enum.Enum):
 
 
 class ConnectorCategory(str, enum.Enum):
-    """Coarse grouping of external systems (Milestone 1)."""
+    """Coarse grouping of external systems."""
 
     GOVERNMENT = "government"
     BANKING = "banking"

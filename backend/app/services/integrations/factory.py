@@ -1,8 +1,8 @@
-"""Connector factory + domain registration (Milestone 1).
+"""Connector factory + domain registration.
 
 Importing this module registers every domain's mock/sandbox/production providers
 with the process-wide :data:`registry`. :func:`get_connector` builds a connector
-for a key using the provider mode from :class:`ConnectorConfig` (or a default),
+for a key using the provider mode from :class:`ConnectorConfig` (or a default)
 wiring per-connector resilience settings from config. This is the single entry
 point services use, so nothing else needs to know which provider is active.
 """

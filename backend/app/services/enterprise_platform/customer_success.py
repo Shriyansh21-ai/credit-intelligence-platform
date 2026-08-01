@@ -1,7 +1,7 @@
 """M9 — Enterprise Customer Success Platform.
 
-The customer lifecycle: onboarding, implementation tracking, health scoring,
-product adoption, usage analytics, milestones, support tickets, training status,
+The customer lifecycle: onboarding, implementation tracking, health scoring
+product adoption, usage analytics, milestones, support tickets, training status
 renewal tracking and success dashboards, plus AI recommendations carrying
 confidence, reasoning, citations and evidence. Backed by ``ent_customers`` and
 ``ent_customer_events``.

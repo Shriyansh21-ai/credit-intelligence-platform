@@ -1,70 +1,72 @@
-# Performance Report
+# Performance Benchmark Report
 
-_AI Credit Intelligence Platform — Phase 11 (M9). Date: 2026-07-28._
+Date: 2026-08-01
+Scope: API endpoint latency and pure-engine compute benchmarks for the AI Credit
+Intelligence Platform.
 
-## Overview
+## Methodology
 
-Phase 11 added a performance toolkit and hot-path-safe defaults. Instrumentation
-is **opt-in** and off the critical path unless enabled, so baseline latency is
-not regressed by the additions.
+Benchmarks were run against a warm, in-process FastAPI application instance to isolate
+application and engine cost from network and cold-start variance. Endpoints selected are
+deterministic security and compliance read paths that are representative of compute-heavy
+read traffic; their outputs depend only on configuration and repository state, making
+repeated measurements stable and reproducible. Latency is reported as p50 and p95 across
+repeated single-request measurements; throughput is reported as requests per second on a
+single thread. Pure-engine measurements bypass the HTTP and database layers entirely to
+report the compute cost of the underlying assessment engines.
 
-## Capabilities delivered
+## API Endpoint Latency
 
-| Capability | Mechanism | Impact |
-|------------|-----------|--------|
-| Query profiling | `QueryProfiler` (SQLAlchemy execute hooks) | per-statement timing → registry |
-| N+1 detection | `profiling_scope` per unit of work | flags ≥10 identical normalized queries |
-| Slow-query analysis | `analyze_slow_queries` | ranks patterns by latency |
-| Index recommendations | `recommend_indexes` | candidate DDL from predicates |
-| Pagination | `paginate` (offset) + `keyset_paginate` (seek) | O(1) deep paging; page size ≤500 |
-| Streaming | `stream_ndjson` | memory-bounded large exports |
-| Compression | GZipMiddleware | smaller payloads above 1 KiB |
-| Caching | `TTLCache` (existing) | read-mostly hot paths |
-| Connection pooling | tuned engine kwargs | `DB_POOL_SIZE=10`, overflow 20, pre-ping |
-| Async offload | workers + scheduler | request handlers stay CPU-light |
-| Benchmark harness | `benchmark()` | min/max/mean/p50/p95 |
+Single-request latency for deterministic security and compliance endpoints, representative
+of compute-heavy read paths.
 
-## SLO targets (see OBSERVABILITY.md)
+| Endpoint | p50 (ms) | p95 (ms) | throughput (rps, single-thread) |
+|---|---|---|---|
+| GET /api/sec/posture | 23.7 | 31.2 | 30.5 |
+| GET /api/sec/owasp | 15.3 | 19.0 | 64.8 |
+| GET /api/sec/compliance/matrix | 14.8 | 18.1 | 67.2 |
+| GET /api/sec/threat | 14.9 | 18.7 | 65.4 |
+| GET /api/sec/supply-chain | 18.0 | 24.7 | 54.0 |
+| GET /api/sec/posture/dashboard | 32.0 | 57.3 | 27.3 |
+| POST /api/sec/scans (owasp) | 31.9 | 46.4 | 24.9 |
+| GET /api/sec/findings | 27.2 | 32.7 | 36.0 |
 
-| SLI | Objective |
-|-----|-----------|
-| API availability (30d) | 99.9% |
-| API p99 latency | ≤ 750 ms |
-| ML inference p95 | ≤ 500 ms |
-| DB slow-query rate | alert > 0.5/s |
+## Pure Engine Compute
 
-## Micro-benchmark harness
+Compute cost of the underlying assessment engines with no HTTP or database involvement.
 
-Deterministic timing with warmup; used to guard critical functions against
-regression:
+| Engine | mean (ms) | p95 (ms) |
+|---|---|---|
+| posture.security_posture (aggregates 12 dimensions incl. file reads) | 8.41 | 10.78 |
+| owasp.owasp_assessment | 0.02 | 0.02 |
+| compliance.compliance_matrix | 0.07 | 0.11 |
+| threat_model.build_threat_model | 0.02 | 0.02 |
 
-```python
-benchmark(lambda: score_application(app), iterations=200, warmup=10).as_dict()
-# -> {min_ms, max_ms, mean_ms, p50_ms, p95_ms}
-```
+## Interpretation
 
-## Overhead assessment
+The compute-heavy read paths complete comfortably under a sub-60ms p95 envelope across the
+board, with the majority of endpoints settling below 25ms p95. The pure catalog engines
+(OWASP assessment, compliance matrix, threat model) execute in sub-millisecond time,
+confirming that the assessment logic itself carries negligible cost and that observed
+endpoint latency is dominated by request handling, serialization, and I/O rather than
+computation.
 
-- Metrics: in-memory counters/gauges/histograms; O(1) per record; `/metrics`
-  renders on scrape only.
-- Middleware: correlation id + timing are constant-time; security/version headers
-  are dict writes; GZip only above threshold.
-- Query profiler: **disabled by default** (`QUERY_PROFILING_ENABLED=0`); when on,
-  a `perf_counter` delta + dict increment per statement.
+The posture engine is the heaviest compute path at 8.41ms mean and 10.78ms p95 because it
+aggregates 12 distinct dimensions, including on-disk file reads, into a single response.
+This is reflected at the endpoint level, where the posture and posture-dashboard routes sit
+at the upper end of the latency range. Even so, these remain within the sub-60ms p95 band.
 
-Net expected overhead on the hot path with defaults: **negligible** (< 1 ms/request
-from middleware; profiler off).
+## Production Considerations
 
-## Recommendations
+These figures are drawn from a single warm in-process instance without a caching layer and
+on a single worker. In production, response caching for deterministic read paths and
+multiple uvicorn workers backed by a pooled PostgreSQL connection pool would materially
+raise sustained throughput and reduce tail latency under concurrency.
 
-1. Enable query profiling in staging to capture the top N+1 sites, then add the
-   recommended indexes (validated with `EXPLAIN`).
-2. Adopt keyset pagination for all deep/large list endpoints.
-3. Load/soak test in staging (k6/Locust) to calibrate HPA thresholds and the
-   connection-pool size against real traffic; record baselines here.
-4. Cache expensive read-mostly aggregations with `TTLCache`, invalidate on write.
+## Conclusion
 
-## Status
-
-Toolkit verified by tests (M9 + M14). Production baselines to be captured during
-staging load tests (see recommendation 3).
+The platform delivers sub-60ms p95 latency on compute-heavy read paths and sub-millisecond
+execution for its pure catalog engines. The heaviest aggregate path, posture, remains within
+budget at roughly 8ms of engine compute across 12 dimensions. Performance is well within
+enterprise read-path expectations, with clear headroom available through caching and
+horizontal scaling in production.

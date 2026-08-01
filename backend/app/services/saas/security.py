@@ -1,6 +1,6 @@
-"""Enterprise security service (Phase 8, Milestone 14).
+"""Enterprise security service.
 
-Secrets management (by reference, with rotation), per-tenant data encryption,
+Secrets management (by reference, with rotation), per-tenant data encryption
 rate limiting, IP allow-lists, session + device management, and identity-
 provider (SSO / SAML / OIDC / SCIM) configuration held in a *ready* abstraction.
 

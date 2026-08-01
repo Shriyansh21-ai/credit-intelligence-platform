@@ -1,23 +1,23 @@
-"""Enterprise Productization & Commercial Readiness APIs (Track 4).
+"""Enterprise Productization & Commercial Readiness APIs.
 
 Additive routers exposing the productization layer under ``/api/ent/*``. Every
-route is new; no existing route is modified. RBAC is enforced with the Track 4
+route is new; no existing route is modified. RBAC is enforced with the
 permission catalog (``ent.*``). Routers are collected into ``ROUTERS`` and mounted
 in ``main.py``.
 
-    /api/ent/ux           enterprise UX / personalization (M1)
-    /api/ent/workspaces   enterprise workspaces (M2)
-    /api/ent/developer    developer platform (M3)
-    /api/ent/marketplace  plugin marketplace (M4)
-    /api/ent/integration  integration studio (M5)
-    /api/ent/data         data management / MDM (M6)
-    /api/ent/operations   operations center (M7)
-    /api/ent/security     security center (M8)
-    /api/ent/success      customer success (M9)
-    /api/ent/deployment   deployment platform (M10)
-    /api/ent/monitoring   monitoring platform (M11)
-    /api/ent/bi           business intelligence (M12)
-    /api/ent/launch       launch readiness (M13)
+    /api/ent/ux enterprise UX / personalization (M1)
+    /api/ent/workspaces enterprise workspaces (M2)
+    /api/ent/developer developer platform (M3)
+    /api/ent/marketplace plugin marketplace (M4)
+    /api/ent/integration integration studio (M5)
+    /api/ent/data data management / MDM (M6)
+    /api/ent/operations operations center (M7)
+    /api/ent/security security center (M8)
+    /api/ent/success customer success (M9)
+    /api/ent/deployment deployment platform (M10)
+    /api/ent/monitoring monitoring platform (M11)
+    /api/ent/bi business intelligence (M12)
+    /api/ent/launch launch readiness (M13)
 """
 
 from __future__ import annotations

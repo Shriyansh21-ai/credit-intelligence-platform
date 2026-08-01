@@ -1,4 +1,4 @@
-"""Payment-gateway abstraction (Phase 8, Milestone 4).
+"""Payment-gateway abstraction.
 
 The billing engine never talks to Stripe/Razorpay directly — it depends on the
 :class:`PaymentGateway` interface. The built-in :class:`InternalGateway` records

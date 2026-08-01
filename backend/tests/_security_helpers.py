@@ -2,7 +2,7 @@
 
 Builds an in-memory SQLite session with the full schema (importing the app
 registers every model) plus a TestClient wired to the Stage 4 routers with auth
-+ db overridden, mirroring the Phase 6-10 helper pattern.
++ db overridden, mirroring the -10 helper pattern.
 """
 
 from __future__ import annotations

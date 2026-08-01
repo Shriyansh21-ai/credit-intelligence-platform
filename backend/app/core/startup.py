@@ -1,8 +1,8 @@
-"""Startup configuration validation (Phase 11, M1).
+"""Startup configuration validation.
 
 Runs once when the application boots. It logs a non-secret configuration
-summary, surfaces every validation finding, and — in staging/production —
-fails fast if any fatal misconfiguration is present (insecure secrets, SQLite,
+summary, surfaces every validation finding, and — in staging/production
+fails fast if any fatal misconfiguration is present (insecure secrets, SQLite
 half-configured backends, …). In development/testing it only warns, so the
 zero-config local experience is preserved.
 """

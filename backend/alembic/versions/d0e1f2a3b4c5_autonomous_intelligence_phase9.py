@@ -1,7 +1,7 @@
-"""Autonomous AI Banking Intelligence Platform tables (Phase 9)
+"""Autonomous AI Banking Intelligence Platform tables
 
-Fully additive: creates the knowledge-graph, real-time monitoring, early-warning,
-AI copilot, scenario, stress-testing, portfolio-optimization, RM-workspace,
+Fully additive: creates the knowledge-graph, real-time monitoring, early-warning
+AI copilot, scenario, stress-testing, portfolio-optimization, RM-workspace
 NL-analytics, recommendation, workflow-intelligence, model-governance and
 data-lake tables. Nothing from Phases 1-8 is altered or dropped.
 

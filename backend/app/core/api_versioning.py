@@ -1,4 +1,4 @@
-"""API versioning & lifecycle (Phase 11, M10).
+"""API versioning & lifecycle.
 
 A small, framework-agnostic version registry plus a Starlette middleware that
 advertises API lifecycle state on every response using the IETF standard

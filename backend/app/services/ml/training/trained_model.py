@@ -1,9 +1,9 @@
 """Trained model artifact — a ``BaseRiskModel`` backed by a fitted pipeline.
 
-This is the object that makes Phase 6 "real": it wraps a fitted scikit-learn /
+This is the object that makes "real": it wraps a fitted scikit-learn /
 gradient-boosting pipeline and implements the exact same
 :class:`~backend.app.services.ml.models.base.BaseRiskModel` interface the
-deterministic placeholder used. Every consumer downstream — inference,
+deterministic placeholder used. Every consumer downstream — inference
 serving, explainability, scenario, stress — keeps working unchanged; they now
 just get learned probabilities instead of the scorecard's closed form.
 
@@ -12,8 +12,8 @@ log-odds decomposition against a stored baseline (median) profile: each
 feature's contribution is the change in predicted log-odds when that feature
 moves from the baseline to its observed value. This keeps the contribution
 contract (signed log-odds, additive-ish) identical to the deterministic
-estimator's, so the existing explainability layer works without modification —
-and the SHAP layer (Milestone 5) can refine it when available.
+estimator's, so the existing explainability layer works without modification
+and the SHAP layer can refine it when available.
 """
 
 from __future__ import annotations

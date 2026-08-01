@@ -2,19 +2,19 @@
 
 These models describe the *enterprise* (commercial / B2B) lending workflow and
 replace the legacy consumer-credit request. They are organised into the four
-business sections that the assessment form collects:
+business sections that the assessment form collects
 
-    1. BusinessProfile        - who the borrower is
-    2. FinancialInformation   - P&L / balance-sheet / cash-flow figures
-    3. BankingInformation     - banking behaviour & credit conduct
-    4. BusinessRiskProfile    - qualitative risk indicators
+    1. BusinessProfile - who the borrower is
+    2. FinancialInformation - P&L / balance-sheet / cash-flow figures
+    3. BankingInformation - banking behaviour & credit conduct
+    4. BusinessRiskProfile - qualitative risk indicators
 
 The composed :class:`EnterpriseAssessmentRequest` is the wire contract for
 ``POST /predict/enterprise-assessment``. The scoring engine consumes a *flat*
 dictionary (for backward compatibility with other callers), so the request
 exposes :meth:`EnterpriseAssessmentRequest.to_engine_input`.
 
-Validation (Task 7) is enforced here with Pydantic v2 field constraints:
+Validation (Task 7) is enforced here with Pydantic v2 field constraints
 monetary values that cannot be negative use ``ge=0``, percentages are bounded
 to ``0..100`` and business age is capped to a realistic range.
 """

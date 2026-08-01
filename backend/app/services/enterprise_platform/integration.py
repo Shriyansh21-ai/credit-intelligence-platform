@@ -1,7 +1,7 @@
 """M5 — Enterprise Integration Studio.
 
-A visual integration builder: connector configuration, API mapping,
-transformation rules, event routing, data mapping, retry policies, scheduling,
+A visual integration builder: connector configuration, API mapping
+transformation rules, event routing, data mapping, retry policies, scheduling
 run monitoring and logs. Pipelines are stored as a node/edge graph
 (``ent_pipelines``) and executed deterministically over sample input, recording
 per-node results, logs and metrics to ``ent_pipeline_runs``.
@@ -97,7 +97,7 @@ def run_pipeline(db: Session, *, pipeline_id: int, sample_input: Optional[dict] 
                  trigger: str = "manual", tenant_id: Optional[int] = None) -> Dict[str, Any]:
     """Execute a pipeline deterministically over sample input.
 
-    Each node transforms an in-memory record; the run records per-node results,
+    Each node transforms an in-memory record; the run records per-node results
     logs, metrics and a duration so the studio can show a pipeline monitor.
     """
     p = db.query(EntPipeline).filter(EntPipeline.id == pipeline_id).first()

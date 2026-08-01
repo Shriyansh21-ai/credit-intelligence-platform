@@ -1,4 +1,4 @@
-"""Config-driven connector registry (Milestone 1).
+"""Config-driven connector registry.
 
 Providers register a factory under a logical connector key (e.g. ``"gst"``) and
 a :class:`ProviderMode`. Callers ask the registry to *create* a connector for a

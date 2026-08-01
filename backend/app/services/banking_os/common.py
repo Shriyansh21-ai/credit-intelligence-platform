@@ -1,9 +1,9 @@
-"""Shared, pure helpers for the Phase 10 Banking OS.
+"""Shared, pure helpers for the Banking OS.
 
 No DB / ORM imports — trivially unit-testable and importable anywhere. These
 encode platform-wide conventions for text tokenization (search), deterministic
 digital signatures (committee votes / prompt approvals) and safe evidence
-construction, reusing the Phase 9 helpers where a convention already exists.
+construction, reusing the helpers where a convention already exists.
 """
 
 from __future__ import annotations
@@ -13,7 +13,7 @@ import math
 import re
 from typing import Any, Dict, Iterable, List, Optional
 
-# Re-export the Phase 9 numeric helpers so Phase 10 code has one import surface.
+# Re-export the numeric helpers so code has one import surface.
 from backend.app.services.autonomous.common import (  # noqa: F401
     clamp, evidence, pct_change, safe_div, severity_from_score,
 )

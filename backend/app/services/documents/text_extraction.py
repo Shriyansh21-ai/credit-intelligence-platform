@@ -1,11 +1,11 @@
 """Document text-extraction orchestrator.
 
-Chooses the best path per document:
+Chooses the best path per document
 
-    * born-digital PDF  -> PyMuPDF text layer (exact, with word rects)
-    * scanned PDF       -> rasterise pages -> image OCR
-    * image             -> image OCR
-    * plain text        -> decode as-is
+    * born-digital PDF -> PyMuPDF text layer (exact, with word rects)
+    * scanned PDF -> rasterise pages -> image OCR
+    * image -> image OCR
+    * plain text -> decode as-is
 
 Returns a provider-agnostic :class:`OcrResult`.
 """

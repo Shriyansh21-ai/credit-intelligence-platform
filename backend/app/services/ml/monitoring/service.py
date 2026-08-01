@@ -1,6 +1,6 @@
-"""Model Monitoring (Phase 6, Milestone 6).
+"""Model Monitoring.
 
-Operational monitoring of the serving layer, computed from the prediction log:
+Operational monitoring of the serving layer, computed from the prediction log
 prediction latency, volume, model confidence, class distribution, input data
 quality, failures, usage statistics, API latency and success rate. Everything
 is derived from :class:`MLPredictionLog` rows, so monitoring is always exactly

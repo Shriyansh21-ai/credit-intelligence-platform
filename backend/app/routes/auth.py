@@ -62,7 +62,7 @@ def signup(
 
     db.refresh(user)
 
-    # Phase 5: grant the default role to a brand-new account (best-effort so a
+    # grant the default role to a brand-new account (best-effort so a
     # missing RBAC catalog never blocks signup).
     try:
         ensure_user_role(db, user, catalog.DEFAULT_SIGNUP_ROLE)

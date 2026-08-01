@@ -1,15 +1,15 @@
 """M7 — AI enterprise report generation.
 
-Generates board-quality reports (credit memo, investment memo, risk report,
+Generates board-quality reports (credit memo, investment memo, risk report
 fraud report, portfolio review, committee brief, executive summary, regulatory
 summary, due diligence, financial analysis, board presentation). Each report is
-assembled from *deterministic grounding* — the Phase 1-10 engines via
+assembled from *deterministic grounding* — the -10 engines via
 ``autonomous.data_access``, the M1 RAG citation engine and (optionally) an M2
-agent committee — and every section carries reasoning, evidence, citations,
+agent committee — and every section carries reasoning, evidence, citations
 chart specifications, a confidence score and recommendations.
 
 Reports persist to ``aip_reports`` and are returned as structured JSON so the
-frontend can render prose, evidence tables and charts; nothing is fabricated —
+frontend can render prose, evidence tables and charts; nothing is fabricated
 missing inputs surface as "unavailable".
 """
 

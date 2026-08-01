@@ -1,17 +1,17 @@
-"""AI Intelligence Platform (Track 2).
+"""AI Intelligence Platform.
 
 An additive, production-grade AI layer built on top of every previous phase.
-Nothing from Phases 1-11 / Track 1 is modified — the AI platform is *another
+Nothing from Phases 1-11 / is modified — the AI platform is *another
 layer*, not another application.
 
-Foundation modules (shared by every milestone):
-    common       — pure deterministic helpers (text, vectors, hashing)
-    embeddings   — pluggable Embedder ABC (offline hashing default)
-    vectorstore  — pluggable VectorStore ABC (SQL default, pgvector-ready)
-    llm          — instrumented, grounding-first LLM client (offline default)
+Foundation modules (shared by every milestone)
+    common — pure deterministic helpers (text, vectors, hashing)
+    embeddings — pluggable Embedder ABC (offline hashing default)
+    vectorstore — pluggable VectorStore ABC (SQL default, pgvector-ready)
+    llm — instrumented, grounding-first LLM client (offline default)
 
-Milestone services are added module-by-module (rag, agents, memory, prompts,
-evaluation, investigation, reports, workflows, chat, research, learning,
+Milestone services are added module-by-module (rag, agents, memory, prompts
+evaluation, investigation, reports, workflows, chat, research, learning
 governance, explainability, monitoring).
 """
 

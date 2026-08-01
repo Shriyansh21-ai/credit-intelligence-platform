@@ -1,18 +1,18 @@
-"""Pluggable vector store for the AI Intelligence Platform (Track 2).
+"""Pluggable vector store for the AI Intelligence Platform.
 
 Provides a small, uniform interface over embedding storage + similarity search
 so RAG (M1), long-term memory (M3) and any future retrieval feature share one
 seam. The default :class:`SqlVectorStore` persists vectors as JSON in the
-additive ``aip_vectors`` table and computes cosine similarity in pure Python —
+additive ``aip_vectors`` table and computes cosine similarity in pure Python
 so it works identically on the SQLite dev database and Postgres, with zero
 extra infrastructure and fully reproducible results.
 
     VectorStore (ABC)
-      ├─ SqlVectorStore     default — JSON column + Python cosine (any DB)
-      └─ PgVectorStore      gated — native pgvector ``<=>`` on Postgres
+      ├─ SqlVectorStore default — JSON column + Python cosine (any DB)
+      └─ PgVectorStore gated — native pgvector ``<=>`` on Postgres
 
 The interface is deliberately backend-agnostic (``upsert``/``query``/``delete``/
-``count`` keyed by ``namespace`` + ``ref_type``/``ref_id`` with metadata filters),
+``count`` keyed by ``namespace`` + ``ref_type``/``ref_id`` with metadata filters)
 so Pinecone / Weaviate / Milvus / Qdrant adapters can be dropped in later by
 implementing the same four methods. ``get_vector_store()`` resolves the active
 backend from ``AIP_VECTOR_STORE`` and always degrades to ``SqlVectorStore``.

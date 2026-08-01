@@ -1,17 +1,17 @@
 """M2 — Enterprise Search Engine.
 
-Universal search across every platform object (companies, applications,
+Universal search across every platform object (companies, applications
 documents, reports, alerts, tasks, policies, models, transactions, …). One
 denormalized :class:`SearchDocument` per object carries a cached, tokenized term
 list so ranking runs in-memory over the tenant's index.
 
-Ranking blends three signals (all deterministic, no external service required):
+Ranking blends three signals (all deterministic, no external service required)
 
-* **keyword**  — BM25-style TF·IDF over the tokenized index.
+* **keyword** — BM25-style TF·IDF over the tokenized index.
 * **semantic** — a lexical-similarity approximation (token Jaccard + prefix/
   substring overlap) that stands in for a vector model; the interface is
   embedding-ready (swap :func:`_semantic_score` for a real ANN backend).
-* **hybrid**   — a weighted blend of the two (the default).
+* **hybrid** — a weighted blend of the two (the default).
 
 Plus field/numeric filters, autocomplete, facets, saved searches and history.
 """
@@ -67,7 +67,7 @@ def index_document(db: Session, *, doc_type: str, ref: str, title: str,
 def reindex_platform(db: Session, *, tenant_id: Optional[int] = None) -> Dict[str, int]:
     """(Re)index the core platform objects into the universal search index.
 
-    Best-effort per source: a missing table/model never aborts the whole reindex,
+    Best-effort per source: a missing table/model never aborts the whole reindex
     so this stays robust across partially-migrated environments.
     """
     counts: Dict[str, int] = defaultdict(int)
@@ -89,7 +89,7 @@ def reindex_platform(db: Session, *, tenant_id: Optional[int] = None) -> Dict[st
     except Exception:
         pass
 
-    # Intelligence alerts (Phase 9)
+    # Intelligence alerts
     try:
         from backend.app.models.autonomous import IntelligenceAlert
         for al in db.query(IntelligenceAlert).filter(IntelligenceAlert.tenant_id == tenant_id).limit(2000).all():
@@ -103,7 +103,7 @@ def reindex_platform(db: Session, *, tenant_id: Optional[int] = None) -> Dict[st
     except Exception:
         pass
 
-    # Policies (Phase 10)
+    # Policies
     try:
         from backend.app.models.banking_os import Policy
         for p in db.query(Policy).filter(Policy.tenant_id == tenant_id).limit(2000).all():
@@ -148,7 +148,7 @@ def _keyword_scores(query_terms: List[str], docs: List[SearchDocument]) -> Dict[
 def _semantic_score(query_terms: List[str], doc: SearchDocument) -> float:
     """Deterministic lexical-similarity stand-in for a vector model.
 
-    Token Jaccard plus prefix/substring overlap — no external embeddings needed;
+    Token Jaccard plus prefix/substring overlap — no external embeddings needed
     replaceable by a real ANN backend without touching callers.
     """
     dt = set(doc.terms or [])

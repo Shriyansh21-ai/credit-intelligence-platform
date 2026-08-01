@@ -2,6 +2,25 @@
 
 *Engineering, architecture, and readiness reports for the AI Credit Intelligence Platform.*
 
+## Release certification (v1.0)
+
+| Report | Description |
+| --- | --- |
+| [ENTERPRISE_RELEASE_CERTIFICATION](ENTERPRISE_RELEASE_CERTIFICATION.md) | Repository-wide release certification and sign-off. |
+| [RELEASE_READINESS](RELEASE_READINESS.md) | Overall v1.0 release-readiness assessment. |
+| [TEST_REPORT](TEST_REPORT.md) | Full test validation and coverage areas. |
+| [BENCHMARK_REPORT](BENCHMARK_REPORT.md) | Consolidated performance benchmarks. |
+| [PERFORMANCE_REPORT](PERFORMANCE_REPORT.md) | API and engine latency analysis. |
+| [LOAD_TEST_REPORT](LOAD_TEST_REPORT.md) | Concurrent load testing results. |
+| [CHAOS_TEST_REPORT](CHAOS_TEST_REPORT.md) | Resilience and fault-injection testing. |
+| [QUALITY_REPORT](QUALITY_REPORT.md) | Code-quality and cleanup audit. |
+| [REPOSITORY_AUDIT](REPOSITORY_AUDIT.md) | Repository cleanliness audit. |
+| [RELEASE_CHECKLIST](RELEASE_CHECKLIST.md) | Release sign-off checklist. |
+| [DEPLOYMENT_CHECKLIST](DEPLOYMENT_CHECKLIST.md) | Deployment checklist. |
+| [QA_CHECKLIST](QA_CHECKLIST.md) | Quality-assurance checklist. |
+| [PRODUCTION_CHECKLIST](PRODUCTION_CHECKLIST.md) | Production-hardening checklist. |
+| [VERSION_CHECKLIST](VERSION_CHECKLIST.md) | Versioning checklist. |
+
 ## Platform & layer reports
 
 | Report | Description |
@@ -25,7 +44,7 @@
 | [SYSTEM_HEALTH_REPORT](SYSTEM_HEALTH_REPORT.md) | Overall system health and stability report. |
 | [TECHNICAL_DEBT_REPORT](TECHNICAL_DEBT_REPORT.md) | Technical debt inventory and remediation plan. |
 
-## Phase engineering reports
+## Layer engineering reports
 
 | Report | Description |
 | --- | --- |

@@ -1,4 +1,4 @@
-"""Phase 8 — Background job platform (M6)."""
+""" Background job platform (M6)."""
 
 import unittest
 import warnings

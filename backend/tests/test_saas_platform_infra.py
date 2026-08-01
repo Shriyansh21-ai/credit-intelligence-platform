@@ -1,4 +1,4 @@
-"""Phase 8 — Real-time (M8), observability (M9) and cache (M10) platforms."""
+""" Real-time (M8), observability (M9) and cache (M10) platforms."""
 
 import unittest
 import warnings

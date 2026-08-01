@@ -1,14 +1,14 @@
-"""Feature-flag evaluation + management (Phase 8, Milestone 5).
+"""Feature-flag evaluation + management.
 
-Evaluation order for a flag, given (tenant, roles):
+Evaluation order for a flag, given (tenant, roles)
 
-1. Flag missing            -> off
-2. Expired                 -> off
-3. Unmet dependency        -> off  (a prerequisite flag is off)
+1. Flag missing -> off
+2. Expired -> off
+3. Unmet dependency -> off (a prerequisite flag is off)
 4. Explicit tenant override -> use it (wins over everything below)
-5. Role targeting          -> off if target_roles set and no role matches
-6. Global enabled          -> on
-7. Percentage rollout      -> deterministic per (key, tenant) bucket < percentage
+5. Role targeting -> off if target_roles set and no role matches
+6. Global enabled -> on
+7. Percentage rollout -> deterministic per (key, tenant) bucket < percentage
 
 Rollout bucketing is a stable hash of ``key:tenant_id`` so a tenant's result is
 consistent across calls and independent of other tenants (true canary).

@@ -1,4 +1,4 @@
-"""Collateral management service (Milestone 9).
+"""Collateral management service.
 
 Stores collateral items with valuation, haircut, ownership, expiry and inspection
 history; derives realizable value, LTV and coverage; supports revaluation

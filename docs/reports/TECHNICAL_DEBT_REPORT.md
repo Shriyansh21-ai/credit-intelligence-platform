@@ -6,11 +6,11 @@ Debt is catalogued with severity, impact, and a remediation path. **None of the
 items below block a controlled production rollout.**
 
 ## Legend
-Severity: 🔴 high · 🟡 medium · 🟢 low
+Severity: high · medium · low
 
 ---
 
-## 1. 🟢 Legacy lint findings (gradual adoption)
+## 1. Legacy lint findings (gradual adoption)
 
 - **What:** The repo-wide ruff gate enforces the correctness core (`E9,F,PLE`)
   and ignores pre-existing `F401` (unused imports) and `F841` (unused locals) —
@@ -21,7 +21,7 @@ Severity: 🔴 high · 🟡 medium · 🟢 low
 - **Path:** clean per-file as those files are next modified; re-enable `F401/F841`
   repo-wide once at zero. Owner: platform. Effort: S (incremental).
 
-## 2. 🟡 Legacy typing & SQLAlchemy 2.0 idioms
+## 2. Legacy typing & SQLAlchemy 2.0 idioms
 
 - **What:** ~1600 `UP045`/`UP006` (old `Optional[...]`/`List[...]`), plus
   `declarative_base()`, `Query.get()`, `datetime.utcnow()` deprecation warnings in
@@ -32,14 +32,14 @@ Severity: 🔴 high · 🟡 medium · 🟢 low
   focused SQLAlchemy-2.0 migration PR before upgrading SQLAlchemy majors.
   Owner: backend. Effort: M.
 
-## 3. 🟡 FastAPI `on_event` → lifespan
+## 3. FastAPI `on_event` → lifespan
 
 - **What:** Startup hooks in `main.py` use the deprecated `@app.on_event`.
 - **Impact:** Deprecation warnings; still functional.
 - **Path:** migrate to a `lifespan` context manager (single, low-risk change).
   Owner: backend. Effort: S.
 
-## 4. 🟡 Multi-cloud Terraform breadth
+## 4. Multi-cloud Terraform breadth
 
 - **What:** AWS has all 11 modules; Azure/GCP implement the core 5 + stack.
   Peripheral domains (CDN, DNS, secrets, monitoring, logging) are AWS-only.
@@ -48,7 +48,7 @@ Severity: 🔴 high · 🟡 medium · 🟢 low
   targeted. `terraform validate`/`fmt` not run locally (binary absent) — add to CI
   with cloud OIDC. Owner: platform/SRE. Effort: M per cloud.
 
-## 5. 🟢 DR / secrets cloud adapters
+## 5. DR / secrets cloud adapters
 
 - **What:** DR backup targets and the secrets provider ship real file/env
   implementations; cloud-native adapters (RDS snapshot, S3 versioning, Secrets
@@ -56,14 +56,14 @@ Severity: 🔴 high · 🟡 medium · 🟢 low
 - **Path:** implement per the `BackupTarget`/`SecretManager` interfaces.
   Owner: platform. Effort: M.
 
-## 6. 🟢 Security scan soft-gates
+## 6. Security scan soft-gates
 
 - **What:** SAST (bandit/semgrep) + IaC (trivy) upload SARIF but don't block
   (adoption posture); only secret leaks hard-gate.
 - **Path:** ratchet to blocking on high severity once the legacy backlog is triaged.
   Owner: security. Effort: S (policy).
 
-## 7. 🟢 Frontend test depth
+## 7. Frontend test depth
 
 - **What:** Frontend CI runs lint + typecheck + build; unit/component test depth
   is lighter than backend.
@@ -76,9 +76,9 @@ Severity: 🔴 high · 🟡 medium · 🟢 low
 
 | Severity | Count |
 |----------|:-----:|
-| 🔴 High | 0 |
-| 🟡 Medium | 3 |
-| 🟢 Low | 4 |
+| High | 0 |
+| Medium | 3 |
+| Low | 4 |
 
 No high-severity debt. Medium items are modernization/breadth, addressable
 incrementally without disrupting production.

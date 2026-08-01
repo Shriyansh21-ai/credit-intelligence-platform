@@ -1,8 +1,8 @@
-"""Early Warning System (Phase 4, Milestone 7).
+"""Early Warning System.
 
 Proactively scans a borrower's features for deterioration signals — revenue
 decline, cash-flow stress, rising leverage, working-capital erosion, weak
-coverage, compliance/late-filing issues, fraud indicators and industry decline —
+coverage, compliance/late-filing issues, fraud indicators and industry decline
 and raises structured, prioritised alerts an analyst can act on.
 
 Rules are deterministic and transparent (a threshold + evidence), so every alert

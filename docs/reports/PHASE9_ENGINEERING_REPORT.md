@@ -1,6 +1,6 @@
-# Phase 9 — Autonomous AI Banking Intelligence Platform
+# Autonomous AI Banking Intelligence Platform
 
-**Status:** ✅ Complete & verified — **807 backend tests green** (627 pre-existing +
+**Status:** Complete & verified — **807 backend tests green** (627 pre-existing +
 180 new, zero regressions); frontend `tsc --noEmit` clean and `npm run build` clean;
 Alembic chain linear (head `d0e1f2a3b4c5`) and round-trips up/down.
 

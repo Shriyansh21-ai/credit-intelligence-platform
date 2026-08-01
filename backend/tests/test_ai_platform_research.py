@@ -1,4 +1,4 @@
-"""Track 2 M10 — AI research assistant tests."""
+""" M10 — AI research assistant tests."""
 
 import unittest
 

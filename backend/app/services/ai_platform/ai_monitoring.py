@@ -1,14 +1,14 @@
 """M14 — AI monitoring.
 
 Continuously measures the health of the AI platform and raises incidents when
-quality degrades. Monitored dimensions: hallucination rate, prompt drift,
-embedding/output drift, retrieval quality, latency, cost, model accuracy,
+quality degrades. Monitored dimensions: hallucination rate, prompt drift
+embedding/output drift, retrieval quality, latency, cost, model accuracy
 feedback score and business-KPI impact.
 
 Metrics are computed from the artifacts the platform already produces — M5
 evaluations, M1 RAG queries and M11 feedback — so monitoring needs no separate
 instrumentation and is fully deterministic. ``run_monitoring`` snapshots the
-current metrics into ``aip_ai_metrics`` and opens ``aip_ai_incidents`` on breach;
+current metrics into ``aip_ai_metrics`` and opens ``aip_ai_incidents`` on breach
 ``dashboard`` rolls everything up for the operations console.
 """
 

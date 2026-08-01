@@ -1,4 +1,4 @@
-"""Automated Retraining (Phase 6, Milestone 9)."""
+"""Automated Retraining."""
 
 from . import service
 from .service import (

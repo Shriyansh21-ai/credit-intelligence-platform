@@ -1,10 +1,10 @@
 """M2 — Enterprise Portfolio Intelligence.
 
-A portfolio construction, analytics and optimization engine over commercial,
+A portfolio construction, analytics and optimization engine over commercial
 SME and corporate loan books. Positions can be added explicitly or pulled from
 the platform's live assessment set (``data_access.portfolio_exposures``). Every
 analytic is deterministic and grounded: sector/geo/industry/borrower
-concentration (HHI + Gini), expected & unexpected loss (single-factor Vasicek),
+concentration (HHI + Gini), expected & unexpected loss (single-factor Vasicek)
 RAROC, Monte-Carlo loss distribution (VaR/ES), rating migration, and early-
 warning signals. Results persist to ``fin_portfolio_analyses``.
 """

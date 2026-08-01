@@ -6,10 +6,10 @@ and self-critique/reflection), and their contributions are fused by **consensus
 voting** with explicit **conflict resolution** and an executive synthesis.
 
 Twelve specialist roles are provided (credit analyst, risk analyst, fraud
-investigator, compliance officer, portfolio manager, relationship manager,
-financial-statement expert, banking-policy expert, regulatory expert,
+investigator, compliance officer, portfolio manager, relationship manager
+financial-statement expert, banking-policy expert, regulatory expert
 underwriter, document specialist, executive advisor). Each agent first assembles
-*deterministic grounding* from real platform data (the Phase 1-10 engines via
+*deterministic grounding* from real platform data (the -10 engines via
 ``autonomous.data_access`` and the M1 RAG index) and only then phrases it via the
 grounding-first LLM client — so the whole system is reproducible and offline by
 default, and never fabricates numbers.

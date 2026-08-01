@@ -1,14 +1,14 @@
-"""API-call audit middleware (Phase 5, Milestone 4).
+"""API-call audit middleware.
 
 Records one audit row per mutating (or otherwise interesting) API request so the
-compliance dashboard reflects real traffic. Kept deliberately cheap and safe:
+compliance dashboard reflects real traffic. Kept deliberately cheap and safe
 
 * GET/HEAD/OPTIONS and infrastructure paths (docs, openapi, root, static) are
   skipped to avoid drowning the log in read noise.
 * The actor is resolved from the bearer token without a DB hit (JWT decode only).
 * All failures are swallowed — auditing must never break a request.
 
-Enable via ``settings.AUDIT_LOG_API_CALLS`` (on by default in the running app;
+Enable via ``settings.AUDIT_LOG_API_CALLS`` (on by default in the running app
 tests mount isolated apps without this middleware).
 """
 

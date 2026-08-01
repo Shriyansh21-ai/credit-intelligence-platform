@@ -1,7 +1,7 @@
 """Backward-compatible configuration facade.
 
 The authoritative configuration now lives in :mod:`backend.app.core.settings`
-(Phase 11, M1). This module preserves the historical ``settings`` object and
+. This module preserves the historical ``settings`` object and
 its uppercase attribute surface so existing imports
 (``from backend.app.config import settings``) keep working unchanged, while
 delegating every value to the centralized, validated settings.
@@ -26,7 +26,7 @@ class _LegacySettings:
     def _s(self) -> AppSettings:
         return get_settings()
 
-    # --- Document Intelligence (Phase 2) ---
+    # --- Document Intelligence ---
     @property
     def STORAGE_ROOT(self) -> str:
         return self._s.storage_root
@@ -39,7 +39,7 @@ class _LegacySettings:
     def OCR_ENGINE(self) -> str:
         return self._s.ocr_engine
 
-    # --- ML (Phase 4) ---
+    # --- ML ---
     @property
     def MODEL_PATH(self) -> str:
         return self._s.ml_model_path

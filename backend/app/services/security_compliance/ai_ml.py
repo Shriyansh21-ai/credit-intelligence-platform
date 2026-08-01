@@ -1,4 +1,4 @@
-"""AI security (Milestone 10) and ML security (Milestone 11) assessments.
+"""AI security and ML security assessments.
 
 Maps the platform's AI/ML controls to the OWASP LLM Top 10 and an ML-pipeline
 threat baseline, turning control status into findings and a posture score.

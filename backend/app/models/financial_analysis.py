@@ -1,4 +1,4 @@
-"""Financial Analysis persistence model (Phase 3, Task 9).
+"""Financial Analysis persistence model.
 
 `FinancialAnalysis` stores a complete, versioned financial-intelligence result
 for an enterprise assessment. Headline scores are promoted to columns so

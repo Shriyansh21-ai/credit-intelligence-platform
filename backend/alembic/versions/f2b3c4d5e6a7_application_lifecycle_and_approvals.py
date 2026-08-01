@@ -1,4 +1,4 @@
-"""Application lifecycle and approval workflow tables (Phase 5, M1 & M2)
+"""Application lifecycle and approval workflow tables
 
 Revision ID: f2b3c4d5e6a7
 Revises: e1f2a3b4c5d6

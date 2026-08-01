@@ -438,7 +438,7 @@ def funding_optimization(db: Session, *, target_amount: float, max_cost: Optiona
                          as_of: Optional[str] = None, created_by: Optional[str] = None) -> Dict[str, Any]:
     """Greedy cost-minimizing funding mix meeting a stability floor.
 
-    Sort available sources by rate ascending and draw until the target is met,
+    Sort available sources by rate ascending and draw until the target is met
     then report blended cost and stability. Explainable and deterministic.
     """
     rows = sorted(_funding_rows(db, tenant_id), key=lambda r: r["rate"])

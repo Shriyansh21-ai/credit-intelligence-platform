@@ -1,7 +1,7 @@
-"""Inbound Pydantic schemas for the Enterprise Platform APIs (Track 4).
+"""Inbound Pydantic schemas for the Enterprise Platform APIs.
 
 Request bodies only — responses are plain JSON dicts assembled by the services
-(mirroring the Phase 9/10 / Tracks 2-3 convention). Grouped by milestone.
+(mirroring the /10 / Tracks 2-3 convention). Grouped by milestone.
 """
 
 from __future__ import annotations

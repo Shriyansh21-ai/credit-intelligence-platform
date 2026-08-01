@@ -1,4 +1,4 @@
-"""Versioned persistence for feature vectors (Phase 4, Milestone 1).
+"""Versioned persistence for feature vectors.
 
 Saving a vector for an assessment supersedes the previous ``is_current`` row and
 inserts an incremented ``version``, so the full history of feature generations

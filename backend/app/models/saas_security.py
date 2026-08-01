@@ -1,4 +1,4 @@
-"""Enterprise security persistence (Phase 8, Milestone 14).
+"""Enterprise security persistence.
 
 Additive, tenant-scoped tables for session management, device tracking, IP
 allow-lists, secret references (secrets are stored by reference, never in

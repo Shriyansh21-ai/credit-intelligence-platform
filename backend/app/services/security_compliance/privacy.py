@@ -1,4 +1,4 @@
-"""Privacy engineering (Milestone 12).
+"""Privacy engineering.
 
 Consent, retention, right-to-erasure and DSAR lifecycle. The catalog of privacy
 controls plus DB-backed request management (see ``service.py``). This module

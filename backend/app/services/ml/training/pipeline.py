@@ -1,6 +1,6 @@
-"""The modular ML training pipeline (Phase 6, Milestone 2).
+"""The modular ML training pipeline.
 
-One entrypoint, :func:`train`, runs the full enterprise training flow:
+One entrypoint, :func:`train`, runs the full enterprise training flow
 
     data loading → cleaning → feature engineering → encoding/scaling →
     cross-validation → (optional) hyperparameter tuning → fit →
@@ -9,9 +9,9 @@ One entrypoint, :func:`train`, runs the full enterprise training flow:
 Each stage is a small, testable function so the pipeline is easy to extend
 (add an algorithm, swap a scaler, plug a new metric) without touching the
 orchestration. The result is a :class:`TrainingResult` carrying a ready-to-
-register :class:`TrainedRiskModel` plus a complete, serialisable report —
-metrics, cross-validation, hyperparameters, feature importances and timing —
-that the model registry (Milestone 3) persists verbatim for reproducibility.
+register :class:`TrainedRiskModel` plus a complete, serialisable report
+metrics, cross-validation, hyperparameters, feature importances and timing
+that the model registry persists verbatim for reproducibility.
 """
 
 from __future__ import annotations

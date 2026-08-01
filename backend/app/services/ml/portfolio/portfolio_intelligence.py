@@ -1,9 +1,9 @@
 """Portfolio aggregation engine — pure, deterministic risk roll-ups.
 
-Standard credit-portfolio mathematics:
+Standard credit-portfolio mathematics
 * Exposure at Default (EAD) proxied by the recommended facility size.
-* Expected Loss  EL  = Σ PDᵢ · LGDᵢ · EADᵢ
-* Unexpected Loss UL  = √ Σ (EADᵢ · LGDᵢ)² · PDᵢ · (1 − PDᵢ)   (independence assumption)
+* Expected Loss EL = Σ PDᵢ · LGDᵢ · EADᵢ
+* Unexpected Loss UL = √ Σ (EADᵢ · LGDᵢ)² · PDᵢ · (1 − PDᵢ) (independence assumption)
 * Concentration measured with the Herfindahl-Hirschman Index (HHI) on exposure
   shares.
 

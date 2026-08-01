@@ -1,4 +1,4 @@
-"""Lightweight in-process TTL cache (Phase 5, Milestone 14).
+"""Lightweight in-process TTL cache.
 
 A dependency-free cache for hot, slow-changing reads (reference config, catalogs).
 Not a distributed cache — one per process — but enough to cut repeated DB hits

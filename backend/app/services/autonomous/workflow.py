@@ -1,13 +1,13 @@
 """M12 — Autonomous Workflow Intelligence.
 
 Proactively proposes (and optionally executes) the workflow actions a senior
-credit analyst would take: create tasks, assign reviewers, trigger reassessments,
+credit analyst would take: create tasks, assign reviewers, trigger reassessments
 request documents, recommend approvals/escalations/committee review, and set the
 right monitoring frequency. Decisions are derived from open alerts, the latest
 EWS band and the recommendation engine — every action carries a trigger + rationale.
 
 ``mode='proposed'`` only records the plan; ``mode='execute'`` additionally performs
-the safe actions (e.g. creating a Phase 5 task) best-effort, never breaking if a
+the safe actions (e.g. creating a task) best-effort, never breaking if a
 subsystem is absent.
 """
 

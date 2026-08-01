@@ -1,4 +1,4 @@
-"""Phase 5, Milestone 7 tests: report builders, renderers, API."""
+""" tests: report builders, renderers, API."""
 
 import unittest
 

@@ -1,9 +1,9 @@
 """M12 — Enterprise Business Intelligence Platform.
 
-Executive analytics that compute *real* metrics from across the platform:
+Executive analytics that compute *real* metrics from across the platform
 revenue, product, customer, risk, AI, adoption, operational, financial and growth
 analytics, forecast dashboards, board reports and saveable interactive dashboards.
-Every metric is grounded in a live read (assessments, customers, plugins,
+Every metric is grounded in a live read (assessments, customers, plugins
 deployments), never a placeholder. Saved dashboards persist to ``ent_bi_dashboards``.
 """
 

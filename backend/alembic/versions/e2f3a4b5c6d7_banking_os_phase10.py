@@ -1,6 +1,6 @@
-"""Enterprise Banking Operating System tables (Phase 10)
+"""Enterprise Banking Operating System tables
 
-Fully additive: creates the policy-engine, loan-committee, enterprise-search,
+Fully additive: creates the policy-engine, loan-committee, enterprise-search
 prompt-management and multi-LLM tables. Nothing from Phases 1-9 is altered or
 dropped.
 

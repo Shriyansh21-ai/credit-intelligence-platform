@@ -1,4 +1,4 @@
-# Phase 7 — Banking Ecosystem Integration Platform
+# Banking Ecosystem Integration Platform
 
 **Engineering Report**
 
@@ -19,7 +19,7 @@ Phases 1–6 — no existing API, table or module was removed or changed.
 
 ---
 
-## 1. Connector Framework (Milestone 1)
+## 1. Connector Framework
 
 The heart of Phase 7 is a universal connector framework under
 `backend/app/services/integrations/base/`. Every external system is reached
@@ -62,7 +62,7 @@ tests alone), all with injectable clocks/sleeps for deterministic testing.
 
 ## 2. Government Integrations
 
-### GST (Milestone 2)
+### GST
 `services/integrations/gst/` — a `GSTConnector` exposing 8 operations:
 `get_profile`, `get_returns`, `get_sales_history`, `get_filing_status`,
 `validate`, `get_business_status`, `get_filing_delays`, `get_tax_trends`. Every
@@ -70,7 +70,7 @@ operation derives from one coherent seeded GST record, so profile, returns and
 compliance signals stay mutually consistent (e.g. a `Cancelled` GSTIN shows
 pending returns). Snapshots are versioned and refresh-scheduled.
 
-### MCA — Ministry of Corporate Affairs (Milestone 3)
+### MCA — Ministry of Corporate Affairs
 `services/integrations/mca/` — company master, directors, charges, registered
 office, incorporation, authorized/paid-up capital, annual filings, financial
 statements, **director network** and **company relationships** (the raw material
@@ -78,7 +78,7 @@ for the Customer 360 relationship graph).
 
 ---
 
-## 3. Banking Integrations — Account Aggregator (Milestone 4)
+## 3. Banking Integrations — Account Aggregator
 
 `services/integrations/aa/` implements the full AA flow behind the connector
 interface:
@@ -94,7 +94,7 @@ interface:
 
 ---
 
-## 4. Bank Statement Analytics (Milestone 5)
+## 4. Bank Statement Analytics
 
 `services/integrations/analytics/statement.py` turns imported transactions into
 lending-grade signals. The core `compute_metrics` is a **pure function** over
@@ -110,7 +110,7 @@ statement and per entity.
 
 ---
 
-## 5. ERP Integrations (Milestone 7)
+## 5. ERP Integrations
 
 `services/integrations/erp/` — one connector, six systems selected by config:
 **SAP, Oracle ERP, Microsoft Dynamics, Zoho Books, QuickBooks, Tally**. Imports
@@ -120,7 +120,7 @@ normalized to a common shape so the platform is ERP-agnostic.
 
 ---
 
-## 6. Bureau Integration (Milestone 6)
+## 6. Bureau Integration
 
 `services/integrations/bureau/` supports **multiple bureau providers** (a
 CIBIL-style mock and an Experian-style sandbox) and **normalizes** their differing
@@ -131,7 +131,7 @@ utilization, enquiries and tradelines (plus a composite `get_full_report`).
 
 ---
 
-## 7. Payment & Transaction Integration (Milestone 8)
+## 7. Payment & Transaction Integration
 
 `services/integrations/payments/` abstracts rails (UPI, NEFT, RTGS, IMPS, SWIFT,
 card, merchant) and analyses payment behaviour, settlement delays, transaction
@@ -140,7 +140,7 @@ network graph.
 
 ---
 
-## 8. Collateral Management (Milestone 9)
+## 8. Collateral Management
 
 `services/integrations/collateral/` manages 8 collateral types (real estate,
 machinery, vehicles, inventory, receivables, fixed deposits, guarantees,
@@ -151,7 +151,7 @@ LTV and coverage; supports **revaluation** (append-only valuation history),
 
 ---
 
-## 9. Customer 360 Platform (Milestone 10)
+## 9. Customer 360 Platform
 
 `services/integrations/customer360/` assembles one unified enterprise profile
 from **every** subsystem — application, assessment, financial analysis, ML
@@ -164,7 +164,7 @@ failing the whole profile.
 
 ---
 
-## 10. Synchronization Engine (Milestone 11)
+## 10. Synchronization Engine
 
 `services/integrations/sync/` synchronises enterprise data from connectors with:
 
@@ -181,7 +181,7 @@ failing the whole profile.
 
 ---
 
-## 11. Open API Platform (Milestone 12)
+## 11. Open API Platform
 
 `services/integrations/apiplatform/`:
 
@@ -196,7 +196,7 @@ failing the whole profile.
 
 ---
 
-## 12. Observability (Milestone 13)
+## 12. Observability
 
 `services/integrations/dashboard.py` aggregates the live `MetricsCollector`,
 durable `ConnectorCallLog` rows and per-connector circuit/health state into
@@ -206,7 +206,7 @@ Exposed at `/api/integrations/observability/*` and surfaced in the Connectors UI
 
 ---
 
-## 13. Security (Milestone 14)
+## 13. Security
 
 `services/integrations/base/security.py`:
 
@@ -289,7 +289,7 @@ administrator all). Seeded idempotently at startup alongside connector configs.
 
 ---
 
-## Testing (Milestone 15)
+## Testing
 
 All previous tests retained and green. New suites:
 

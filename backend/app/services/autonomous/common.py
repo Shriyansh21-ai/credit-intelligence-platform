@@ -1,9 +1,9 @@
-"""Shared numeric + classification helpers for the Phase 9 AI Brain.
+"""Shared numeric + classification helpers for the AI Brain.
 
 Pure functions only (no DB, no ORM) so they are trivially unit-testable and can
 be imported anywhere without side effects. These encode the platform-wide
 conventions for severity bands, priority scoring and safe arithmetic that every
-Phase 9 engine reuses (SOLID / no-duplicated-logic requirement).
+ engine reuses (SOLID / no-duplicated-logic requirement).
 """
 
 from __future__ import annotations
@@ -124,7 +124,7 @@ def shift_rating(rating: Optional[str], notches: int) -> Optional[str]:
 
 
 def pd_from_score(score: float) -> float:
-    """Calibrated PD from a 300-900 enterprise credit score (mirrors Phase 1).
+    """Calibrated PD from a 300-900 enterprise credit score (mirrors ).
 
     Exponential calibration: a 900 score ≈ 0.2% PD, a 300 score ≈ ~35% PD.
     Used when an assessment lacks a stored PD so downstream engines still work.

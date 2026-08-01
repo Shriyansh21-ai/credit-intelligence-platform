@@ -1,7 +1,7 @@
-"""Pydantic request models for the Phase 10 Banking OS APIs.
+"""Pydantic request models for the Banking OS APIs.
 
 Typed, additive schemas. Response payloads are plain dicts assembled by the
-service ``*_dict`` serializers (mirroring the Phase 9 convention).
+service ``*_dict`` serializers (mirroring the convention).
 """
 
 from __future__ import annotations

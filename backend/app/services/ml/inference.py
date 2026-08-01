@@ -1,6 +1,6 @@
 """Inference service — the single entrypoint from features to a risk prediction.
 
-Bridges the Feature Store (Milestone 1) and the ML engine (Milestone 2): it
+Bridges the Feature Store and the ML engine: it
 accepts either a raw ``{feature_name: value}`` mapping or a full feature-vector
 payload (as produced by :mod:`feature_pipeline` or persisted by the feature
 store), selects a model via the registry, and returns a :class:`ModelPrediction`.
@@ -20,9 +20,9 @@ from .models.base import ModelPrediction
 def features_to_mapping(features: Any) -> dict:
     """Normalise the several feature shapes into ``{feature_name: value}``.
 
-    Accepts:
-      * a plain ``{name: value}`` mapping,
-      * a feature-vector payload with a ``features`` list of feature dicts,
+    Accepts
+      * a plain ``{name: value}`` mapping
+      * a feature-vector payload with a ``features`` list of feature dicts
       * a bare list of feature dicts.
     """
     if isinstance(features, Mapping) and "features" in features:

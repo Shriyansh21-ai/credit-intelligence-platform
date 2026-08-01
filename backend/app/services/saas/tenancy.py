@@ -1,4 +1,4 @@
-"""Tenancy + organization-management service (Phase 8, M1 & M2).
+"""Tenancy + organization-management service.
 
 Pure service functions over the tenancy models. Organization creation always
 provisions a default tenant so the hierarchy is never empty. The org-structure

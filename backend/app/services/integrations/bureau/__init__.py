@@ -1,4 +1,4 @@
-"""Credit Bureau integration (Phase 7, Milestone 6)."""
+"""Credit Bureau integration."""
 
 from backend.app.services.integrations.bureau.connector import (
     BureauConnector,

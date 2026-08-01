@@ -1,4 +1,4 @@
-"""Phase 5, Milestone 5 tests: covenant tracking, breach alerts, trend, API."""
+""" tests: covenant tracking, breach alerts, trend, API."""
 
 import unittest
 

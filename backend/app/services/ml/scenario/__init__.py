@@ -1,8 +1,8 @@
-"""Scenario simulation (Phase 4, Milestone 4).
+"""Scenario simulation.
 
 Interactive "what-if" analysis. A scenario is a set of adjustments (revenue down
-20%, +2pp interest rate, customer loss, ...) applied to an assessment's inputs;
-the engine recomputes the full risk picture — score, PD, expected loss, health,
+20%, +2pp interest rate, customer loss, ...) applied to an assessment's inputs
+the engine recomputes the full risk picture — score, PD, expected loss, health
 recommendation, loan sizing and pricing — and reports the delta against the
 baseline.
 

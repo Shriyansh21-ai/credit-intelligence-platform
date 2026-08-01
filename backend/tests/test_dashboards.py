@@ -1,4 +1,4 @@
-"""Phase 5, Milestone 11 tests: dashboard aggregation endpoints."""
+""" tests: dashboard aggregation endpoints."""
 
 import unittest
 

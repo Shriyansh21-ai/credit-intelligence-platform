@@ -1,4 +1,4 @@
-"""Audit & Compliance engine (Phase 5, Milestone 4).
+"""Audit & Compliance engine.
 
 Central, best-effort audit recording plus a searchable query layer. Recording
 never raises into the caller: an audit failure must not break a business action.

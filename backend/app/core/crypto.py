@@ -1,7 +1,7 @@
-"""Data-protection primitives (Phase 11, M8).
+"""Data-protection primitives.
 
 Bank-grade, dependency-light building blocks for protecting data at rest and in
-transit:
+transit
 
 * :class:`FieldCipher` / :class:`KeyRing` — authenticated field-level encryption
   with key versioning + rotation. Prefers AES-256-GCM via the optional
@@ -9,9 +9,9 @@ transit:
   construction (HMAC-SHA256 keystream + HMAC-SHA256 tag) so the platform has
   real, authenticated encryption even with no third-party crypto installed.
 * Signed URLs — HMAC-signed, expiring URLs for time-limited access to resources.
-* :class:`PiiMasker` — deterministic masking/redaction of PII (email, phone,
+* :class:`PiiMasker` — deterministic masking/redaction of PII (email, phone
   card, PAN, Aadhaar, …) for logs, exports, and lower environments.
-* Retention + secure deletion — a retention-policy registry, crypto-shredding,
+* Retention + secure deletion — a retention-policy registry, crypto-shredding
   and best-effort secure file overwrite.
 
 Everything is stdlib-only by default and safe to import anywhere.
@@ -65,7 +65,7 @@ class DecryptionError(Exception):
 class FieldCipher:
     """Authenticated symmetric encryption for a single key version.
 
-    Token format: ``<scheme>.<version>.<nonce>.<ciphertext>.<tag>`` (dot-joined,
+    Token format: ``<scheme>.<version>.<nonce>.<ciphertext>.<tag>`` (dot-joined
     urlsafe-base64 parts). ``scheme`` is ``g`` (AES-GCM) or ``s`` (stdlib EtM).
     """
 

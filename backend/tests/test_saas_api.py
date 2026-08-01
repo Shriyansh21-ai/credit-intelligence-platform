@@ -1,4 +1,4 @@
-"""Phase 8 — HTTP API + RBAC enforcement + deployment probes."""
+""" HTTP API + RBAC enforcement + deployment probes."""
 
 import unittest
 import warnings

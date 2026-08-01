@@ -1,6 +1,6 @@
-"""Payments connector interface + providers (Milestone 8).
+"""Payments connector interface + providers.
 
-Abstracts payment/transaction rails (UPI, NEFT, RTGS, IMPS, SWIFT, card,
+Abstracts payment/transaction rails (UPI, NEFT, RTGS, IMPS, SWIFT, card
 merchant) behind the common interface and exposes analytics over payment
 behaviour, settlement delays, transaction health, counterparty risk and the
 payment network.

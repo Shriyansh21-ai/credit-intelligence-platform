@@ -1,4 +1,4 @@
-"""Notification models (Phase 5, Milestone 10).
+"""Notification models.
 
 ``Notification`` is an in-app message for a single recipient. ``NotificationPreference``
 stores per-user, per-event channel toggles (in-app / email / webhook) so the

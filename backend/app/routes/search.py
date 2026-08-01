@@ -1,6 +1,6 @@
-"""Enterprise search API (Phase 5, Milestone 12).
+"""Enterprise search API.
 
-    GET /api/search   filterable, sortable, paginated application search + facets
+    GET /api/search filterable, sortable, paginated application search + facets
 """
 
 from __future__ import annotations

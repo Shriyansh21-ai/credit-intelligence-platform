@@ -1,4 +1,4 @@
-"""Webhook events (Milestone 12).
+"""Webhook events.
 
 Manages webhook subscriptions and event fan-out. Emitting an event creates a
 :class:`WebhookDelivery` per matching subscription and (in this build) marks it

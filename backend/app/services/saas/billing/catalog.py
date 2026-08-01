@@ -5,14 +5,14 @@ tests. ``limits`` are hard entitlements (None/absent = unlimited). ``unit_prices
 drive usage-based / overage billing per meter. Seeded into ``billing_plans`` by
 :func:`services.saas.billing.service.sync_plans`.
 
-Metered units (meters)::
+Metered units (meters)
 
-    seats            per active seat / month
-    storage_gb       per GB stored / month
-    api_calls        per 1,000 Open-API calls
-    ml_predictions   per 1,000 ML inferences
-    ocr_pages        per 1,000 OCR pages
-    connector_calls  per 1,000 external connector calls
+    seats per active seat / month
+    storage_gb per GB stored / month
+    api_calls per 1,000 Open-API calls
+    ml_predictions per 1,000 ML inferences
+    ocr_pages per 1,000 OCR pages
+    connector_calls per 1,000 external connector calls
 """
 
 from __future__ import annotations

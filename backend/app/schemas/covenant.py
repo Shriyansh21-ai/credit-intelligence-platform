@@ -1,4 +1,4 @@
-"""Pydantic schemas for the covenant API (Phase 5, Milestone 5)."""
+"""Pydantic schemas for the covenant API."""
 
 from __future__ import annotations
 

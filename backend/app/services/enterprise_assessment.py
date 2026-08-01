@@ -1,7 +1,7 @@
 """Enterprise credit scoring engine.
 
 A transparent, factor-based commercial scorecard. It converts a company's
-financial, banking and qualitative-risk inputs into:
+financial, banking and qualitative-risk inputs into
 
     * an enterprise credit score (300-900)
     * a letter risk grade (AAA .. CC)

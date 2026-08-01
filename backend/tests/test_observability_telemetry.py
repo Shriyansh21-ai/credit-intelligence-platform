@@ -1,4 +1,4 @@
-"""Phase 11, M7 — observability / telemetry tests.
+""" observability / telemetry tests.
 
 Covers the Prometheus exposition renderer, the /metrics endpoint (including the
 METRICS_ENABLED toggle), the domain metric facades, structured logging, the

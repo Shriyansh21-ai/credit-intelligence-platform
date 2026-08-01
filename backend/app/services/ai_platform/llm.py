@@ -1,19 +1,19 @@
-"""LLM client for the AI Intelligence Platform (Track 2).
+"""LLM client for the AI Intelligence Platform.
 
-Extends the Phase 9 grounding-first philosophy (``services/autonomous/llm.py``)
-with a richer, instrumented interface that the agents (M2), reports (M7),
+Extends the grounding-first philosophy (``services/autonomous/llm.py``)
+with a richer, instrumented interface that the agents (M2), reports (M7)
 evaluation (M5) and monitoring (M14) layers all need: message-based generation
 plus per-call usage (tokens, latency, cost) and a ``grounded`` flag.
 
 The platform NEVER trusts an LLM for facts. Every caller assembles deterministic
 ``grounding`` from real platform data first; the provider only phrases it. The
 default :class:`LocalDeterministicLLM` runs fully offline and reproducibly; the
-gated :class:`ClaudeLLM` upgrades phrasing when ``ANTHROPIC_API_KEY`` is set —
+gated :class:`ClaudeLLM` upgrades phrasing when ``ANTHROPIC_API_KEY`` is set
 with no change to any call site.
 
     LLMClient (ABC)
-      ├─ LocalDeterministicLLM   default, offline, template composition
-      └─ ClaudeLLM               gated: needs `anthropic` + ANTHROPIC_API_KEY
+      ├─ LocalDeterministicLLM default, offline, template composition
+      └─ ClaudeLLM gated: needs `anthropic` + ANTHROPIC_API_KEY
 """
 
 from __future__ import annotations

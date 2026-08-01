@@ -67,13 +67,13 @@ PERMISSIONS: List[Tuple[str, str, str]] = [
     ("notifications.view", "Notifications", "View own notifications"),
     # Search
     ("search.use", "Search", "Use enterprise-wide search"),
-    # Machine Learning platform (Phase 6)
+    # Machine Learning platform
     ("mlops.view", "Machine Learning", "View ML models, training, monitoring and dashboards"),
     ("mlops.train", "Machine Learning", "Train and register ML models"),
     ("mlops.deploy", "Machine Learning", "Approve, promote, roll back and retrain models"),
     ("mlops.predict", "Machine Learning", "Run ML inference (serving)"),
     ("mlops.fraud", "Machine Learning", "Run ML fraud and anomaly scoring"),
-    # Banking Ecosystem Integration Platform (Phase 7)
+    # Banking Ecosystem Integration Platform
     ("integrations.view", "Integrations", "View connectors, snapshots, imports and observability"),
     ("integrations.manage", "Integrations", "Configure connectors and trigger data imports"),
     ("integrations.sync", "Integrations", "Run and manage portfolio synchronization jobs"),
@@ -82,7 +82,7 @@ PERMISSIONS: List[Tuple[str, str, str]] = [
     ("customer360.view", "Integrations", "View the unified Customer 360 profile"),
     ("apiplatform.view", "Integrations", "View Open API keys, webhooks and usage"),
     ("apiplatform.manage", "Integrations", "Manage Open API keys and webhook subscriptions"),
-    # Multi-Tenant Enterprise SaaS Platform (Phase 8)
+    # Multi-Tenant Enterprise SaaS Platform
     ("tenancy.view", "SaaS Platform", "View organizations, tenants and hierarchy"),
     ("tenancy.manage", "SaaS Platform", "Create/manage orgs, tenants, members and invitations"),
     ("branding.view", "SaaS Platform", "View white-label branding"),
@@ -102,7 +102,7 @@ PERMISSIONS: List[Tuple[str, str, str]] = [
     ("security.manage", "SaaS Platform", "Manage secrets, IP allow-lists, sessions and IdPs"),
     ("analytics.view", "SaaS Platform", "View SaaS analytics dashboards"),
     ("platform.admin", "SaaS Platform", "Full super-admin console across all tenants"),
-    # Autonomous AI Banking Intelligence (Phase 9)
+    # Autonomous AI Banking Intelligence
     ("intelligence.view", "Autonomous Intelligence", "View the AI knowledge graph, monitoring, EWS and alerts"),
     ("intelligence.manage", "Autonomous Intelligence", "Run monitoring, resolve alerts and manage the knowledge graph"),
     ("copilot.use", "Autonomous Intelligence", "Use the AI Credit Copilot and natural-language analytics"),
@@ -116,7 +116,7 @@ PERMISSIONS: List[Tuple[str, str, str]] = [
     ("governance.manage", "Autonomous Intelligence", "Validate, approve and govern ML models"),
     ("datalake.view", "Autonomous Intelligence", "Query the enterprise data lake"),
     ("datalake.manage", "Autonomous Intelligence", "Ingest into and manage the enterprise data lake"),
-    # Enterprise Banking Operating System (Phase 10)
+    # Enterprise Banking Operating System
     ("policy.view", "Banking OS", "View business policies, versions and evaluations"),
     ("policy.manage", "Banking OS", "Author, version, publish and archive business policies"),
     ("policy.evaluate", "Banking OS", "Execute policy evaluations in real time"),
@@ -133,7 +133,7 @@ PERMISSIONS: List[Tuple[str, str, str]] = [
     ("workflowstudio.manage", "Banking OS", "Design, version and execute enterprise workflows"),
     ("marketplace.view", "Banking OS", "View the AI recommendation marketplace"),
     ("marketplace.manage", "Banking OS", "Install and configure recommendation plugins"),
-    # AI Intelligence Platform (Track 2)
+    # AI Intelligence Platform
     ("aip.rag.view", "AI Intelligence Platform", "View knowledge sources, documents and RAG queries"),
     ("aip.rag.query", "AI Intelligence Platform", "Run retrieval-augmented queries against knowledge"),
     ("aip.rag.manage", "AI Intelligence Platform", "Register sources, ingest and re-index documents"),
@@ -156,7 +156,7 @@ PERMISSIONS: List[Tuple[str, str, str]] = [
     ("aip.explain.view", "AI Intelligence Platform", "View explainability artifacts for AI decisions"),
     ("aip.monitoring.view", "AI Intelligence Platform", "View AI monitoring metrics and incidents"),
     ("aip.monitoring.manage", "AI Intelligence Platform", "Record AI metrics and manage AI incidents"),
-    # Advanced Financial Intelligence Platform (Track 3)
+    # Advanced Financial Intelligence Platform
     ("fin.treasury.view", "Financial Intelligence Platform", "View treasury positions, liquidity, ALM/LCR/NSFR and KPIs"),
     ("fin.treasury.manage", "Financial Intelligence Platform", "Manage funding sources and run treasury analytics/scenarios"),
     ("fin.portfolio.view", "Financial Intelligence Platform", "View portfolios, concentration, loss and RAROC analytics"),
@@ -184,7 +184,7 @@ PERMISSIONS: List[Tuple[str, str, str]] = [
     ("fin.twin.manage", "Financial Intelligence Platform", "Build and simulate financial digital twins"),
     ("fin.strategic.view", "Financial Intelligence Platform", "View strategic intelligence reports"),
     ("fin.strategic.generate", "Financial Intelligence Platform", "Generate strategic intelligence reports and briefings"),
-    # Enterprise Productization & Commercial Readiness (Track 4)
+    # Enterprise Productization & Commercial Readiness
     ("ent.ux.view", "Enterprise Platform", "View UX preferences and saved layouts"),
     ("ent.ux.manage", "Enterprise Platform", "Manage personalization, themes and saved layouts"),
     ("ent.workspace.view", "Enterprise Platform", "View workspaces, collections and shared views"),
@@ -254,10 +254,10 @@ ROLES: List[Tuple[str, str, str]] = [
     ("auditor", "Auditor", "Read-only access with full audit visibility"),
     ("compliance_officer", "Compliance Officer", "Compliance oversight and reporting"),
     ("viewer", "Viewer", "Read-only access to applications and portfolio"),
-    ("platform_admin", "Platform Admin", "Super-admin of the multi-tenant SaaS platform (Phase 8)"),
+    ("platform_admin", "Platform Admin", "Super-admin of the multi-tenant SaaS platform"),
 ]
 
-# Phase 8 SaaS-platform permission codes, grouped for reuse below.
+# SaaS-platform permission codes, grouped for reuse below.
 _SAAS_PLATFORM_PERMISSIONS: List[str] = [
     "tenancy.view", "tenancy.manage", "branding.view", "branding.manage",
     "billing.view", "billing.manage", "flags.view", "flags.manage",
@@ -352,7 +352,7 @@ ROLE_PERMISSIONS: Dict[str, List[str]] = {
         "reports.view", "notifications.view", "search.use",
         "realtime.view",
     ],
-    # Phase 8: dedicated super-admin of the SaaS platform. Holds every platform
+    # dedicated super-admin of the SaaS platform. Holds every platform
     # permission but not the credit-workflow permissions (separation of duties).
     "platform_admin": list(_SAAS_PLATFORM_PERMISSIONS) + [
         "audit.view", "config.view", "config.manage", "users.manage", "roles.manage",
@@ -369,7 +369,7 @@ for _role in ("risk_manager", "compliance_officer", "auditor"):
 ROLE_PERMISSIONS["risk_manager"].extend(["bgjobs.view", "storage.view", "branding.view"])
 
 # ---------------------------------------------------------------------------
-# Phase 9 — Autonomous AI Banking Intelligence grants.
+# Autonomous AI Banking Intelligence grants.
 # The "AI Brain" is broadly readable by the credit-workflow roles; running heavy
 # engines (simulation, optimization, governance) is restricted by seniority.
 # ---------------------------------------------------------------------------
@@ -398,9 +398,9 @@ for _role in ("compliance_officer", "auditor"):
     ROLE_PERMISSIONS[_role].extend(["command.center", "governance.view"])
 
 # ---------------------------------------------------------------------------
-# Phase 10 — Enterprise Banking Operating System grants.
-# The AI-native OS layer (policies, committees, prompts, multi-LLM, data fabric,
-# workflow studio, marketplace) is broadly readable by credit-workflow roles;
+# Enterprise Banking Operating System grants.
+# The AI-native OS layer (policies, committees, prompts, multi-LLM, data fabric
+# workflow studio, marketplace) is broadly readable by credit-workflow roles
 # authoring/governance is restricted by seniority.
 # ---------------------------------------------------------------------------
 _PHASE10_READ = [
@@ -428,8 +428,8 @@ ROLE_PERMISSIONS["risk_manager"].extend([
 ])
 
 # ---------------------------------------------------------------------------
-# Track 2 — AI Intelligence Platform grants.
-# The AI layer (RAG, agents, memory, prompts, eval, investigation, reports,
+# AI Intelligence Platform grants.
+# The AI layer (RAG, agents, memory, prompts, eval, investigation, reports
 # workflows, chat, research, learning, governance, explainability, monitoring)
 # is broadly readable/usable by credit-workflow roles; authoring, governance and
 # retraining are restricted by seniority.
@@ -462,8 +462,8 @@ for _role in ("compliance_officer", "auditor"):
     ROLE_PERMISSIONS[_role].extend(["aip.eval.run"])
 
 # ---------------------------------------------------------------------------
-# Track 3 — Advanced Financial Intelligence Platform grants.
-# Treasury, portfolio, regulatory, economic, ESG, market, alt-data, forecasting,
+# Advanced Financial Intelligence Platform grants.
+# Treasury, portfolio, regulatory, economic, ESG, market, alt-data, forecasting
 # quant risk, benchmarking, executive, optimization, digital-twin and strategic
 # intelligence. Read/view surfaces are broadly available to credit-workflow and
 # oversight roles; execution and management are restricted by seniority.
@@ -496,9 +496,9 @@ ROLE_PERMISSIONS["risk_manager"].extend([
 ])
 
 # ---------------------------------------------------------------------------
-# Track 4 — Enterprise Productization & Commercial Readiness grants.
-# The productization surfaces (UX, workspaces, developer platform, marketplace,
-# integration, data management, operations, security, customer success,
+# Enterprise Productization & Commercial Readiness grants.
+# The productization surfaces (UX, workspaces, developer platform, marketplace
+# integration, data management, operations, security, customer success
 # deployment, monitoring, BI, launch readiness) are broadly viewable by every
 # workflow role; platform/operations management is restricted to admins and the
 # platform_admin persona.
@@ -538,7 +538,7 @@ ROLE_PERMISSIONS["platform_admin"].extend(_TRACK4_ALL)
 
 # ---------------------------------------------------------------------------
 # Stage 4 — Enterprise Security & Compliance Platform grants.
-# Security posture, threat model, OWASP, compliance, secrets, data protection,
+# Security posture, threat model, OWASP, compliance, secrets, data protection
 # supply chain, container hardening, AI/ML security, privacy, findings and the
 # risk register. Read surfaces are broadly available to oversight roles; the
 # compliance_officer and risk_manager personas are the natural owners of the

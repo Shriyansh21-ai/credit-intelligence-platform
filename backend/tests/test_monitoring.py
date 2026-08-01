@@ -1,4 +1,4 @@
-"""Phase 5, Milestone 6 tests: post-disbursement monitoring + deterioration."""
+""" tests: post-disbursement monitoring + deterioration."""
 
 import unittest
 

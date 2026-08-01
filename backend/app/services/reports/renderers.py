@@ -1,12 +1,12 @@
 """Report renderers.
 
 Each renderer takes a normalised report document and returns
-``(bytes, content_type, extension)``. Formats:
-    json  — structured data (dict, returned directly by the service)
-    html  — styled, printable HTML (always available)
-    pdf   — reportlab (available in this environment)
-    csv   — flat CSV, opens in Excel (stdlib)
-    rtf   — Rich Text, opens in Word (stdlib)
+``(bytes, content_type, extension)``. Formats
+    json — structured data (dict, returned directly by the service)
+    html — styled, printable HTML (always available)
+    pdf — reportlab (available in this environment)
+    csv — flat CSV, opens in Excel (stdlib)
+    rtf — Rich Text, opens in Word (stdlib)
 """
 
 from __future__ import annotations

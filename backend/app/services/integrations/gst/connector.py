@@ -1,4 +1,4 @@
-"""GST connector interface + mock/sandbox/production providers (Milestone 2).
+"""GST connector interface + mock/sandbox/production providers.
 
 The abstract :class:`GSTConnector` defines the GST operation surface and
 dispatches each operation to a ``fetch_*`` method the concrete provider

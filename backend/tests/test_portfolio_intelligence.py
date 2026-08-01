@@ -1,4 +1,4 @@
-"""Phase 4 Milestone 6 tests: portfolio risk intelligence."""
+""" tests: portfolio risk intelligence."""
 
 import unittest
 

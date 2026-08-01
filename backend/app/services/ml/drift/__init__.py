@@ -1,4 +1,4 @@
-"""Data Drift Detection (Phase 6, Milestone 7)."""
+"""Data Drift Detection."""
 
 from . import service
 from .service import (

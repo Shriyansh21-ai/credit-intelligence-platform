@@ -1,13 +1,13 @@
 """Account Aggregator service — consent lifecycle + statement import (M4).
 
-Wraps the AA connector with durable persistence:
+Wraps the AA connector with durable persistence
 
 * Consent lifecycle: request → activate → (expire | revoke), stored as
   :class:`ConsentArtifact`. :func:`sync_consent_status` reconciles state with the
   provider and enforces expiry.
 * Account discovery and statement import: a fetched statement is persisted as a
   :class:`BankStatement` header plus :class:`BankTransaction` rows, ready for the
-  analytics engine (Milestone 5).
+  analytics engine.
 """
 
 from __future__ import annotations

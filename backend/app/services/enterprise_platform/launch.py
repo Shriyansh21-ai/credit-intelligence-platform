@@ -1,7 +1,7 @@
 """M13 — Enterprise Launch Readiness.
 
 Generates and tracks the checklists that gate a commercial release: production
-configuration, deployment, security, operational, release, disaster-recovery,
+configuration, deployment, security, operational, release, disaster-recovery
 business-continuity, scaling, performance and monitoring. Each checklist is
 seeded from a deterministic template, scored as items are completed, and rolled
 up into an overall launch-readiness score. Backed by ``ent_checklists``.

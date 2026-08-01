@@ -1,6 +1,6 @@
-"""Risk explanation persistence model (Phase 4, Milestone 3).
+"""Risk explanation persistence model.
 
-Stores a versioned, auditable explanation for an assessment's risk prediction:
+Stores a versioned, auditable explanation for an assessment's risk prediction
 the probability of default, its base rate, the full per-feature contributions and
 the top risk drivers, plus the waterfall and global importance. Headline fields
 are promoted to columns; the rich detail lives in JSON.

@@ -6,7 +6,7 @@
 * :class:`ShapExplainer` - SHAP abstraction. When a trained tree model and the
   ``shap`` library are available it would compute SHAP values; until then it
   resolves to the exact contributions (documented, not faked).
-* :class:`LimeExplainer` - LIME abstraction. A local surrogate explanation;
+* :class:`LimeExplainer` - LIME abstraction. A local surrogate explanation
   for the additive model the local linear surrogate equals the contributions.
 
 All three return the same :class:`Explanation` shape via the shared builder.

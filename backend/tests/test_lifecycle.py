@@ -1,4 +1,4 @@
-"""Phase 5, Milestone 1 tests: lifecycle state machine + service + API."""
+""" tests: lifecycle state machine + service + API."""
 
 import unittest
 

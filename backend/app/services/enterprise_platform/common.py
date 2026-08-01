@@ -1,11 +1,11 @@
-"""Pure, dependency-free helpers shared across Track 4 (Enterprise Productization).
+"""Pure, dependency-free helpers shared across (Enterprise Productization).
 
 Nothing here touches the database, network or any LLM. Deterministic and safe to
 import from migrations, tests and services alike — mirroring the
-``services/financial_intelligence/common.py`` and Track 2 conventions.
+``services/financial_intelligence/common.py`` and conventions.
 
-Track 4 is a *productization* layer, so the primitives here lean toward product
-plumbing: slugs, content-addressed identity, API-key hashing, health scoring,
+ is a *productization* layer, so the primitives here lean toward product
+plumbing: slugs, content-addressed identity, API-key hashing, health scoring
 status roll-ups and grounding blocks, rather than heavy numerics.
 """
 
@@ -158,7 +158,7 @@ def confidence_block(score: float, reasoning: str, citations: Optional[List[Dict
                      evidence: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
     """Standard AI envelope: confidence + reasoning + citations + evidence.
 
-    Track 4's quality bar requires every AI response to carry confidence,
+    's quality bar requires every AI response to carry confidence
     reasoning, citations and evidence; this is the shared envelope used by the
     customer-success, operations and BI recommendation surfaces.
     """

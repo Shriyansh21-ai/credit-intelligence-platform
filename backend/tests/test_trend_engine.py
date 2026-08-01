@@ -1,4 +1,4 @@
-"""Milestone 6 tests: the trend engine."""
+""" tests: the trend engine."""
 
 import unittest
 

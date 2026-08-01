@@ -6,16 +6,16 @@ approval / country / risk-appetite / fraud). Each published
 :class:`PolicyVersion` carries a rule DSL evaluated in priority order against an
 input subject at runtime — no code deploys, fully auditable, never an LLM.
 
-Rule DSL (one entry in ``rules``)::
+Rule DSL (one entry in ``rules``)
 
     {
-      "id": "high-pd",
-      "name": "Reject very high PD",
-      "when": [{"field": "pd", "op": "gte", "value": 0.25}],
-      "then": {"decision": "reject", "action": "decline",
-               "message": "PD above risk appetite", "params": {}},
-      "priority": 100,        # higher fires first
-      "stop": true            # stop after this rule (first_match/highest_priority)
+      "id": "high-pd"
+      "name": "Reject very high PD"
+      "when": [{"field": "pd", "op": "gte", "value": 0.25}]
+      "then": {"decision": "reject", "action": "decline"
+               "message": "PD above risk appetite", "params": {}}
+      "priority": 100, # higher fires first
+      "stop": true # stop after this rule (first_match/highest_priority)
     }
 
 ``when`` is an AND of conditions; ``op`` is one of the operators in
@@ -131,7 +131,7 @@ def evaluate_rules(rules: List[Dict[str, Any]], data: Dict[str, Any], *,
                    default_decision: str = "pass") -> Dict[str, Any]:
     """Evaluate a rule list against ``data``; returns the decision bundle.
 
-    ``combine``:
+    ``combine``
       * ``first_match`` — rules sorted by priority desc; stop at the first match
         (or the first match with ``stop=true``).
       * ``highest_priority`` — evaluate all, the highest-priority match decides.

@@ -18,16 +18,16 @@ serves probes and metrics, and the full middleware stack is verified end-to-end.
 
 | Check | Result |
 |-------|--------|
-| App import + startup hooks | ✅ boots, config validation runs |
-| `GET /livez` | ✅ 200 `{"status":"alive"}` |
-| `GET /readyz` | ✅ 200 (dependency checks) |
-| `GET /healthz` | ✅ 200 |
-| `GET /metrics` | ✅ 200 Prometheus exposition (`aicredit_*`) |
-| `GET /openapi.json` | ✅ 200 with enriched metadata |
-| Security headers | ✅ CSP/XFO/nosniff/Referrer/Permissions present |
-| Correlation ID | ✅ echoed + generated, injected into logs |
-| API version header | ✅ `X-API-Version: v1` |
-| GZip compression | ✅ active above threshold |
+| App import + startup hooks | boots, config validation runs |
+| `GET /livez` | 200 `{"status":"alive"}` |
+| `GET /readyz` | 200 (dependency checks) |
+| `GET /healthz` | 200 |
+| `GET /metrics` | 200 Prometheus exposition (`aicredit_*`) |
+| `GET /openapi.json` | 200 with enriched metadata |
+| Security headers | CSP/XFO/nosniff/Referrer/Permissions present |
+| Correlation ID | echoed + generated, injected into logs |
+| API version header | `X-API-Version: v1` |
+| GZip compression | active above threshold |
 
 ## Lint & format
 

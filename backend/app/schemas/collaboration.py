@@ -1,4 +1,4 @@
-"""Pydantic schemas for the collaboration API (Phase 5, Milestone 8)."""
+"""Pydantic schemas for the collaboration API."""
 
 from __future__ import annotations
 

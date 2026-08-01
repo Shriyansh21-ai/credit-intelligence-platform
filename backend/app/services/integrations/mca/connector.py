@@ -1,6 +1,6 @@
-"""MCA connector interface + providers (Milestone 3).
+"""MCA connector interface + providers.
 
-Retrieves company master data, directors, charges, capital, annual filings,
+Retrieves company master data, directors, charges, capital, annual filings
 financial statements and the director/company relationship network from the
 Ministry of Corporate Affairs. Everything derives from one seeded company record
 keyed by CIN, so directors, charges and relationships stay consistent.

@@ -1,15 +1,15 @@
-"""Enterprise Banking Operating System APIs (Phase 10).
+"""Enterprise Banking Operating System APIs.
 
 Focused, additive routers under ``/api/os/*``. Every route is new; nothing from
-Phases 1-9 is modified. RBAC is enforced with the Phase 10 permission catalog
-(``policy.*``, ``committee.*``, ``prompt.*``, ``llm.*``, ``fabric.*``,
+Phases 1-9 is modified. RBAC is enforced with the permission catalog
+(``policy.*``, ``committee.*``, ``prompt.*``, ``llm.*``, ``fabric.*``
 ``workflowstudio.*``, ``marketplace.*``) plus the existing ``search.use``.
 
-    /api/os/policy      Enterprise Policy Engine (M7)
-    /api/os/committee   Loan Committee Workspace (M4)
-    /api/os/search      Enterprise Search Engine (M2)
-    /api/os/prompt      Prompt Management Platform (M8)
-    /api/os/llm         Multi-LLM Intelligence Layer (M9)
+    /api/os/policy Enterprise Policy Engine (M7)
+    /api/os/committee Loan Committee Workspace (M4)
+    /api/os/search Enterprise Search Engine (M2)
+    /api/os/prompt Prompt Management Platform (M8)
+    /api/os/llm Multi-LLM Intelligence Layer (M9)
 """
 
 from __future__ import annotations

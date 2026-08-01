@@ -1,13 +1,13 @@
-"""Shared runtime for standalone worker/scheduler processes (Phase 11, M2).
+"""Shared runtime for standalone worker/scheduler processes.
 
-Provides a resilient, signal-aware poll loop:
+Provides a resilient, signal-aware poll loop
 
-* graceful shutdown on SIGTERM/SIGINT (drains the in-flight tick, then exits) —
-  the contract Kubernetes and Docker use when stopping a pod/container;
+* graceful shutdown on SIGTERM/SIGINT (drains the in-flight tick, then exits)
+  the contract Kubernetes and Docker use when stopping a pod/container
 * a fresh DB session per tick, always closed, so a poisoned session never
-  wedges the loop;
+  wedges the loop
 * per-tick exception isolation with backoff so one bad tick cannot crash the
-  process;
+  process
 * structured logging of throughput.
 """
 

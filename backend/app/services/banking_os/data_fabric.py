@@ -1,10 +1,10 @@
 """M14 — Enterprise Data Fabric.
 
-A unified data catalog + governance layer over the platform's logical datasets:
+A unified data catalog + governance layer over the platform's logical datasets
 a searchable catalog (ownership, classification, declared schema), directed
 **lineage** with upstream/downstream traversal and **impact analysis**, versioned
 **data contracts**, and deterministic **data-quality** evaluation across the
-completeness / validity / consistency dimensions. Complements the Phase 9 data
+completeness / validity / consistency dimensions. Complements the data
 lake (physical storage) with the metadata/governance plane.
 
 The contract-validation core (:func:`evaluate_records`) is pure and DB-free.

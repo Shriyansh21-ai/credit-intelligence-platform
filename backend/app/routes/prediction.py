@@ -220,7 +220,7 @@ async def enterprise_assessment(
     db.commit()
     db.refresh(db_record)
 
-    # Phase 3: auto-compute and persist the full financial analysis, linked to
+    # auto-compute and persist the full financial analysis, linked to
     # this assessment. Best-effort — a failure here must not fail the
     # assessment itself (the analysis can be recomputed on demand).
     try:
@@ -234,7 +234,7 @@ async def enterprise_assessment(
     except Exception:  # pragma: no cover - defensive
         logger.exception("Financial analysis persistence failed for assessment %s", db_record.id)
 
-    # Phase 4: build and persist the ML-ready feature vector for this
+    # build and persist the ML-ready feature vector for this
     # assessment. Best-effort — feature generation must never fail an
     # assessment, and the vector can always be recomputed on demand.
     try:

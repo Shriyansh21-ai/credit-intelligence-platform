@@ -6,7 +6,7 @@ trends, supply-chain risk, geopolitical risk and ESG.
 
 Research is grounded in what the platform actually knows: the internal portfolio
 (peer/sector statistics computed from ``EnterpriseAssessment`` via
-``autonomous.data_access``) and the M1 RAG knowledge base (regulatory circulars,
+``autonomous.data_access``) and the M1 RAG knowledge base (regulatory circulars
 sector manuals). It never fabricates external figures — when no external source
 is indexed for a topic, the report says so explicitly and reports the internal
 signal instead. Results persist to ``aip_research``.

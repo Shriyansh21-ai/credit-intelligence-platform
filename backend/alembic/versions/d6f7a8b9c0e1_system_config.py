@@ -1,4 +1,4 @@
-"""System configuration table (Phase 5, M13)
+"""System configuration table
 
 Revision ID: d6f7a8b9c0e1
 Revises: c5e6f7a8b9d0

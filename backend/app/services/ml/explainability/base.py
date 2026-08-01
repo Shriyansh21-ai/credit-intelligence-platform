@@ -63,7 +63,7 @@ def build_explanation(
     concern, not this builder's.
 
     ``base_logit`` is the model's neutral/expected-value log-odds. It defaults to
-    the deterministic estimator's intercept (preserving the Phase 4 behaviour);
+    the deterministic estimator's intercept (preserving the behaviour)
     trained-model explainers pass the SHAP expected value so the waterfall starts
     from the model's true base rate.
     """

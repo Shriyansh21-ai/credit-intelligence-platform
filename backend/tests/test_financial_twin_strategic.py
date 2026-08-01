@@ -1,4 +1,4 @@
-"""Track 3 M13 (Digital Twin) + M14 (Strategic Intelligence) tests."""
+""" M13 (Digital Twin) + M14 (Strategic Intelligence) tests."""
 
 from backend.tests._financial_intelligence_helpers import admin_client, seed_company, seed_portfolio_companies
 

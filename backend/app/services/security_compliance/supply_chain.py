@@ -1,7 +1,7 @@
-"""Supply-chain security (Milestone 8).
+"""Supply-chain security.
 
 Builds a lightweight SBOM, a dependency report and a license report by reading
-the real dependency manifests in the repo (requirements.txt, pyproject.toml,
+the real dependency manifests in the repo (requirements.txt, pyproject.toml
 frontend/package.json). Pure-stdlib parsing — no network, no third-party SBOM
 tool required — so it works fully offline and deterministically.
 """
@@ -14,7 +14,7 @@ from typing import Dict, List, Optional
 
 from .common import clamp
 
-# repo root = five parents up from this file:
+# repo root = five parents up from this file
 # backend/app/services/security_compliance/supply_chain.py -> repo root
 _REPO_ROOT = Path(__file__).resolve().parents[4]
 

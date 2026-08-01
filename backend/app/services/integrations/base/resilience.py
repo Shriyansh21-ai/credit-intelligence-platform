@@ -1,15 +1,15 @@
-"""Resilience primitives for the connector framework (Milestone 1).
+"""Resilience primitives for the connector framework.
 
 Three standalone, independently testable pieces that the base connector composes
-around every provider call:
+around every provider call
 
-* :class:`RetryPolicy`   — bounded retries with exponential backoff + jitter,
+* :class:`RetryPolicy` — bounded retries with exponential backoff + jitter
   gated on whether the raised error is retriable.
 * :class:`CircuitBreaker`— CLOSED → OPEN → HALF_OPEN state machine that stops
   hammering a failing provider and probes for recovery.
-* :class:`RateLimiter`   — token-bucket limiter that smooths call volume.
+* :class:`RateLimiter` — token-bucket limiter that smooths call volume.
 
-All three take an injectable ``clock`` (monotonic seconds) and, where relevant,
+All three take an injectable ``clock`` (monotonic seconds) and, where relevant
 an injectable ``sleep`` so tests are fully deterministic and never wall-sleep.
 """
 

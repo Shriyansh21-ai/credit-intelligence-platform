@@ -1,4 +1,4 @@
-"""Versioned persistence for risk explanations (Phase 4, Milestone 3)."""
+"""Versioned persistence for risk explanations."""
 
 from __future__ import annotations
 

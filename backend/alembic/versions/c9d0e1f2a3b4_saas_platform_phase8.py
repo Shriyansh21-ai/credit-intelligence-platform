@@ -1,6 +1,6 @@
-"""Multi-Tenant Enterprise SaaS Platform tables (Phase 8)
+"""Multi-Tenant Enterprise SaaS Platform tables
 
-Fully additive: creates the tenancy, branding, billing, feature-flag,
+Fully additive: creates the tenancy, branding, billing, feature-flag
 background-job, cloud-storage, real-time, observability and security tables.
 Nothing from Phases 1-7 is altered or dropped.
 

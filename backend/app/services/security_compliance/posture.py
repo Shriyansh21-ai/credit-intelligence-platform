@@ -1,4 +1,4 @@
-"""Security posture aggregator (Milestone 14).
+"""Security posture aggregator.
 
 Fuses every assessment dimension into a single enterprise security posture score
 and grade. Config/catalog-derived (no DB) so it is cheap to call on every

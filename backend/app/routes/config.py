@@ -1,9 +1,9 @@
-"""System configuration API (Phase 5, Milestone 13).
+"""System configuration API.
 
-    GET  /api/config                 all config (optional ?category=)
-    GET  /api/config/categories       distinct categories
-    GET  /api/config/{key}            one value
-    PUT  /api/config/{key}            update a value (config.manage)
+    GET /api/config all config (optional ?category=)
+    GET /api/config/categories distinct categories
+    GET /api/config/{key} one value
+    PUT /api/config/{key} update a value (config.manage)
 
 Reading requires ``config.view``; writing requires ``config.manage``.
 """

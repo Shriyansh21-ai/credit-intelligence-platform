@@ -1,4 +1,4 @@
-"""Financial Analysis API schemas (Phase 3, Task 8).
+"""Financial Analysis API schemas.
 
 Analysis results are deeply nested and engine-driven, so the GET endpoints
 return the engine payload as-is (a JSON object). Only the ad-hoc compute request
@@ -15,7 +15,7 @@ from pydantic import BaseModel, Field, model_validator
 class AnalysisComputeRequest(BaseModel):
     """Compute an analysis without a persisted assessment.
 
-    Provide exactly one financial source:
+    Provide exactly one financial source
       * ``financials`` — a mapping whose keys match ``FinancialStatement`` fields
       * ``document_fields`` — a ``DocumentExtraction.fields`` payload
     """

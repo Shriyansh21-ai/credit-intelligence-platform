@@ -1,17 +1,17 @@
-"""Enterprise AI Risk Intelligence API (Phase 4, Milestone 10).
+"""Enterprise AI Risk Intelligence API.
 
-Versioned under ``/api/ml``. Routes are intentionally thin: they validate input,
+Versioned under ``/api/ml``. Routes are intentionally thin: they validate input
 delegate to services and stores, and shape the response. No business logic lives
 here.
 
-    GET  /api/ml/models                      registered risk models + metadata
-    GET  /api/ml/features/{assessment_id}    stored feature vector for an assessment
-    GET  /api/ml/features                     latest feature vector for the user
-    POST /api/ml/features/compute             ad-hoc feature vector (optional persist)
-    GET  /api/ml/predict/{assessment_id}     prediction from the stored vector
-    POST /api/ml/predict                      ad-hoc prediction
-    GET  /api/ml/explain/{assessment_id}     explanation (stored or computed)
-    POST /api/ml/explain                      ad-hoc explanation (optional persist)
+    GET /api/ml/models registered risk models + metadata
+    GET /api/ml/features/{assessment_id} stored feature vector for an assessment
+    GET /api/ml/features latest feature vector for the user
+    POST /api/ml/features/compute ad-hoc feature vector (optional persist)
+    GET /api/ml/predict/{assessment_id} prediction from the stored vector
+    POST /api/ml/predict ad-hoc prediction
+    GET /api/ml/explain/{assessment_id} explanation (stored or computed)
+    POST /api/ml/explain ad-hoc explanation (optional persist)
 """
 
 from __future__ import annotations
@@ -106,7 +106,7 @@ async def list_models(current_user: User = Depends(get_current_user)):
 
 
 # ---------------------------------------------------------------------------
-# Features (Milestone 1)
+# Features
 # ---------------------------------------------------------------------------
 
 @router.post("/features/compute")
@@ -149,7 +149,7 @@ async def get_features(
 
 
 # ---------------------------------------------------------------------------
-# Predict (Milestone 2)
+# Predict
 # ---------------------------------------------------------------------------
 
 @router.post("/predict")
@@ -173,7 +173,7 @@ async def predict_for_assessment(
 
 
 # ---------------------------------------------------------------------------
-# Explain (Milestone 3)
+# Explain
 # ---------------------------------------------------------------------------
 
 @router.post("/explain")
@@ -206,7 +206,7 @@ async def explain_for_assessment(
 
 
 # ---------------------------------------------------------------------------
-# Scenario simulation (Milestone 4)
+# Scenario simulation
 # ---------------------------------------------------------------------------
 
 @router.get("/scenario/factors")
@@ -230,7 +230,7 @@ async def run_scenario(
 
 
 # ---------------------------------------------------------------------------
-# Stress testing (Milestone 5)
+# Stress testing
 # ---------------------------------------------------------------------------
 
 @router.get("/stress-test/scenarios")
@@ -250,7 +250,7 @@ async def stress_test(
 
 
 # ---------------------------------------------------------------------------
-# Portfolio intelligence (Milestone 6)
+# Portfolio intelligence
 # ---------------------------------------------------------------------------
 
 @router.get("/portfolio")
@@ -273,7 +273,7 @@ async def portfolio(
 
 
 # ---------------------------------------------------------------------------
-# Early warning alerts (Milestone 7)
+# Early warning alerts
 # ---------------------------------------------------------------------------
 
 @router.post("/alerts/scan")
@@ -315,7 +315,7 @@ async def alerts_for_assessment(
 
 
 # ---------------------------------------------------------------------------
-# Analyst Copilot credit memo (Milestone 8)
+# Analyst Copilot credit memo
 # ---------------------------------------------------------------------------
 
 @router.post("/report")

@@ -1,4 +1,4 @@
-"""Collaboration models (Phase 5, Milestone 8).
+"""Collaboration models.
 
 ``Note`` powers internal notes, comments, threaded review discussions and pinned
 notes on an application (a ``parent_id`` makes a note a reply). ``NoteAttachment``

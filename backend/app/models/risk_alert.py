@@ -1,4 +1,4 @@
-"""Risk alert persistence model (Phase 4, Milestone 7).
+"""Risk alert persistence model.
 
 Every early-warning alert is stored for history and auditing. A scan supersedes
 the previous batch for an assessment (``is_current`` toggled) while keeping older

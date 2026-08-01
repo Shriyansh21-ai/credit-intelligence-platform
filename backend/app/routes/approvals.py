@@ -1,11 +1,11 @@
-"""Approval workflow API (Phase 5, Milestone 2).
+"""Approval workflow API.
 
-    GET  /api/approvals/workflow                       default workflow config
-    PUT  /api/approvals/workflow                       edit workflow (approvals.configure)
-    GET  /api/approvals/applications/{id}/decisions    approval timeline
-    POST /api/approvals/applications/{id}/decisions    submit a decision
+    GET /api/approvals/workflow default workflow config
+    PUT /api/approvals/workflow edit workflow (approvals.configure)
+    GET /api/approvals/applications/{id}/decisions approval timeline
+    POST /api/approvals/applications/{id}/decisions submit a decision
 
-Each decision's required permission is derived from its action (approve, reject,
+Each decision's required permission is derived from its action (approve, reject
 request_changes, escalate, hold, comment).
 """
 

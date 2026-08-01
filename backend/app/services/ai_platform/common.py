@@ -1,8 +1,8 @@
-"""Pure, dependency-free helpers shared across the Track 2 AI Intelligence Platform.
+"""Pure, dependency-free helpers shared across the AI Intelligence Platform.
 
 Nothing in this module touches the database, the network or any LLM. Everything
 here is deterministic and safe to import from migrations, tests and services
-alike, mirroring the ``services/autonomous/common.py`` convention from Phase 9.
+alike, mirroring the ``services/autonomous/common.py`` convention from .
 """
 
 from __future__ import annotations

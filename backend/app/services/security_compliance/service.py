@@ -1,7 +1,7 @@
 """DB-backed orchestration for the Security & Compliance module.
 
-Persists scan runs and findings, compliance assessments, the risk register,
-privacy (DSAR) requests and posture snapshots. Function-based, tenant-scoped,
+Persists scan runs and findings, compliance assessments, the risk register
+privacy (DSAR) requests and posture snapshots. Function-based, tenant-scoped
 mirroring the platform's service conventions. Serializers return plain dicts.
 """
 
@@ -442,9 +442,9 @@ def _open_findings_count(db: Session, *, tenant_id: Optional[int] = None,
 
 
 def security_dashboard(db: Session, *, tenant_id: Optional[int] = None) -> dict:
-    """The full security administration dashboard (Milestone 14).
+    """The full security administration dashboard.
 
-    Combines the live posture (config-derived) with DB counters: open findings,
+    Combines the live posture (config-derived) with DB counters: open findings
     risk register, compliance history, privacy queue and recent scans.
     """
     p = posture_mod.security_posture()
@@ -487,7 +487,7 @@ def security_dashboard(db: Session, *, tenant_id: Optional[int] = None) -> dict:
 
 
 def _session_stats(db: Session, *, tenant_id: Optional[int] = None) -> dict:
-    """Live active-session / device counters from the Phase 8 security tables."""
+    """Live active-session / device counters from the security tables."""
     try:
         from backend.app.models.saas_security import SecurityDevice, SecuritySession
 

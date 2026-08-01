@@ -1,32 +1,32 @@
-"""AI Intelligence Platform persistence (Track 2).
+"""AI Intelligence Platform persistence.
 
-Every table here is **additive** — nothing from Phases 1-11 / Track 1 is altered
+Every table here is **additive** — nothing from Phases 1-11 / is altered
 or dropped. Schema is created by the Alembic migration
 ``f3a4b5c6d7e8_ai_platform_track2`` (the app never calls ``create_all``).
 
-The Track 2 AI layer sits on top of every previous phase. To stay loosely
+The AI layer sits on top of every previous phase. To stay loosely
 coupled (and avoid cross-model FK-ordering pain in targeted test schemas) rows
 reference domain objects by stable string refs (``company_ref``, ``target_ref``)
 and optionally carry an ``assessment_id`` when derived from a concrete
 :class:`EnterpriseAssessment`. Multi-tenancy is preserved by an optional
 nullable ``tenant_id`` column so legacy single-tenant flows keep working.
 
-Table groups:
-    Foundation      — aip_vectors
-    M1  RAG         — aip_knowledge_sources, aip_documents, aip_chunks, aip_rag_queries
-    M2  Agents      — aip_agent_runs, aip_agent_steps
-    M3  Memory      — aip_memories, aip_memory_summaries
-    M4  Prompts     — aip_prompts, aip_prompt_versions, aip_prompt_evals, aip_prompt_experiments
-    M5  Evaluation  — aip_evaluations, aip_eval_cases
-    M6  Investigate — aip_investigations, aip_investigation_steps
-    M7  Reports     — aip_reports
-    M8  Workflows   — aip_workflows, aip_workflow_runs
-    M9  Chat        — aip_conversations, aip_messages
-    M10 Research    — aip_research
-    M11 Learning    — aip_feedback, aip_learning_signals, aip_training_events
-    M12 Governance  — aip_ai_assets, aip_ai_asset_events
-    M13 Explain     — aip_explanations
-    M14 Monitoring  — aip_ai_metrics, aip_ai_incidents
+Table groups
+    Foundation — aip_vectors
+    M1 RAG — aip_knowledge_sources, aip_documents, aip_chunks, aip_rag_queries
+    M2 Agents — aip_agent_runs, aip_agent_steps
+    M3 Memory — aip_memories, aip_memory_summaries
+    M4 Prompts — aip_prompts, aip_prompt_versions, aip_prompt_evals, aip_prompt_experiments
+    M5 Evaluation — aip_evaluations, aip_eval_cases
+    M6 Investigate — aip_investigations, aip_investigation_steps
+    M7 Reports — aip_reports
+    M8 Workflows — aip_workflows, aip_workflow_runs
+    M9 Chat — aip_conversations, aip_messages
+    M10 Research — aip_research
+    M11 Learning — aip_feedback, aip_learning_signals, aip_training_events
+    M12 Governance — aip_ai_assets, aip_ai_asset_events
+    M13 Explain — aip_explanations
+    M14 Monitoring — aip_ai_metrics, aip_ai_incidents
 """
 
 from __future__ import annotations

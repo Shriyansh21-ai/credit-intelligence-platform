@@ -1,4 +1,4 @@
-"""Phase 5, Milestone 15: end-to-end integration across the platform spine.
+""" end-to-end integration across the platform spine.
 
 Exercises the full journey — create -> submit -> analysis -> approvals ->
 covenant breach -> monitoring deterioration — and asserts that audit records and

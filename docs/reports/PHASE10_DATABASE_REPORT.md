@@ -1,4 +1,4 @@
-# Phase 10 — Database Report
+# Database Report
 
 **Migration:** `e2f3a4b5c6d7_banking_os_phase10` (down_revision `d0e1f2a3b4c5`).
 **Additive only** — 25 new `os_*` tables; no existing table altered/dropped.

@@ -1,4 +1,4 @@
-"""Enterprise ML Platform tables (Phase 6)
+"""Enterprise ML Platform tables
 
 Revision ID: a7b8c9d0e1f2
 Revises: d6f7a8b9c0e1

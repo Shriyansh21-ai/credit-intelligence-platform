@@ -18,27 +18,27 @@ branch-protection or environment rules in the repo, so apply them via
 
 ## 2. Protected branch rules — `main`
 
-- ✅ Require a pull request before merging
+- Require a pull request before merging
   - Require **2** approvals
   - Dismiss stale approvals on new commits
   - **Require review from Code Owners** (activates `.github/CODEOWNERS`)
-- ✅ Require status checks to pass before merging
+- Require status checks to pass before merging
   - Require branches to be up to date
   - Required check: **`CI / CI success`**
-- ✅ Require conversation resolution before merging
-- ✅ Require signed commits
-- ✅ Require linear history
-- ✅ Include administrators
-- ✅ Restrict who can push (release managers only)
-- ✅ Do not allow force pushes or deletions
+- Require conversation resolution before merging
+- Require signed commits
+- Require linear history
+- Include administrators
+- Restrict who can push (release managers only)
+- Do not allow force pushes or deletions
 
 ## 3. Protected branch rules — `develop`
 
-- ✅ Require a pull request (1 approval)
-- ✅ Require **`CI / CI success`**
-- ✅ Require conversation resolution
-- ✅ Require Code Owner review
-- 🚫 No force pushes / deletions
+- Require a pull request (1 approval)
+- Require **`CI / CI success`**
+- Require conversation resolution
+- Require Code Owner review
+- No force pushes / deletions
 
 ## 4. GitHub Environments
 
@@ -54,12 +54,12 @@ reviewer approves it in the Actions UI.
 
 ## 5. Repository-wide settings
 
-- ✅ Enable **Dependabot** alerts + security updates (`.github/dependabot.yml`).
-- ✅ Enable **Code scanning** (CodeQL + SARIF uploads from Security workflow).
-- ✅ Enable **Secret scanning** + push protection.
-- ✅ Restrict GHCR package write to the `Release` workflow's `GITHUB_TOKEN`.
-- ✅ Require 2FA for all organisation members.
-- ✅ Actions permissions: allow only actions from this org + verified creators;
+- Enable **Dependabot** alerts + security updates (`.github/dependabot.yml`).
+- Enable **Code scanning** (CodeQL + SARIF uploads from Security workflow).
+- Enable **Secret scanning** + push protection.
+- Restrict GHCR package write to the `Release` workflow's `GITHUB_TOKEN`.
+- Require 2FA for all organisation members.
+- Actions permissions: allow only actions from this org + verified creators;
   pin third-party actions by SHA in high-security environments.
 
 ## 6. Apply via `gh` CLI (example)

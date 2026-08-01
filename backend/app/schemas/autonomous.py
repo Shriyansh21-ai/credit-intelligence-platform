@@ -1,4 +1,4 @@
-"""Pydantic v2 request schemas for the Phase 9 Autonomous Intelligence APIs.
+"""Pydantic v2 request schemas for the Autonomous Intelligence APIs.
 
 Responses are plain dicts assembled by the service layer (kept deliberately
 flexible); only inbound bodies are typed here.

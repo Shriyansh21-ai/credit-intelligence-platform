@@ -1,4 +1,4 @@
-"""Phase 7 — Customer 360 aggregation tests (M10)."""
+""" Customer 360 aggregation tests (M10)."""
 
 import unittest
 import warnings

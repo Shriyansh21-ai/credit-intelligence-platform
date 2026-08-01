@@ -1,6 +1,6 @@
-"""Portfolio synchronization engine (Milestone 11).
+"""Portfolio synchronization engine.
 
-Synchronises enterprise data from external connectors into the platform with:
+Synchronises enterprise data from external connectors into the platform with
 
 * **Full** and **incremental** sync (incremental skips snapshots not yet due for
   refresh, using the snapshot store's ``refresh_due_at`` watermark).
@@ -9,9 +9,9 @@ Synchronises enterprise data from external connectors into the platform with:
   resolved by the configured strategy (``latest_wins`` by default; the versioned
   snapshot store keeps the prior version regardless).
 * **Versioning** — every accepted change appends a new snapshot version.
-* **Background jobs** — :func:`start_job` records a :class:`PortfolioSyncJob`;
+* **Background jobs** — :func:`start_job` records a :class:`PortfolioSyncJob`
   :func:`process_job` executes it (call it from a worker / job runner).
-* **Retry queue + dead-letter queue** — failed targets are retried up to a limit;
+* **Retry queue + dead-letter queue** — failed targets are retried up to a limit
   exhausted failures land in :class:`SyncDeadLetter` for later replay.
 """
 

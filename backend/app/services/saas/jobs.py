@@ -1,7 +1,7 @@
-"""Background job platform (Phase 8, Milestone 6).
+"""Background job platform.
 
 A durable, tenant-scoped job engine with queues, priorities, retries with
-exponential backoff, a dead-letter queue, scheduling / recurring jobs,
+exponential backoff, a dead-letter queue, scheduling / recurring jobs
 cancellation and progress tracking. Jobs persist to ``background_jobs`` so state
 survives restarts and is visible in the admin console.
 

@@ -1,6 +1,6 @@
 """M12 — AI Recommendation Marketplace.
 
-A plugin architecture for credit-action recommendations. Each plugin is a small,
+A plugin architecture for credit-action recommendations. Each plugin is a small
 deterministic function over a subject's risk context that either fires a
 recommendation (action + rationale + confidence + evidence) or stays silent.
 Plugins are cataloged, installable and individually enable-able per tenant, so a

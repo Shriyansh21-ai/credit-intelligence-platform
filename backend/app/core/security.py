@@ -8,8 +8,8 @@ from backend.app.core.settings import get_settings
 # ----------------------------------------
 # Config
 # ----------------------------------------
-# Sourced from the centralized settings (Phase 11, M1) instead of hardcoded
-# constants. The module-level names are preserved for backward compatibility —
+# Sourced from the centralized settings instead of hardcoded
+# constants. The module-level names are preserved for backward compatibility
 # many modules do ``from backend.app.core.security import SECRET_KEY``.
 _settings = get_settings()
 

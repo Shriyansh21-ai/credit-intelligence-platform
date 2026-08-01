@@ -1,4 +1,4 @@
-"""Phase 11, M9 — performance engineering + pagination tests."""
+""" performance engineering + pagination tests."""
 
 import unittest
 

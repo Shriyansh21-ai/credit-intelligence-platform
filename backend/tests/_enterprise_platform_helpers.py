@@ -1,8 +1,8 @@
-"""Shared helpers for Track 4 Enterprise Platform tests (not a test module).
+"""Shared helpers for Enterprise Platform tests (not a test module).
 
 Builds an in-memory SQLite session with the full schema (importing the app
-registers every model) plus a TestClient wired to the Track 4 routers with auth +
-db overridden, mirroring the Track 3 helper pattern.
+registers every model) plus a TestClient wired to the routers with auth +
+db overridden, mirroring the helper pattern.
 """
 
 from __future__ import annotations
@@ -17,7 +17,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
 
-import backend.app.main  # noqa: F401  (registers every ORM model + builds the app)
+import backend.app.main  # noqa: F401 (registers every ORM model + builds the app)
 from backend.app.core.dependencies import get_current_user
 from backend.app.db.database import Base, get_db
 from backend.app.models.enterprise_assessment import EnterpriseAssessment

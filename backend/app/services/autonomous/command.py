@@ -1,10 +1,10 @@
 """M9 — Executive Command Center.
 
 Role-tailored executive dashboards (CEO, Chief Risk Officer, Chief Credit
-Officer, Board, Regional Head) aggregating the whole platform into KPIs,
+Officer, Board, Regional Head) aggregating the whole platform into KPIs
 portfolio risk, capital usage, approvals pipeline, watchlist, industry/geographic
 exposure, fraud trends, ML drift and business growth — each with drill-down
-references. All read-only aggregation over existing + Phase 9 data; defensive so
+references. All read-only aggregation over existing + data; defensive so
 a missing subsystem degrades to zeros rather than erroring.
 """
 

@@ -1,4 +1,4 @@
-"""Covenant monitoring and post-disbursement monitoring tables (Phase 5, M5 & M6)
+"""Covenant monitoring and post-disbursement monitoring tables
 
 Revision ID: a3c4d5e6f7b8
 Revises: f2b3c4d5e6a7

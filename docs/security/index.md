@@ -8,7 +8,7 @@
 | [SECURITY_ARCHITECTURE](SECURITY_ARCHITECTURE.md) | Security design: identity, authorization, encryption, and boundaries. |
 | [SECURITY_GUIDE](SECURITY_GUIDE.md) | Practical security guidance and hardening practices. |
 
-## Stage 4 — Enterprise Security & Compliance Platform
+## Enterprise Security & Compliance Platform
 
 Deliverables of the enterprise security & compliance programme. The live control
 plane is exposed under `/api/sec/*` and the Security Center dashboard.

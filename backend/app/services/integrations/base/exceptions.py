@@ -13,7 +13,7 @@ from typing import Optional
 class ConnectorError(Exception):
     """Base class for every connector-related failure."""
 
-    #: Whether a retry could plausibly succeed. Overridden per subclass.
+    # Whether a retry could plausibly succeed. Overridden per subclass.
     retriable: bool = False
 
     def __init__(self, message: str, *, provider: Optional[str] = None, operation: Optional[str] = None):

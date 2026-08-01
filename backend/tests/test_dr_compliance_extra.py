@@ -1,4 +1,4 @@
-"""Phase 11, M14 — expanded disaster-recovery & compliance tests."""
+""" expanded disaster-recovery & compliance tests."""
 
 import tempfile
 import unittest

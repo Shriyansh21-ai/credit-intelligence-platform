@@ -2,7 +2,7 @@
 
 The visual redesign (design system, command palette, split views, dockable
 panels, themes, skeletons, error boundaries) lives in the frontend. This service
-is the *persistence* backend behind it: per-user preferences (theme, density,
+is the *persistence* backend behind it: per-user preferences (theme, density
 accent, shortcuts) and saved layouts (panel/split/dock configurations), plus the
 static command-palette catalog that powers global search and keyboard-driven
 navigation across every module.
@@ -20,8 +20,8 @@ from .common import iso, slugify, utcnow
 THEMES = ["light", "dark", "system"]
 DENSITIES = ["comfortable", "compact", "spacious"]
 
-# The command palette / global-search catalog. One entry per navigable surface;
-# the frontend renders these as ⌘K commands so no page is a dead placeholder.
+# The command palette / global-search catalog. One entry per navigable surface
+# the frontend renders these as K commands so no page is a dead placeholder.
 COMMAND_CATALOG: List[Dict[str, str]] = [
     {"id": "goto-dashboard", "label": "Go to Dashboard", "group": "Navigate", "href": "/"},
     {"id": "goto-portfolio", "label": "Portfolio Intelligence", "group": "Financial", "href": "/fin-portfolio"},

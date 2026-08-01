@@ -1,15 +1,15 @@
 """M2 — Real-Time Risk Monitoring engine.
 
 A continuous monitoring engine that ingests *observations* from every platform
-source (financials, connectors, payments, GST, MCA, bureau, portfolio, news,
+source (financials, connectors, payments, GST, MCA, bureau, portfolio, news
 document uploads, market data), detects material changes deterministically, and
 turns them into prioritized :class:`MonitoringSignal` rows. High-severity signals
 are escalated into unified :class:`IntelligenceAlert` rows and can spawn
 monitoring tasks + reassessment recommendations.
 
 The engine is *pull*-driven: callers hand it the current (and optional previous)
-observation for a company. This keeps the engine testable and provider-agnostic —
-the Phase 7 connectors / sync jobs supply the observations in production, and a
+observation for a company. This keeps the engine testable and provider-agnostic
+the connectors / sync jobs supply the observations in production, and a
 background job can call :func:`run_monitoring` on a schedule.
 """
 

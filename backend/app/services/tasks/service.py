@@ -1,6 +1,6 @@
 """Task service — CRUD, status transitions, comments, due scans.
 
-Side effects:
+Side effects
     - Assigning a task notifies the owner (``task_assigned``).
     - Completing a task notifies the creator (``task_completed``).
     - ``scan_due_tasks`` notifies owners of due/overdue open tasks (``task_due``).

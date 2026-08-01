@@ -1,4 +1,4 @@
-"""Tenant context — the ambient isolation scope for a request (Phase 8, M1).
+"""Tenant context — the ambient isolation scope for a request.
 
 A :class:`TenantContext` identifies the organization + tenant a unit of work
 runs under. The active context is held in a :class:`contextvars.ContextVar` so

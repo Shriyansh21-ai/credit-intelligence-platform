@@ -1,4 +1,4 @@
-"""Payment & Transaction integration (Phase 7, Milestone 8)."""
+"""Payment & Transaction integration."""
 
 from backend.app.services.integrations.payments.connector import (
     PaymentsConnector,

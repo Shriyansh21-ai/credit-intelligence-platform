@@ -1,4 +1,4 @@
-"""Threat modeling engine (Milestone 1) — STRIDE, attack surface, attack trees.
+"""Threat modeling engine — STRIDE, attack surface, attack trees.
 
 Deterministic: derives the model from the static catalog plus the live settings
 profile, so the output is reproducible and reflects the actual configuration.

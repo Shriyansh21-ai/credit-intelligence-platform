@@ -1,4 +1,4 @@
-"""Phase 11, M14 — expanded performance, pagination & API-platform tests."""
+""" expanded performance, pagination & API-platform tests."""
 
 import unittest
 

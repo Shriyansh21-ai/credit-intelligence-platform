@@ -2,7 +2,7 @@
 
 Real-time, role-specific executive dashboards (CEO / CRO / CCO / Compliance /
 Portfolio / Regulatory / Treasury) built by deterministic aggregation over the
-platform's assessments plus the Phase 9/10 intelligence and OS surfaces. Each
+platform's assessments plus the /10 intelligence and OS surfaces. Each
 dashboard returns titled KPI cards (value + trend intent) and chart-ready
 series — every number traces to a source, none fabricated.
 """

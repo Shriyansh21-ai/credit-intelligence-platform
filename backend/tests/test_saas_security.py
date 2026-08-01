@@ -1,4 +1,4 @@
-"""Phase 8 — Enterprise security (M14)."""
+""" Enterprise security (M14)."""
 
 import unittest
 import warnings

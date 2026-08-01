@@ -1,12 +1,12 @@
-"""Pure, dependency-free financial mathematics shared across Track 3.
+"""Pure, dependency-free financial mathematics shared across .
 
 Nothing in this module touches the database, the network or any LLM. Everything
 here is deterministic and safe to import from migrations, tests and services
 alike — mirroring the ``services/autonomous/common.py`` and
-``services/ai_platform/common.py`` conventions from Phase 9 and Track 2.
+``services/ai_platform/common.py`` conventions from and .
 
-The Track 3 Advanced Financial Intelligence Platform is a *quantitative* layer,
-so the primitives here are richer than the earlier tracks: time-value-of-money,
+The Advanced Financial Intelligence Platform is a *quantitative* layer
+so the primitives here are richer than the earlier tracks: time-value-of-money
 statistics, distributions, a seedable deterministic RNG (for reproducible Monte
 Carlo without ``random``/``numpy``), interpolation, matrix helpers and the
 regulatory building blocks (PD/LGD/EAD → ECL) reused by several milestones.
@@ -375,7 +375,7 @@ def stable_id(*parts: Any) -> str:
 
 
 # ---------------------------------------------------------------------------
-# Grounding — every AI narrative in Track 3 phrases *these* deterministic facts.
+# Grounding — every AI narrative in phrases *these* deterministic facts.
 # ---------------------------------------------------------------------------
 
 def grounding_block(title: str, facts: Dict[str, Any]) -> Dict[str, Any]:

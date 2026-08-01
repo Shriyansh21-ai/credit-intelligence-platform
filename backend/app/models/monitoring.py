@@ -1,6 +1,6 @@
-"""Post-disbursement monitoring models (Phase 5, Milestone 6).
+"""Post-disbursement monitoring models.
 
-``MonitoringRecord`` captures a periodic update on a live loan (financials, GST,
+``MonitoringRecord`` captures a periodic update on a live loan (financials, GST
 bank statement, payment behaviour, rating change, ...). ``MonitoringAlert`` flags
 deterioration detected across successive records.
 """

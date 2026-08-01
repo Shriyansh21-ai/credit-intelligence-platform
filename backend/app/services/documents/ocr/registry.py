@@ -11,9 +11,9 @@ from .tesseract_engine import TesseractOcrEngine
 
 _ENGINES: dict[str, OcrEngine] = {
     "tesseract": TesseractOcrEngine(),
-    # "google-vision": GoogleVisionOcrEngine(),   # future
-    # "azure": AzureOcrEngine(),                  # future
-    # "textract": TextractOcrEngine(),            # future
+    # "google-vision": GoogleVisionOcrEngine(), # future
+    # "azure": AzureOcrEngine(), # future
+    # "textract": TextractOcrEngine(), # future
 }
 
 _DEFAULT = "tesseract"

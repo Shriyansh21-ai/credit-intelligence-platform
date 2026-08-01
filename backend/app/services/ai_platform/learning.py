@@ -5,7 +5,7 @@ human feedback (ratings, corrections, analyst notes), approval outcomes and
 repayment/default signals, then evaluates retraining triggers and records
 versioned training events. Nothing retrains a model directly here — training
 events are *proposals* that flow into the governance registry (M12) and the
-existing Phase 6 ML platform — but every signal, trigger and event is durable and
+existing ML platform — but every signal, trigger and event is durable and
 versioned so the improvement history is auditable.
 """
 

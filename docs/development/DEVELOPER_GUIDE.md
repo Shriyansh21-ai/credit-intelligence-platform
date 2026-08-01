@@ -115,7 +115,7 @@ routers, additive migrations, structured logging. New code must pass the strict
 ruff rule set and `ruff format --check`. Commit style and PR flow are in
 [Contributing](../../CONTRIBUTING.md).
 
-## Track 4 — Enterprise Developer Platform (`/api/ent/developer`)
+## Enterprise Developer Platform (`/api/ent/developer`)
 
 An in-product developer platform for building against the API:
 

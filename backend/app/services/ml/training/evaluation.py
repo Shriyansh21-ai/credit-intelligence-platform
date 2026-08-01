@@ -1,7 +1,7 @@
 """Model evaluation metrics — the full credit-risk metric suite.
 
 Produces the classification and rank-ordering metrics banks actually use to
-sign off a scorecard: discrimination (ROC-AUC, Gini, KS), calibration (Brier,
+sign off a scorecard: discrimination (ROC-AUC, Gini, KS), calibration (Brier
 reliability bins) and the confusion-matrix family (accuracy/precision/recall/
 F1). All metrics are computed from ``(y_true, y_prob)`` so they apply uniformly
 to every algorithm and to live monitoring against realised outcomes.

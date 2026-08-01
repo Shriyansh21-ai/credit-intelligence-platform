@@ -1,10 +1,10 @@
 """M4 — Enterprise Plugin Marketplace.
 
-A full plugin lifecycle on top of the platform: publishing, an approval workflow,
-semantic versioning, dependency & compatibility declarations, plugin permissions,
-health, install analytics and billing readiness. Backed by ``ent_plugins``,
+A full plugin lifecycle on top of the platform: publishing, an approval workflow
+semantic versioning, dependency & compatibility declarations, plugin permissions
+health, install analytics and billing readiness. Backed by ``ent_plugins``
 ``ent_plugin_versions`` and ``ent_plugin_installs``. Complements (does not
-replace) the Banking-OS marketplace from Phase 10.
+replace) the Banking-OS marketplace from .
 """
 
 from __future__ import annotations

@@ -1,4 +1,4 @@
-"""Track 3 M5 (ESG) + M6 (Market) + M7 (Alt-Data) tests."""
+""" M5 (ESG) + M6 (Market) + M7 (Alt-Data) tests."""
 
 from backend.tests._financial_intelligence_helpers import admin_client, seed_company, seed_portfolio_companies
 

@@ -1,8 +1,8 @@
-# Phase 10 — Migration Report
+# Migration Report
 
 ## Revision
-- **ID:** `e2f3a4b5c6d7` — "Enterprise Banking Operating System tables (Phase 10)"
-- **down_revision:** `d0e1f2a3b4c5` (Phase 9 head) → Phase 10 is now the single head.
+- **ID:** `e2f3a4b5c6d7` — "Enterprise Banking Operating System tables"
+- **down_revision:** `d0e1f2a3b4c5` → Phase 10 is now the single head.
 - **File:** `backend/alembic/versions/e2f3a4b5c6d7_banking_os_phase10.py`
 
 ## Scope

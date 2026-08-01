@@ -1,12 +1,12 @@
-"""Covenant monitoring API (Phase 5, Milestone 5).
+"""Covenant monitoring API.
 
-    GET  /api/covenants/metrics                              metric catalog
-    GET  /api/covenants/applications/{app_id}                covenants for an app
-    POST /api/covenants/applications/{app_id}                create a covenant
-    POST /api/covenants/{covenant_id}/measurements           record a measurement
-    GET  /api/covenants/{covenant_id}/trend                  trend + points
-    GET  /api/covenants/applications/{app_id}/alerts         breach alerts
-    PATCH /api/covenants/alerts/{alert_id}                   update alert status
+    GET /api/covenants/metrics metric catalog
+    GET /api/covenants/applications/{app_id} covenants for an app
+    POST /api/covenants/applications/{app_id} create a covenant
+    POST /api/covenants/{covenant_id}/measurements record a measurement
+    GET /api/covenants/{covenant_id}/trend trend + points
+    GET /api/covenants/applications/{app_id}/alerts breach alerts
+    PATCH /api/covenants/alerts/{alert_id} update alert status
 """
 
 from __future__ import annotations

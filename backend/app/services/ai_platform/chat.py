@@ -1,13 +1,13 @@
 """M9 — Enterprise conversational AI.
 
 A ChatGPT-style assistant grounded in the whole platform. It answers questions
-about customers, portfolios, loans, documents, compliance, fraud, policies,
+about customers, portfolios, loans, documents, compliance, fraud, policies
 banking regulations and committee history — and **every** answer carries
 evidence (grounded facts + RAG citations), because the assistant never speaks
 without first assembling deterministic grounding.
 
 The flow per turn: classify intent → assemble grounding from the relevant
-source(s) (M1 RAG, the Phase 1-10 engines via ``autonomous.data_access``, the M2
+source(s) (M1 RAG, the -10 engines via ``autonomous.data_access``, the M2
 specialist agents and M3 conversation memory) → compose via the grounding-first
 LLM → persist the turn with its citations + confidence. Conversation memory gives
 continuity across turns.

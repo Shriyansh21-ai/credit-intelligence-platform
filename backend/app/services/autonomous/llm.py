@@ -1,6 +1,6 @@
 """Pluggable LLM orchestration layer for the AI Copilot (M4) and NL analytics (M10).
 
-Mirrors the Phase 7/8 "abstraction with a working local default + gated production
+Mirrors the /8 "abstraction with a working local default + gated production
 adapter" pattern. The platform NEVER trusts an LLM for numbers: every engine first
 assembles *deterministic grounding* from real platform data, and the provider only
 phrases/orchestrates that grounding into prose. This module is therefore safe to
@@ -11,8 +11,8 @@ Providers implement :class:`LLMProvider.compose`, which receives the already-com
 grounding and must not invent facts.
 
     LLMProvider (ABC)
-      ├─ LocalDeterministicProvider   default, offline, template-driven
-      └─ ClaudeProvider               gated: needs `anthropic` + ANTHROPIC_API_KEY
+      ├─ LocalDeterministicProvider default, offline, template-driven
+      └─ ClaudeProvider gated: needs `anthropic` + ANTHROPIC_API_KEY
 """
 
 from __future__ import annotations

@@ -1,4 +1,4 @@
-"""Request/response schemas for the Phase 6 ML platform APIs."""
+"""Request/response schemas for the ML platform APIs."""
 
 from __future__ import annotations
 

@@ -1,12 +1,12 @@
-"""Financial Analysis API (Phase 3, Task 8).
+"""Financial Analysis API.
 
-    GET  /analysis/{assessment_id}                full analysis (current version)
-    GET  /analysis/ratios/{assessment_id}         ratios only
-    GET  /analysis/health/{assessment_id}          health scores only
-    GET  /analysis/recommendations/{assessment_id} recommendations only
-    GET  /analysis/risk-flags/{assessment_id}      risk flags only
-    GET  /analysis/{assessment_id}/history         all versions
-    POST /analysis/compute                         ad-hoc analysis (optionally persisted)
+    GET /analysis/{assessment_id} full analysis (current version)
+    GET /analysis/ratios/{assessment_id} ratios only
+    GET /analysis/health/{assessment_id} health scores only
+    GET /analysis/recommendations/{assessment_id} recommendations only
+    GET /analysis/risk-flags/{assessment_id} risk flags only
+    GET /analysis/{assessment_id}/history all versions
+    POST /analysis/compute ad-hoc analysis (optionally persisted)
 
 Analyses are persisted automatically when an enterprise assessment is created
 (see ``routes/prediction.enterprise_assessment``); these endpoints read the

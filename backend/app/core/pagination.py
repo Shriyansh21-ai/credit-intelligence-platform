@@ -1,7 +1,7 @@
-"""Pagination + streaming helpers (Phase 11, M9).
+"""Pagination + streaming helpers.
 
 Standardises list-endpoint pagination and large-result streaming without
-changing any existing endpoint:
+changing any existing endpoint
 
 * :func:`paginate` — bounded **offset** pagination returning a typed
   :class:`Page` (with total + navigation metadata).

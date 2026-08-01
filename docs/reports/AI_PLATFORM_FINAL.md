@@ -4,10 +4,10 @@ The platform's AI capability spans three layers, all additive and grounding-firs
 
 ## Layers
 
-1. **Autonomous Intelligence (Phase 9, `/api/ai/*`)** — the AI Brain: knowledge
+1. **Autonomous Intelligence** — the AI Brain: knowledge
    graph, monitoring, early-warning, copilot, simulation, stress, optimization,
    NLQ, recommendations, workflow, governance, data lake.
-2. **Enterprise AI Intelligence (Track 2, `/api/aip/*`)** — RAG, multi-agent,
+2. **Enterprise AI Intelligence** — RAG, multi-agent,
    long-term memory, prompt engineering, evaluation, autonomous investigation,
    report generation, workflow builder, conversational AI, research, continuous
    learning, governance, explainability, monitoring.

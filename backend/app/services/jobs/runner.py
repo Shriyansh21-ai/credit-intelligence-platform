@@ -31,7 +31,7 @@ def job_open_alert_summary(db: Session) -> Dict[str, Any]:
 
 
 def job_ml_drift_retrain_scan(db: Session) -> Dict[str, Any]:
-    """Scheduled retraining (Phase 6, M9): retrain any production model whose
+    """Scheduled retraining: retrain any production model whose
     latest drift report has breached thresholds. Challengers are left pending
     approval (no auto-promotion) so a human owns the production decision."""
     from backend.app.services.ml import retraining

@@ -1,8 +1,8 @@
-"""Real-time platform (Phase 8, Milestone 8).
+"""Real-time platform.
 
 An in-process pub/sub hub backing WebSocket delivery, a durable activity stream
 and presence tracking. Producers anywhere in the app call :func:`publish`
-(synchronous, safe off the event loop) which:
+(synchronous, safe off the event loop) which
 
 * persists an :class:`ActivityEvent` (the durable feed / activity stream), and
 * fans the event out to every subscribed live connection's queue (best-effort).

@@ -1,10 +1,10 @@
-"""Role-Based Access Control (Phase 5, Milestone 3).
+"""Role-Based Access Control.
 
 Enterprise RBAC for the Credit Decision Platform. Roles and permissions are
 fully **database-driven** (see :mod:`catalog` for the canonical seed data and
 :mod:`seeding` for the idempotent sync used by migrations and tests).
 
-Public surface:
+Public surface
     - ``require_permission(code)`` / ``require_any_permission(*codes)`` — FastAPI
       dependencies that enforce a permission on the current user.
     - ``user_permission_codes(db, user)`` — the effective permission set.

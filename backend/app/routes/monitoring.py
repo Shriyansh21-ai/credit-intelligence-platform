@@ -1,12 +1,12 @@
-"""Post-disbursement monitoring API (Phase 5, Milestone 6).
+"""Post-disbursement monitoring API.
 
-    GET   /api/monitoring/record-types                       supported record types
-    GET   /api/monitoring/applications/{app_id}/records      all monitoring records
-    POST  /api/monitoring/applications/{app_id}/records      add a record (auto-alerts)
-    GET   /api/monitoring/applications/{app_id}/health        health timeline
-    GET   /api/monitoring/applications/{app_id}/trend         risk trend
-    GET   /api/monitoring/applications/{app_id}/alerts        deterioration alerts
-    PATCH /api/monitoring/alerts/{alert_id}                   update alert status
+    GET /api/monitoring/record-types supported record types
+    GET /api/monitoring/applications/{app_id}/records all monitoring records
+    POST /api/monitoring/applications/{app_id}/records add a record (auto-alerts)
+    GET /api/monitoring/applications/{app_id}/health health timeline
+    GET /api/monitoring/applications/{app_id}/trend risk trend
+    GET /api/monitoring/applications/{app_id}/alerts deterioration alerts
+    PATCH /api/monitoring/alerts/{alert_id} update alert status
 """
 
 from __future__ import annotations

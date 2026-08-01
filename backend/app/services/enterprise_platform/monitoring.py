@@ -1,6 +1,6 @@
 """M11 — Enterprise Monitoring Platform.
 
-Extends observability with distributed tracing, a service dependency graph,
+Extends observability with distributed tracing, a service dependency graph
 latency analysis, performance profiling, resource usage, capacity planning, AI &
 ML cost monitoring, connector monitoring, SLA tracking and business-KPI /
 executive monitoring dashboards. Traces are stored in ``ent_traces`` and SLAs in

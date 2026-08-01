@@ -1,4 +1,4 @@
-"""Phase 6 — Enterprise ML Platform API tests (HTTP + RBAC)."""
+""" Enterprise ML Platform API tests (HTTP + RBAC)."""
 
 import unittest
 import warnings

@@ -1,14 +1,14 @@
-"""Compliance toolkit (Phase 11, M12).
+"""Compliance toolkit.
 
 Framework-agnostic abstractions that map the platform's *actual* technical
 controls (built across M5-M11) to the requirements of the major frameworks a
 Tier-1 bank must satisfy, and provide the operational machinery for privacy
-rights and evidence collection:
+rights and evidence collection
 
 * Frameworks & control mapping — SOC 2, ISO 27001, PCI DSS, GDPR, RBI. The
   :data:`control_catalog` maps internal control ids to framework requirement ids
   with an implementation status, so a coverage report is derivable, not asserted.
-* Consent management (:class:`ConsentLedger`) — purpose-scoped, versioned,
+* Consent management (:class:`ConsentLedger`) — purpose-scoped, versioned
   auditable grant/withdraw with point-in-time lookup (GDPR Art. 6/7).
 * Data residency (:class:`ResidencyPolicy`) — allowed regions per data category.
 * Data subject rights — :class:`DataExporter` (portability / DSAR, Art. 15/20)
@@ -66,7 +66,7 @@ class Control:
         return self.mappings.get(framework, ())
 
 
-# Real mappings from controls delivered in Phase 11 (M5-M11) to framework refs.
+# Real mappings from controls delivered in (M5-M11) to framework refs.
 control_catalog: list[Control] = [
     Control(
         "access-control-rbac",

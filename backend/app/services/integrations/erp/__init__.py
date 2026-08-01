@@ -1,4 +1,4 @@
-"""ERP / Accounting integration (Phase 7, Milestone 7)."""
+"""ERP / Accounting integration."""
 
 from backend.app.services.integrations.erp.connector import (
     ERPConnector,

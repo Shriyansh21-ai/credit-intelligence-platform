@@ -1,7 +1,7 @@
 """M11 — Executive Intelligence Center.
 
-Persona-tailored executive dashboards (CEO, CFO, CRO, Chief Risk Officer,
-Treasurer, Portfolio Manager, Board Member, Credit Committee, Regulator,
+Persona-tailored executive dashboards (CEO, CFO, CRO, Chief Risk Officer
+Treasurer, Portfolio Manager, Board Member, Credit Committee, Regulator
 Relationship Manager). Each dashboard aggregates the deterministic outputs of the
 other Track-3 engines into persona-relevant KPIs, sections, an AI-generated
 executive summary and strategic recommendations. Everything is grounded — the

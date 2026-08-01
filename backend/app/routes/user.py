@@ -12,6 +12,6 @@ async def create_user(user: UserData):
 
     return {"user_id": user_id, "message": "User created"}
 
-# 🔥 ADD THIS
+# ADD THIS
 def get_user(user_id: str):
     return fake_db.get(user_id)

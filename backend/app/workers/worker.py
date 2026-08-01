@@ -1,14 +1,14 @@
-"""Background job worker process (Phase 11, M2).
+"""Background job worker process.
 
 Drains the platform's background job queue by repeatedly calling
-``services.saas.jobs.run_pending``. Run as:
+``services.saas.jobs.run_pending``. Run as
 
     python -m backend.app.workers.worker
 
-Configuration (see ``core.settings``):
-    WORKER_QUEUE           restrict to a single queue (default: all queues)
-    WORKER_POLL_INTERVAL   idle poll interval in seconds (default: 2.0)
-    WORKER_BATCH_SIZE      max jobs drained per pass (default: 100)
+Configuration (see ``core.settings``)
+    WORKER_QUEUE restrict to a single queue (default: all queues)
+    WORKER_POLL_INTERVAL idle poll interval in seconds (default: 2.0)
+    WORKER_BATCH_SIZE max jobs drained per pass (default: 100)
 """
 
 from __future__ import annotations

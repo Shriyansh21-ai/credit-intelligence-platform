@@ -1,4 +1,4 @@
-"""Phase 4 Milestone 8 tests: the deterministic Analyst Copilot credit memo."""
+""" tests: the deterministic Analyst Copilot credit memo."""
 
 import unittest
 

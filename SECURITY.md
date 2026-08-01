@@ -12,8 +12,8 @@ and what to expect in return.
 
 | Version | Supported |
 |---------|-----------|
-| 1.0.x (GA) | ✅ Actively supported |
-| < 1.0 | ❌ Not supported |
+| 1.0.x (GA) | Actively supported |
+| < 1.0 | Not supported |
 
 ## Reporting a Vulnerability
 

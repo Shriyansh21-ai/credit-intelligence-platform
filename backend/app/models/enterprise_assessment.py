@@ -55,7 +55,7 @@ class EnterpriseAssessment(Base):
 
     ai_analysis = Column(String, nullable=False)
 
-    # Phase 4: the exact flattened engine input that produced this assessment.
+    # the exact flattened engine input that produced this assessment.
     # Persisted so the AI Risk Intelligence layer (scenario / stress / report)
     # can be driven by assessment_id without re-collecting inputs, and for audit.
     engine_input = Column(JSON, nullable=True)

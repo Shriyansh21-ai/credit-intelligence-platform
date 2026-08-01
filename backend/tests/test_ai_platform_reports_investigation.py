@@ -1,4 +1,4 @@
-"""Track 2 M6+M7 — Autonomous investigation and report generation tests."""
+""" M6+M7 — Autonomous investigation and report generation tests."""
 
 import unittest
 

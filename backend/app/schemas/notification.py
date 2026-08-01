@@ -1,4 +1,4 @@
-"""Pydantic schemas for the notification API (Phase 5, Milestone 10)."""
+"""Pydantic schemas for the notification API."""
 
 from __future__ import annotations
 

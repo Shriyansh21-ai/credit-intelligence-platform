@@ -1,4 +1,4 @@
-"""Track 3 M3 (Basel/IFRS9) + M4 (Economic Scenario) tests."""
+""" M3 (Basel/IFRS9) + M4 (Economic Scenario) tests."""
 
 from backend.tests._financial_intelligence_helpers import admin_client, seed_company, seed_portfolio_companies
 

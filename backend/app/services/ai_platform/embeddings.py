@@ -1,15 +1,15 @@
-"""Pluggable embedding layer for the AI Intelligence Platform (Track 2).
+"""Pluggable embedding layer for the AI Intelligence Platform.
 
 Mirrors the platform-wide "abstraction + working offline default + gated
 production adapter" pattern (see ``services/autonomous/llm.py``).
 
     Embedder (ABC)
-      ├─ HashingEmbedder    default, offline, deterministic feature-hashing
-      └─ Claude/OpenAI...   gated real providers, resolved lazily (never required)
+      ├─ HashingEmbedder default, offline, deterministic feature-hashing
+      └─ Claude/OpenAI... gated real providers, resolved lazily (never required)
 
 The default :class:`HashingEmbedder` produces a fixed-dimension, L2-normalised
 bag-of-words vector using signed feature hashing. It needs no model download and
-no network, so retrieval is fully reproducible in tests and air-gapped banks —
+no network, so retrieval is fully reproducible in tests and air-gapped banks
 yet cosine similarity between related texts is meaningfully > unrelated texts.
 
 Real embedding providers can be enabled with ``AIP_EMBEDDING_PROVIDER`` without

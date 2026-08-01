@@ -1,8 +1,8 @@
 """M13 — Explainable enterprise AI.
 
-Extends explainability across the AI platform's decisions with a full toolkit:
+Extends explainability across the AI platform's decisions with a full toolkit
 signed feature contributions (SHAP-style exact additive attribution), a local
-linear (LIME-style) view, counterfactuals ("what would flip the decision"),
+linear (LIME-style) view, counterfactuals ("what would flip the decision")
 a decision-tree/rule path, rule contributions, a natural-language explanation, an
 evidence trace, a calibrated confidence interval and an ordered reasoning chain.
 

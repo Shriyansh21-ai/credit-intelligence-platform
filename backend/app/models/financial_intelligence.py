@@ -1,32 +1,32 @@
-"""Advanced Financial Intelligence Platform persistence (Track 3).
+"""Advanced Financial Intelligence Platform persistence.
 
 Every table here is **additive** — nothing from Phases 1-11 / Tracks 1-2 is
 altered or dropped. Schema is created by the Alembic migration
 ``a1b2c3d4e5f6_financial_intelligence_track3`` (the app never calls
 ``create_all`` at import time).
 
-Track 3 sits on top of every previous phase. To stay loosely coupled (and avoid
+ sits on top of every previous phase. To stay loosely coupled (and avoid
 cross-model FK-ordering pain in targeted test schemas) rows reference domain
 objects by stable string refs (``company_ref``, ``subject_ref``) and optionally
 carry an ``assessment_id`` when derived from a concrete
 :class:`EnterpriseAssessment`. Multi-tenancy is preserved by an optional
 nullable ``tenant_id`` column so legacy single-tenant flows keep working.
 
-Table groups (all prefixed ``fin_``):
-    M1  Treasury      — fin_funding_sources, fin_treasury_snapshots
-    M2  Portfolio     — fin_portfolios, fin_portfolio_positions, fin_portfolio_analyses
-    M3  Regulatory    — fin_regulatory_calcs
-    M4  Economic      — fin_economic_indicators, fin_economic_scenarios
-    M5  ESG/Climate   — fin_esg_assessments
-    M6  Market        — fin_market_instruments, fin_market_quotes, fin_market_news
-    M7  Alt Data      — fin_alt_signals
-    M8  Forecasting   — fin_forecasts
-    M9  Quant Risk    — fin_risk_simulations
-    M10 Benchmarking  — fin_benchmarks
-    M11 Executive     — fin_exec_dashboards
-    M12 Optimization  — fin_optimizations
-    M13 Digital Twin  — fin_twins, fin_twin_simulations
-    M14 Strategic     — fin_strategic_reports
+Table groups (all prefixed ``fin_``)
+    M1 Treasury — fin_funding_sources, fin_treasury_snapshots
+    M2 Portfolio — fin_portfolios, fin_portfolio_positions, fin_portfolio_analyses
+    M3 Regulatory — fin_regulatory_calcs
+    M4 Economic — fin_economic_indicators, fin_economic_scenarios
+    M5 ESG/Climate — fin_esg_assessments
+    M6 Market — fin_market_instruments, fin_market_quotes, fin_market_news
+    M7 Alt Data — fin_alt_signals
+    M8 Forecasting — fin_forecasts
+    M9 Quant Risk — fin_risk_simulations
+    M10 Benchmarking — fin_benchmarks
+    M11 Executive — fin_exec_dashboards
+    M12 Optimization — fin_optimizations
+    M13 Digital Twin — fin_twins, fin_twin_simulations
+    M14 Strategic — fin_strategic_reports
 """
 
 from __future__ import annotations

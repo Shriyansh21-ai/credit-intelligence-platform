@@ -1,11 +1,11 @@
-"""Model Serving Engine (Phase 6, Milestone 4).
+"""Model Serving Engine.
 
 Production inference for the platform. One service exposes every inference mode
 the brief requires — real-time, batch, portfolio, bulk and async — over a single
-resolution + logging core:
+resolution + logging core
 
 * **Model resolution** picks the artifact to serve: an explicit model id, the
-  production model for a key, the most-recent production model of any key, or —
+  production model for a key, the most-recent production model of any key, or
   when nothing is trained yet — the deterministic scorecard. Serving therefore
   never fails for lack of a trained model (full backward compatibility).
 * **Caching** memoises both loaded artifacts (joblib load is slow) and identical

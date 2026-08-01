@@ -1,7 +1,7 @@
-"""Read-only platform data access for Track 3 Financial Intelligence.
+"""Read-only platform data access for Financial Intelligence.
 
-Track 3 is grounded in *real* platform data. Rather than duplicate query logic,
-this module re-exports the Phase 9 read layer (:mod:`autonomous.data_access`),
+ is grounded in *real* platform data. Rather than duplicate query logic
+this module re-exports the read layer (:mod:`autonomous.data_access`)
 which normalizes :class:`EnterpriseAssessment` rows into profile dicts, and adds
 a couple of Track-3-specific conveniences (exposure/PD extraction with sane
 fallbacks). Every helper tolerates a missing table / empty DB.

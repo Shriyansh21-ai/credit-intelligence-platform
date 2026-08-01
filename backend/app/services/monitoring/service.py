@@ -1,6 +1,6 @@
 """Monitoring service — records, health timeline, risk trend, auto-alerts.
 
-Adding a record triggers deterioration detection against the prior record:
+Adding a record triggers deterioration detection against the prior record
     - health_score drop beyond a tolerance -> "deterioration" alert
     - rating downgrade (worse rating band) -> "rating_downgrade" alert
     - payment_status of late/default -> "payment_delay" alert

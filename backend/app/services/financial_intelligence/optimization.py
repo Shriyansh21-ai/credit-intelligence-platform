@@ -1,7 +1,7 @@
 """M12 — Decision Optimization Engine.
 
 Explainable optimization for the core lending decisions: loan pricing, credit
-limits, collateral, portfolio allocation, capital allocation, liquidity,
+limits, collateral, portfolio allocation, capital allocation, liquidity
 recovery, risk appetite and relationship optimization. Every optimizer returns a
 ``solution`` plus an ``explanation`` naming the objective, the binding
 constraints and the trade-off — no black-box output. Deterministic closed-form

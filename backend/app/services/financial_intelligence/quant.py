@@ -1,7 +1,7 @@
 """M9 — Quantitative Risk Platform.
 
 Advanced, deterministic quantitative models: Monte-Carlo simulation (correlated
-factors via Cholesky), Value-at-Risk (parametric / historical / Monte-Carlo),
+factors via Cholesky), Value-at-Risk (parametric / historical / Monte-Carlo)
 Expected Shortfall, stress testing, sensitivity analysis, scenario trees, risk
 attribution (component VaR), correlation matrices, volatility models (EWMA) and
 tail-risk metrics. Uses only the stdlib-backed math in :mod:`common` and the

@@ -34,7 +34,7 @@ strictly additive — no API, table, migration, auth or RBAC grant was removed.
 
 ### Added — Track 4: Enterprise Productization & Commercial Readiness
 - **Enterprise Platform module** (`/api/ent/*`, `ent_*` tables): Enterprise UX
-  (global ⌘K command palette, personalization, saved layouts), Workspaces,
+(global K command palette, personalization, saved layouts), Workspaces,
   Developer Platform (API keys/webhooks/sandbox), Plugin Marketplace, Integration
   Studio, Data Management (MDM), Operations Center, Security Center (zero-trust),
   Customer Success, Deployment Platform (blue-green/canary/rollback), Monitoring

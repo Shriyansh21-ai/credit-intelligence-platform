@@ -1,6 +1,6 @@
-"""Read-only loaders over existing platform tables for the Phase 9 AI Brain.
+"""Read-only loaders over existing platform tables for the AI Brain.
 
-Every Phase 9 engine is grounded in *real* platform data — this module is the
+Every engine is grounded in *real* platform data — this module is the
 single, defensive read layer that turns :class:`EnterpriseAssessment` rows (and
 their stored ``engine_input``) into normalized profile dicts. Keeping all reads
 here means no engine fabricates numbers and there is no duplicated query logic.
@@ -76,9 +76,9 @@ def resolve(db: Session, *, assessment_id: Optional[int] = None,
 def profile(assessment: Optional[EnterpriseAssessment]) -> Optional[Dict[str, Any]]:
     """Normalize an assessment into a flat, defensive profile dict.
 
-    Returns ``None`` when there is no assessment. Never invents missing figures —
+    Returns ``None`` when there is no assessment. Never invents missing figures
     unknown fields stay ``None`` (except PD, which is calibrated from the score
-    when a stored PD is absent, mirroring the Phase 1 scorecard).
+    when a stored PD is absent, mirroring the scorecard).
     """
     if assessment is None:
         return None

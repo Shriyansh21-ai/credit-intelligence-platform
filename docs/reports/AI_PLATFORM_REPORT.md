@@ -1,4 +1,4 @@
-# Track 2 — Enterprise AI Intelligence Platform — Delivery Report
+# Enterprise AI Intelligence Platform — Delivery Report
 
 ## Summary
 

@@ -1,4 +1,4 @@
-"""Phase 4 Milestone 1 tests: the enterprise feature engine (registry,
+""" tests: the enterprise feature engine (registry
 builder, pipeline) — no database involved."""
 
 import unittest

@@ -1,4 +1,4 @@
-"""Phase 5, Milestone 3 tests: RBAC (roles, permissions, enforcement)."""
+""" tests: RBAC (roles, permissions, enforcement)."""
 
 import unittest
 

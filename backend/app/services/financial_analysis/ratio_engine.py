@@ -1,7 +1,7 @@
 """Financial Ratio Engine (Task 1).
 
 Computes 20 commercial-lending ratios from a :class:`FinancialStatement`. Every
-ratio is returned as a :class:`Ratio` carrying ``value``, ``formula``,
+ratio is returned as a :class:`Ratio` carrying ``value``, ``formula``
 ``interpretation``, ``ideal_range`` and a five-tier ``status`` — the exact
 contract the phase brief specifies.
 
@@ -10,7 +10,7 @@ Design notes
 * Missing or undefined ratios (e.g. division by a zero/absent denominator)
   surface ``value=None`` and ``status="unavailable"`` rather than a fabricated
   number (Task 12).
-* A handful of ratios have finance-specific edge cases handled explicitly:
+* A handful of ratios have finance-specific edge cases handled explicitly
   zero interest expense / zero debt service means *no* obligation to cover
   (excellent, not "unavailable"), and equity-based ratios are suppressed when
   equity is non-positive (the negative-equity condition is raised separately by

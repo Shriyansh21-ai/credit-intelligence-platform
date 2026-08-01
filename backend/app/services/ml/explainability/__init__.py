@@ -1,9 +1,9 @@
-"""Explainable AI layer (Phase 4, Milestone 3).
+"""Explainable AI layer.
 
 Turns a model's per-feature contributions into analyst- and business-readable
 explanations: global importance, local importance, a waterfall from the base
 rate to the borrower's probability of default, the top risk-increasing and
-risk-reducing drivers, and plain-language narratives such as:
+risk-reducing drivers, and plain-language narratives such as
 
     "Debt Service Coverage reduced overall risk by 11%."
 

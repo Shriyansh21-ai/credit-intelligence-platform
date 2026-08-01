@@ -9,17 +9,17 @@ An end-to-end Enterprise Banking Intelligence Platform:
 
 - **Enterprise Assessment Engine** (Phases 1–5) — credit applications, approvals,
   covenants, risk scoring, RBAC and audit.
-- **ML Platform** (Phase 6), **Banking Connectors** (Phase 7), **Multi-Tenant
-  SaaS** (Phase 8), **Autonomous Intelligence** (Phase 9), **Banking OS**
-  (Phase 10), **Production Engineering / CI-CD** (Phase 11).
-- **Enterprise AI Intelligence Platform** (Track 2, `/api/aip/*`) — RAG,
+- **ML Platform**, **Banking Connectors**, **Multi-Tenant
+  SaaS**, **Autonomous Intelligence**, **Banking OS**
+, **Production Engineering / CI-CD**.
+- **Enterprise AI Intelligence Platform** — RAG,
   multi-agent, memory, prompts, evaluation, investigation, reports, workflows,
   chat, research, learning, governance, explainability, monitoring.
-- **Advanced Financial Intelligence Platform** (Track 3, `/api/fin/*`) —
+- **Advanced Financial Intelligence Platform** —
   treasury, portfolio, Basel III/IFRS 9, economic scenarios, ESG, market, alt
   data, forecasting, quant risk, benchmarking, executive, optimization, digital
   twin, strategic intelligence.
-- **Enterprise Productization Layer** (Track 4, `/api/ent/*`) — UX/command
+- **Enterprise Productization Layer** — UX/command
   palette, workspaces, developer platform, plugin marketplace, integration
   studio, data management, operations center, security center, customer success,
   deployment, monitoring, business intelligence, launch readiness.
@@ -30,7 +30,7 @@ An end-to-end Enterprise Banking Intelligence Platform:
 - **Migrations**: single linear head `b2c3d4e5f6a7`; every migration reversible.
 - **API**: hundreds of routes across 9 namespaces, all RBAC-gated and OpenAPI-documented.
 - **Frontend**: feature modules + route pages per track, unified design system,
-  global ⌘K command palette.
+global K command palette.
 - **Tests**: full backend suite green; zero regressions across tracks.
 - **Build**: frontend `tsc --noEmit` clean + production build clean.
 

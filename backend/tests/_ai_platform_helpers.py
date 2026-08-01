@@ -1,8 +1,8 @@
-"""Shared helpers for Track 2 AI Intelligence Platform tests (not a test module).
+"""Shared helpers for AI Intelligence Platform tests (not a test module).
 
 Builds an in-memory SQLite session with the full schema (importing the app
-registers every model) plus TestClients wired to the Track 2 routers with auth +
-db overridden, mirroring the Phase 9/10 helper pattern.
+registers every model) plus TestClients wired to the routers with auth +
+db overridden, mirroring the /10 helper pattern.
 """
 
 from __future__ import annotations

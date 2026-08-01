@@ -1,4 +1,4 @@
-# Phase 6 — Enterprise Machine Learning Platform (MLOps + Explainable AI)
+# Enterprise Machine Learning Platform (MLOps + Explainable AI)
 
 **Status:** Delivered. Additive to Phases 1–5; no existing API, table, or module removed.
 **Migration head:** `a7b8c9d0e1f2` (was `d6f7a8b9c0e1`).
@@ -55,7 +55,7 @@ platform's established optional-dependency pattern). scikit-learn / shap / panda
 
 ---
 
-## 2. Feature Store Design (Milestone 1)
+## 2. Feature Store Design
 
 Built on the Phase 4 versioned feature store (63 features across 16 categories,
 each carrying value / source / version / confidence / generated-time). Phase 6
@@ -76,7 +76,7 @@ reconciled and reproduced years later.
 
 ---
 
-## 3. Training Pipeline (Milestone 2)
+## 3. Training Pipeline
 
 One entrypoint, `training.train(dataset, algorithm, …)`, runs the full flow:
 
@@ -105,7 +105,7 @@ load → clean → feature engineering → encode/scale → cross-validate →
 
 ---
 
-## 4. Model Registry (Milestone 3)
+## 4. Model Registry
 
 `MLModel` (one row per version) + `MLDataset` (reproducible snapshots) +
 `MLDeploymentEvent` (append-only history).
@@ -127,7 +127,7 @@ production status, rollback support, deployment history.
 
 ---
 
-## 5. Serving Architecture (Milestone 4)
+## 5. Serving Architecture
 
 One service, five modes, one logging core:
 
@@ -143,7 +143,7 @@ One service, five modes, one logging core:
 
 ---
 
-## 6. Explainable AI (Milestone 5)
+## 6. Explainable AI
 
 Extends the Phase 4 presentation layer (waterfall, top factors, narrative) to
 trained models:
@@ -163,7 +163,7 @@ trained models:
 
 ---
 
-## 7. Drift Detection (Milestone 7)
+## 7. Drift Detection
 
 `drift.detect(model, current_rows)` compares the live population to the model's
 **regenerated training reference** (from the dataset spec):
@@ -182,7 +182,7 @@ Validated: identical distribution → PSI ≈ 0.015 (stable); a 4-feature macro 
 
 ---
 
-## 8. Retraining Pipeline (Milestone 9)
+## 8. Retraining Pipeline
 
 `retraining.run_retraining(model_key, …)` composes training + registry + drift:
 
@@ -201,7 +201,7 @@ prior one.
 
 ---
 
-## 9. Stress Testing (Milestone 12)
+## 9. Stress Testing
 
 `stress/ml_stress.py` applies macro scenarios **directly to model features**,
 re-scores through the trained model, and measures portfolio impact (complementing
@@ -215,7 +215,7 @@ default rate 0.43 → 0.47 → 0.53 across severities (EL multiplier up to ~1.35
 
 ---
 
-## 10. Portfolio ML (Milestone 11)
+## 10. Portfolio ML
 
 `portfolio/ml_portfolio.py` aggregates model-scored positions into portfolio
 analytics: exposure-weighted **portfolio default rate**, **expected loss** and
@@ -227,7 +227,7 @@ feature-vector portfolio.
 
 ---
 
-## 11. Fraud ML (Milestone 10)
+## 11. Fraud ML
 
 `fraud/detectors.py` unifies unsupervised detectors behind one interface and
 ensembles them:
@@ -244,7 +244,7 @@ ensembles them:
 
 ---
 
-## 12. Governance (Milestone 14)
+## 12. Governance
 
 - **Model & dataset approvals** — registry approval state machine; datasets are
   versioned, hashed and reproducible.
@@ -319,7 +319,7 @@ expected result. **Out-of-sample holdout** (different seed) for XGBoost: ROC-AUC
 
 ---
 
-## Testing (Milestone 15)
+## Testing
 
 - **102 new backend tests** (`test_ml_platform.py` — 82 service-level;
   `test_ml_platform_api.py` — HTTP + RBAC), covering training, registry, serving,

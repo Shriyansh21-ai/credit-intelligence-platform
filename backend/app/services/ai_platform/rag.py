@@ -1,13 +1,13 @@
 """M1 — Enterprise Retrieval Augmented Generation platform.
 
 A complete, production-shaped RAG pipeline built on the pluggable embedding +
-vector-store seam:
+vector-store seam
 
     register_source → ingest_document (chunk → embed → index, versioned + lineage)
       → search (hybrid semantic + lexical, reranked, metadata-filtered, tenant-isolated)
       → answer (grounded composition with a citation engine + confidence scoring)
 
-Knowledge sources cover internal credit policies, RBI circulars, Basel guidelines,
+Knowledge sources cover internal credit policies, RBI circulars, Basel guidelines
 financial statements, annual reports, loan agreements, committee notes, audit
 reports, OCR documents, customer interactions, emails and external manuals — all
 distinguished by ``source_type`` and free-form metadata rather than bespoke

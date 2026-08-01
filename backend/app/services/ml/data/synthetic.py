@@ -1,4 +1,4 @@
-"""Seeded synthetic lending-data generator (Phase 6, Milestone 2 support).
+"""Seeded synthetic lending-data generator.
 
 Real machine learning needs historical labelled data. Rather than fabricate an
 opaque dataset, this generator reuses the platform's existing, curated
@@ -8,7 +8,7 @@ them through the deterministic additive log-odds estimator to obtain a *true*
 probability of default, then draw the observed default label from that
 probability.
 
-This has three important properties:
+This has three important properties
 
 * **Reproducible** — every draw is governed by an explicit integer seed, so the
   same seed always yields byte-identical data. Predictions are reproducible and
@@ -129,15 +129,15 @@ def generate(
 
     Parameters
     ----------
-    seed:
+    seed
         Integer seed governing every random draw. Same seed → identical data.
-    n_rows:
+    n_rows
         Number of synthetic borrowers.
-    drift:
+    drift
         Optional ``{feature_name: shift}`` map. Each named feature's sampling
         distribution is shifted by ``shift`` standardised units, simulating a
         change in the applicant population (for drift/retraining tests).
-    label_noise:
+    label_noise
         Probability of flipping a label, to make the problem non-separable.
     """
     rng = np.random.default_rng(seed)

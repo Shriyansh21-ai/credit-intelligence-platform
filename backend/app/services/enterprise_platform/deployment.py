@@ -1,6 +1,6 @@
 """M10 — Enterprise Deployment Platform.
 
-Environment management (development / testing / staging / production),
+Environment management (development / testing / staging / production)
 blue-green deployments, canary releases, feature rollouts, rollback, release
 notes, a version dashboard, deployment history and environment health. Backed by
 ``ent_environments`` and ``ent_deployments``. Deterministic step generation per

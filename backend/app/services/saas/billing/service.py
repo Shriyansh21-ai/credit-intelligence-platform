@@ -1,4 +1,4 @@
-"""Billing engine service (Phase 8, Milestone 4).
+"""Billing engine service.
 
 Subscriptions, metered usage, quota enforcement, invoice generation and billing
 analytics. Plans come from the code catalog and are synced into ``billing_plans``

@@ -1,7 +1,7 @@
-"""In-process connector observability (Milestone 13).
+"""In-process connector observability.
 
 A thread-safe metrics registry that every connector call feeds. It tracks, per
-``(category, provider)``: call counts, success/failure, retries, cache hits,
+``(category, provider)``: call counts, success/failure, retries, cache hits
 circuit-open rejections and a latency summary. This is the live source for the
 observability dashboard; durable per-call rows are persisted separately as
 ``ConnectorCallLog`` (see :mod:`..logging`).

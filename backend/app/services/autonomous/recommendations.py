@@ -1,7 +1,7 @@
 """M11 — Enterprise Recommendation Engine.
 
 Turns a company's assessment profile (plus optional EWS/monitoring context) into
-concrete credit actions — approve, reject, manual review, increase/decrease limit,
+concrete credit actions — approve, reject, manual review, increase/decrease limit
 restructure, additional collateral, site visit, portfolio rebalance, relationship
 expansion — each with a confidence, a plain-English reason, supporting metrics and
 evidence. Deterministic rule engine grounded in real figures.

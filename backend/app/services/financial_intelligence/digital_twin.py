@@ -1,6 +1,6 @@
 """M13 — Enterprise Financial Digital Twin.
 
-A digital twin is a driver-based model of a real entity — company, industry,
+A digital twin is a driver-based model of a real entity — company, industry
 portfolio, economy, bank, treasury, market, supply chain or counterparty — whose
 ``state`` (named metrics) evolves under ``drivers`` (growth/decay/elasticities).
 Simulating a twin projects the state forward under an optional scenario of

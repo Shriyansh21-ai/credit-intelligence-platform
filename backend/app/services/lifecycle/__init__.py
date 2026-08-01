@@ -1,4 +1,4 @@
-"""Application Lifecycle Engine (Phase 5, Milestone 1).
+"""Application Lifecycle Engine.
 
 A validated state machine governing a credit application from Draft through to
 Closed, with full status history, actor/reason capture, rollback, and auditing.

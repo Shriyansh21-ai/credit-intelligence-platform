@@ -1,8 +1,8 @@
 """M13 — Model Governance: Bias / Fairness / Drift.
 
-Deterministic fairness and drift diagnostics that extend the Phase 9 model
+Deterministic fairness and drift diagnostics that extend the model
 governance platform. Fairness evaluates group parity over labeled prediction
-records (demographic-parity difference, disparate-impact ratio / 80% rule,
+records (demographic-parity difference, disparate-impact ratio / 80% rule
 equal-opportunity difference when outcomes are present). Drift computes the
 Population Stability Index (PSI) between a baseline and a current distribution.
 All metrics are closed-form and reproducible — no sampling, no LLM.

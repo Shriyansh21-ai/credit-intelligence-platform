@@ -1,4 +1,4 @@
-"""Track 3 M1 — Treasury Intelligence tests."""
+""" M1 — Treasury Intelligence tests."""
 
 from backend.tests._financial_intelligence_helpers import admin_client
 

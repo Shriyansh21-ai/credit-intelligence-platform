@@ -1,4 +1,4 @@
-"""Model Serving Engine (Phase 6, Milestone 4)."""
+"""Model Serving Engine."""
 
 from . import service
 from .service import (

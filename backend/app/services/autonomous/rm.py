@@ -1,6 +1,6 @@
 """M8 — Relationship Manager Workspace.
 
-A single pane for an RM to manage a customer: interaction timeline (calls, emails,
+A single pane for an RM to manage a customer: interaction timeline (calls, emails
 meetings, visits, notes), loan/assessment history, cross-sell opportunities, AI
 recommendations, a composite customer-health score, open alerts and a concrete
 "next best action". Interactions + opportunities are first-class rows; everything

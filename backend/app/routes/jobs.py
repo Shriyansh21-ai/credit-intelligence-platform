@@ -1,8 +1,8 @@
-"""Background jobs API (Phase 5, Milestone 14).
+"""Background jobs API.
 
-    GET  /api/jobs             list registered jobs        (config.view)
-    POST /api/jobs/run-all      run every job              (config.manage)
-    POST /api/jobs/run/{name}   run a single job           (config.manage)
+    GET /api/jobs list registered jobs (config.view)
+    POST /api/jobs/run-all run every job (config.manage)
+    POST /api/jobs/run/{name} run a single job (config.manage)
 """
 
 from __future__ import annotations

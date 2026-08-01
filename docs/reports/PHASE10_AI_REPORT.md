@@ -1,4 +1,4 @@
-# Phase 10 — AI Report
+# AI Report
 
 ## Philosophy: deterministic-first, LLM-where-appropriate
 Phase 10 keeps regulated credit decisioning **deterministic and auditable**. Generative

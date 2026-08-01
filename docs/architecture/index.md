@@ -5,7 +5,7 @@
 | Document | Description |
 | --- | --- |
 | [ARCHITECTURE](ARCHITECTURE.md) | Core platform architecture: layers, modules, and cross-cutting concerns. |
-| [ARCHITECTURE_TRACK3](ARCHITECTURE_TRACK3.md) | Architecture of the Advanced Financial Intelligence layer (Track 3). |
+| [ARCHITECTURE_TRACK3](ARCHITECTURE_TRACK3.md) | Architecture of the Advanced Financial Intelligence layer. |
 | [DATABASE_ARCHITECTURE_FINAL](DATABASE_ARCHITECTURE_FINAL.md) | Final data model: SQLAlchemy schema, migrations, and persistence design. |
 | [SYSTEM_ARCHITECTURE_FINAL](SYSTEM_ARCHITECTURE_FINAL.md) | End-to-end system topology, service boundaries, and integration flows. |
 

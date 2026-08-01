@@ -1,4 +1,4 @@
-# Phase 10 — Testing Report
+# Testing Report
 
 ## Result
 **Full backend suite: 961 passed, 0 failed** (`pytest backend/tests`, ~13 min).

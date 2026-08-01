@@ -1,8 +1,8 @@
-"""Feature vector persistence model (Phase 4, Milestone 1).
+"""Feature vector persistence model.
 
 ``FeatureVector`` stores a complete, versioned ML-ready feature set for an
 enterprise assessment. Headline coverage/quality metrics are promoted to columns
-so vectors are queryable without unpacking JSON, while the full feature list,
+so vectors are queryable without unpacking JSON, while the full feature list
 category breakdown and a self-describing registry snapshot live in JSON blobs.
 
 Versioning mirrors ``FinancialAnalysis``: each recompute inserts a new row with

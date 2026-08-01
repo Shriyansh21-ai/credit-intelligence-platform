@@ -1,4 +1,4 @@
-"""Credit application lifecycle models (Phase 5, Milestone 1).
+"""Credit application lifecycle models.
 
 ``Application`` is the central workflow entity that ties together a company, its
 assessment, documents, approvals, tasks and monitoring. ``ApplicationStatusHistory``

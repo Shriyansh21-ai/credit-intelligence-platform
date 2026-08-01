@@ -2,7 +2,7 @@
 
 Persists visual workflow designs (a node/edge graph authored in the frontend
 designer) and executes them deterministically. Node types cover the AI platform
-surface:
+surface
 
     start · agent · rag · api · connector · approval · memory · condition · report · end
 

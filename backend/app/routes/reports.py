@@ -1,7 +1,7 @@
-"""Report generation API (Phase 5, Milestone 7).
+"""Report generation API.
 
-    GET /api/reports/types                report types + available formats
-    GET /api/reports/{report_type}        generate a report
+    GET /api/reports/types report types + available formats
+    GET /api/reports/{report_type} generate a report
 
 Query params: format (json|html|pdf|csv|rtf), application_id, entity_type, entity_id.
 JSON returns the structured document; file formats stream a download. Viewing

@@ -1,8 +1,8 @@
-"""Shared helpers for Track 3 Financial Intelligence tests (not a test module).
+"""Shared helpers for Financial Intelligence tests (not a test module).
 
 Builds an in-memory SQLite session with the full schema (importing the app
-registers every model) plus TestClients wired to the Track 3 routers with auth +
-db overridden, mirroring the Track 2 helper pattern.
+registers every model) plus TestClients wired to the routers with auth +
+db overridden, mirroring the helper pattern.
 """
 
 from __future__ import annotations

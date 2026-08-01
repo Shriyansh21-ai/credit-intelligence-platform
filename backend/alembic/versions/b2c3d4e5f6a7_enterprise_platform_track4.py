@@ -1,7 +1,7 @@
-"""Enterprise Productization & Commercial Readiness tables (Track 4)
+"""Enterprise Productization & Commercial Readiness tables
 
-Fully additive: creates the UX, workspace, developer, marketplace, integration,
-data-management, operations, security, customer-success, deployment, monitoring,
+Fully additive: creates the UX, workspace, developer, marketplace, integration
+data-management, operations, security, customer-success, deployment, monitoring
 BI and launch-readiness tables. Nothing from Phases 1-11 / Tracks 1-3 is altered
 or dropped.
 

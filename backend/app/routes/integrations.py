@@ -1,19 +1,19 @@
-"""Banking Ecosystem Integration Platform APIs (Phase 7).
+"""Banking Ecosystem Integration Platform APIs.
 
-A set of focused routers exposing the whole integration surface. All new,
-additive to existing routers:
+A set of focused routers exposing the whole integration surface. All new
+additive to existing routers
 
-    /api/integrations/connectors     connector catalog, config, mode switching
-    /api/integrations/observability  metrics, health, circuit state, call logs
-    /api/integrations/data           import + snapshots for GST/MCA/bureau/ERP/payments
-    /api/integrations/aa             Account Aggregator consent + statements + analytics
-    /api/integrations/sync           portfolio synchronization jobs + DLQ
-    /api/collateral                  collateral management
-    /api/customer360                 unified enterprise profile
-    /api/platform                    Open API keys, webhooks, usage analytics
+    /api/integrations/connectors connector catalog, config, mode switching
+    /api/integrations/observability metrics, health, circuit state, call logs
+    /api/integrations/data import + snapshots for GST/MCA/bureau/ERP/payments
+    /api/integrations/aa Account Aggregator consent + statements + analytics
+    /api/integrations/sync portfolio synchronization jobs + DLQ
+    /api/collateral collateral management
+    /api/customer360 unified enterprise profile
+    /api/platform Open API keys, webhooks, usage analytics
 
-Permissions: ``integrations.view``/``integrations.manage``/``integrations.sync``,
-``collateral.view``/``collateral.manage``, ``customer360.view``,
+Permissions: ``integrations.view``/``integrations.manage``/``integrations.sync``
+``collateral.view``/``collateral.manage``, ``customer360.view``
 ``apiplatform.view``/``apiplatform.manage``.
 """
 
@@ -496,7 +496,7 @@ def webhook_deliveries(subscription_id: int, db: Session = Depends(get_db),
     return {"deliveries": [wh_svc.delivery_to_dict(d) for d in wh_svc.delivery_history(db, subscription_id=subscription_id)]}
 
 
-# Exported for main.py — mirrors the Phase 6 ROUTERS pattern.
+# Exported for main.py — mirrors the ROUTERS pattern.
 ROUTERS: List[APIRouter] = [
     connectors_router, observability_router, data_router, aa_router,
     sync_router, collateral_router, customer360_router, platform_router,

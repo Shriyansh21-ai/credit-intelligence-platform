@@ -1,4 +1,4 @@
-"""Phase 4 Milestone 4 tests: the scenario simulator."""
+""" tests: the scenario simulator."""
 
 import unittest
 

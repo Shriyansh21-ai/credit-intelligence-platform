@@ -1,4 +1,4 @@
-"""Track 2 M2 — Multi-agent AI system tests."""
+""" M2 — Multi-agent AI system tests."""
 
 import unittest
 

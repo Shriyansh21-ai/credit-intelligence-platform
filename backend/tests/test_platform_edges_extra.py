@@ -1,4 +1,4 @@
-"""Phase 11, M14 — additional edge-case coverage across core modules."""
+""" additional edge-case coverage across core modules."""
 
 import tempfile
 import unittest

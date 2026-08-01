@@ -1,4 +1,4 @@
-# Stage 3 — Production Certification Report
+# Production Certification Report
 
 *Production-readiness certification for the AI Credit Intelligence Platform,
 covering Milestones M1–M15. Every control was audited against the codebase and,
@@ -15,21 +15,21 @@ changed. All Stage 3 changes are additive config templates and documentation.
 
 | # | Milestone | Evidence | Verified |
 |---|-----------|----------|----------|
-| M1 | Production Configuration | `core/settings.py` (typed, 4 profiles, secret providers, `validate_runtime`); `deploy/env/*.env.example` | ✅ Fail-fast caught 5 fatal prod errors; 4 profiles validate; 49 config tests pass |
-| M2 | Observability & Health | `/healthz` `/livez` `/readyz` `/metrics`; OTel; `deploy/monitoring/` | ✅ Probes + metrics live `200`; `/readyz` runs DB check |
-| M3 | Security Hardening | headers middleware, insecure-secret rejection, non-root container, RBAC | ✅ Audited + prod validation |
-| M4 | Container & Deployment | Dockerfile `HEALTHCHECK`, K8s probes/resources/securityContext, overlays | ✅ Manifests parse; probes wired |
-| M5 | Reliability & Operations | fail-fast startup, backup CronJob, draining, migration gating | ✅ Audited + verified |
-| M6 | Production Monitoring | Prometheus + SLO alert rules + Grafana dashboards + Alertmanager | ✅ 32 configs parse; alert catalog documented |
-| M7 | Centralized Logging | JSON logs, correlation ids, Loki + Grafana datasource | ✅ Documented + wired |
-| M8 | Disaster Recovery | backup CronJob, PITR window, retention; DR drill checklist | ✅ Drill checklist added |
-| M9 | High Availability | ≥3 API replicas, HPA (3→20 / 2→10), stateless + draining | ✅ HPA verified; HA documented |
-| M10 | Performance Engineering | compression, caching, pooling, virtualization, HPA thresholds | ✅ Existing perf docs + Stage 2 frontend perf |
-| M11 | Security Hardening (deep) | crypto, authn, rate limiting, CI SAST/deps/secrets/IaC | ✅ See `PRODUCTION_HARDENING.md` |
-| M12 | Operational Runbooks | `RUNBOOK.md`, `INCIDENT_RESPONSE.md`, alert→response mapping | ✅ Alert catalog maps to responses |
-| M13 | Production Validation | full backend suite; frontend build; probes; config validation | ✅ See "Validation results" |
-| M14 | Release Engineering | `release.yml` (semver → GHCR image publish → release notes → test gate) | ✅ Workflow present |
-| M15 | Final Certification | this report | ✅ |
+| M1 | Production Configuration | `core/settings.py` (typed, 4 profiles, secret providers, `validate_runtime`); `deploy/env/*.env.example` | Fail-fast caught 5 fatal prod errors; 4 profiles validate; 49 config tests pass |
+| M2 | Observability & Health | `/healthz` `/livez` `/readyz` `/metrics`; OTel; `deploy/monitoring/` | Probes + metrics live `200`; `/readyz` runs DB check |
+| M3 | Security Hardening | headers middleware, insecure-secret rejection, non-root container, RBAC | Audited + prod validation |
+| M4 | Container & Deployment | Dockerfile `HEALTHCHECK`, K8s probes/resources/securityContext, overlays | Manifests parse; probes wired |
+| M5 | Reliability & Operations | fail-fast startup, backup CronJob, draining, migration gating | Audited + verified |
+| M6 | Production Monitoring | Prometheus + SLO alert rules + Grafana dashboards + Alertmanager | 32 configs parse; alert catalog documented |
+| M7 | Centralized Logging | JSON logs, correlation ids, Loki + Grafana datasource | Documented + wired |
+| M8 | Disaster Recovery | backup CronJob, PITR window, retention; DR drill checklist | Drill checklist added |
+| M9 | High Availability | ≥3 API replicas, HPA (3→20 / 2→10), stateless + draining | HPA verified; HA documented |
+| M10 | Performance Engineering | compression, caching, pooling, virtualization, HPA thresholds | Existing perf docs + Stage 2 frontend perf |
+| M11 | Security Hardening (deep) | crypto, authn, rate limiting, CI SAST/deps/secrets/IaC | See `PRODUCTION_HARDENING.md` |
+| M12 | Operational Runbooks | `RUNBOOK.md`, `INCIDENT_RESPONSE.md`, alert→response mapping | Alert catalog maps to responses |
+| M13 | Production Validation | full backend suite; frontend build; probes; config validation | See "Validation results" |
+| M14 | Release Engineering | `release.yml` (semver → GHCR image publish → release notes → test gate) | Workflow present |
+| M15 | Final Certification | this report | |
 
 ---
 
@@ -95,12 +95,12 @@ This report. All milestones audited and verified; no breaking changes.
 
 | Check | Result |
 |-------|--------|
-| Configuration fail-fast (prod profile, insecure defaults) | ✅ 5 fatal errors → refused to boot |
-| Environment profiles (dev/test/staging/prod) validate | ✅ staging & production clean (0 errors) |
-| Health/readiness probes + metrics | ✅ `/healthz` `/livez` `/readyz` `/metrics` → `200` |
-| Monitoring & K8s configs parse | ✅ 32/32 files valid |
-| Frontend production build (Stage 2) | ✅ `vite build` green, 102 routes |
-| Backend test suite | ✅ **1327 passed, 0 failed** (8m47s) |
+| Configuration fail-fast (prod profile, insecure defaults) | 5 fatal errors → refused to boot |
+| Environment profiles (dev/test/staging/prod) validate | staging & production clean (0 errors) |
+| Health/readiness probes + metrics | `/healthz` `/livez` `/readyz` `/metrics` → `200` |
+| Monitoring & K8s configs parse | 32/32 files valid |
+| Frontend production build (Stage 2) | `vite build` green, 102 routes |
+| Backend test suite | **1327 passed, 0 failed** (8m47s) |
 
 ---
 

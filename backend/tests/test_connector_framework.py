@@ -1,8 +1,8 @@
-"""Phase 7 — connector framework tests (Milestone 1, 13, 14).
+""" connector framework tests.
 
 Covers the resilience primitives (retry / circuit breaker / rate limiter), the
 security layer (secret resolution, encryption, PII masking), the observability
-collector, the registry, and the BaseConnector call flow (auth, cache, retries,
+collector, the registry, and the BaseConnector call flow (auth, cache, retries
 circuit short-circuit, metrics) with a synthetic in-test connector.
 """
 

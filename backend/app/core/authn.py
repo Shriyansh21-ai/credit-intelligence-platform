@@ -1,8 +1,8 @@
-"""Authentication hardening (Phase 11, M8).
+"""Authentication hardening.
 
 Additive, stdlib + python-jose only. Complements the existing
 ``core/security.py`` (password hashing, access-token creation) and the Phase-8
-session/device store without changing any existing signature:
+session/device store without changing any existing signature
 
 * :class:`JwtKeyRing` — versioned JWT signing keys (``kid``) enabling zero-
   downtime signing-key rotation: sign with the active key, verify against all.

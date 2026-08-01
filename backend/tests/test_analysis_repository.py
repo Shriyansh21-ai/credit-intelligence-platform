@@ -1,4 +1,4 @@
-"""Milestone 4 tests: FinancialAnalysis persistence + versioning."""
+""" tests: FinancialAnalysis persistence + versioning."""
 
 import unittest
 

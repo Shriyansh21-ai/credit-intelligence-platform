@@ -1,9 +1,9 @@
-"""Enterprise AI Risk Intelligence layer (Phase 4).
+"""Enterprise AI Risk Intelligence layer.
 
 This package houses the ML-facing architecture that sits *on top of* the
-deterministic scoring and financial-analysis engines built in Phases 1-3:
+deterministic scoring and financial-analysis engines built in Phases 1-3
 
-    features/   - the enterprise Feature Store (Milestone 1)
+    features/ - the enterprise Feature Store
 
 Design principle: the AI layer never replaces banking logic. It turns the
 existing, explainable financial signals into reusable, versioned, ML-ready

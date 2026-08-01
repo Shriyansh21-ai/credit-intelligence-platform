@@ -1,6 +1,6 @@
 """Enterprise Security & Compliance tables (Stage 4)
 
-Fully additive: creates the security-scan, findings, compliance-assessment,
+Fully additive: creates the security-scan, findings, compliance-assessment
 risk-register, privacy-request, posture-snapshot and secret-record tables.
 Nothing from Stages 1-3 (Phases 1-10 + Tracks 2-4) is altered or dropped.
 

@@ -1,4 +1,4 @@
-"""Persistence for early-warning alerts (Phase 4, Milestone 7)."""
+"""Persistence for early-warning alerts."""
 
 from __future__ import annotations
 

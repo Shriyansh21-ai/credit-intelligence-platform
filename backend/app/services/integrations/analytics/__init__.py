@@ -1,4 +1,4 @@
-"""Bank statement analytics (Phase 7, Milestone 5)."""
+"""Bank statement analytics."""
 
 from backend.app.services.integrations.analytics.statement import (
     analyze_entity,

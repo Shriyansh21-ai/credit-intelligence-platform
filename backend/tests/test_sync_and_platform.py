@@ -1,4 +1,4 @@
-"""Phase 7 — synchronization engine + Open API platform tests (M11, M12)."""
+""" synchronization engine + Open API platform tests (M11, M12)."""
 
 import unittest
 import warnings

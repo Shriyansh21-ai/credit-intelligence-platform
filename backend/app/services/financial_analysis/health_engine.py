@@ -1,9 +1,9 @@
 """Business Health Engine (Task 2).
 
 Produces seven independent 0-100 health scores, each with a five-tier status
-(Excellent / Good / Moderate / Weak / Critical) and a one-line summary:
+(Excellent / Good / Moderate / Weak / Critical) and a one-line summary
 
-    liquidity, profitability, leverage, efficiency, cash_flow,
+    liquidity, profitability, leverage, efficiency, cash_flow
     business_stability, growth
 
 Scores are continuous (built from scaled ratio values via
@@ -204,7 +204,7 @@ def compute_health(
 ) -> Dict[str, HealthScore]:
     """Compute all seven health dimensions.
 
-    ``context`` optionally supplies company-profile inputs (``years_in_business``,
+    ``context`` optionally supplies company-profile inputs (``years_in_business``
     ``employee_count``, ``business_expansion_stage``) for business stability.
     ``previous`` optionally supplies the prior-period statement for growth.
     """

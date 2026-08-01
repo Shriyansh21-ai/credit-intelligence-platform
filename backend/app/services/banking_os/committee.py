@@ -1,7 +1,7 @@
 """M4 — Loan Committee Workspace.
 
-Collaborative committee review: standing committees with members and a quorum,
-convened meetings with attendance and agendas, one decision item per application,
+Collaborative committee review: standing committees with members and a quorum
+convened meetings with attendance and agendas, one decision item per application
 weighted voting with tamper-evident digital signatures, auto-generated minutes
 and committee analytics. Deterministic tallying — the decision follows the
 weighted vote against the committee's quorum, never an opaque model.

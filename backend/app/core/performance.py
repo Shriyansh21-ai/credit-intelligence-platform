@@ -1,8 +1,8 @@
-"""Performance engineering toolkit (Phase 11, M9).
+"""Performance engineering toolkit.
 
 Additive, opt-in instrumentation and analysis utilities. Nothing here is wired
 into the hot path unless explicitly enabled, so it never regresses baseline
-latency:
+latency
 
 * :class:`QueryProfiler` — attaches SQLAlchemy cursor-execute hooks that time
   every statement, feed the observability registry, and detect N+1 access
@@ -14,7 +14,7 @@ latency:
 * :func:`benchmark` — a small, dependency-free micro-benchmark harness.
 
 Pairs with the existing primitives: `core/cache.py` (caching), `app/workers/*`
-(background execution), `services/saas/observability.py` (slow-query buffer),
+(background execution), `services/saas/observability.py` (slow-query buffer)
 and the connection-pool knobs in `core/settings.py`.
 """
 
@@ -98,11 +98,11 @@ class UnitOfWorkStats:
 def profiling_scope():
     """Track per-unit-of-work query counts; yields a callable returning stats.
 
-    Usage::
+    Usage
 
-        with profiling_scope() as stats:
+        with profiling_scope() as stats
             ... do work ...
-        report = stats()   # UnitOfWorkStats
+        report = stats() # UnitOfWorkStats
     """
     tally: dict[str, int] = defaultdict(int)
     token = _query_tally.set(tally)

@@ -1,6 +1,6 @@
-"""Observability platform (Phase 8, Milestone 9).
+"""Observability platform.
 
-Correlation IDs, distributed tracing spans, an in-process metrics registry,
+Correlation IDs, distributed tracing spans, an in-process metrics registry
 slow-query detection, structured logging and error analytics — shaped to be
 OpenTelemetry-compatible so the durable sinks can be swapped for OTLP exporters
 without changing call sites.

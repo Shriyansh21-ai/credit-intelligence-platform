@@ -1,7 +1,7 @@
-"""System configuration model (Phase 5, Milestone 13).
+"""System configuration model.
 
-A single key/value store (value held as JSON) so every tunable — risk thresholds,
-rating scale, approval matrix, interest rules, loan limits, industries,
+A single key/value store (value held as JSON) so every tunable — risk thresholds
+rating scale, approval matrix, interest rules, loan limits, industries
 currencies, notification rules, stress scenarios — lives in the database rather
 than in code.
 """

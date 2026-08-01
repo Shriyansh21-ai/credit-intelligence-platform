@@ -2,7 +2,7 @@
 
 Every calculation in this package flows through these helpers so that
 division-by-zero, missing inputs and out-of-range values are handled in exactly
-one place. The engine distinguishes a genuine ``0`` from a *missing* value:
+one place. The engine distinguishes a genuine ``0`` from a *missing* value
 missing / undefined ratios return ``None`` (surfaced to the user as
 ``"unavailable"``) rather than a fabricated number.
 

@@ -1,4 +1,4 @@
-"""Portfolio synchronization engine (Phase 7, Milestone 11)."""
+"""Portfolio synchronization engine."""
 
 from backend.app.services.integrations.sync.service import (
     process_job,

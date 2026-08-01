@@ -1,8 +1,8 @@
 # Banking OS — Final (v1.0.0)
 
-The Enterprise Banking Operating System (Phase 10, `/api/os/*`, `os_*` tables) is
-the AI-native operating layer that the Financial (Track 3) and Enterprise
-(Track 4) platforms build on and integrate with.
+The Enterprise Banking Operating System is
+the AI-native operating layer that the Financial and Enterprise
+ platforms build on and integrate with.
 
 ## Core services
 

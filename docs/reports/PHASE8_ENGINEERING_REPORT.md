@@ -1,4 +1,4 @@
-# Phase 8 — Multi-Tenant Enterprise SaaS Cloud Platform
+# Multi-Tenant Enterprise SaaS Cloud Platform
 
 **Engineering Report**
 
@@ -16,7 +16,7 @@ unchanged under an implicitly-provisioned default tenant.
 
 ## Status at a glance
 
-| Metric | Before (Phase 7) | After (Phase 8) |
+| Metric | Before | After |
 | --- | --- | --- |
 | Backend tests | 483 | **627 (all green)** |
 | Alembic head | `b8c9d0e1f2a3` | **`c9d0e1f2a3b4`** (one additive migration) |

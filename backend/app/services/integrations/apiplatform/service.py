@@ -1,4 +1,4 @@
-"""Open API platform — API keys + usage analytics (Milestone 12).
+"""Open API platform — API keys + usage analytics.
 
 Issues scoped API keys (returned once, stored only as a salted SHA-256 hash + a
 public prefix), verifies them, enforces per-key rate limits, and records usage

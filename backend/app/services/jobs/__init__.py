@@ -1,6 +1,6 @@
-"""Background jobs (Phase 5, Milestone 14).
+"""Background jobs.
 
-A small registry of idempotent maintenance jobs that a scheduler (cron, APScheduler,
+A small registry of idempotent maintenance jobs that a scheduler (cron, APScheduler
 Celery beat) can drive, exposed via an admin API for manual runs. Each job takes a
 DB session and returns a small result dict.
 """

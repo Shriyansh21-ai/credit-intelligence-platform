@@ -1,6 +1,6 @@
 # AI Intelligence Platform — Roadmap
 
-## Delivered (Track 2, M1–M15)
+## Delivered
 
 RAG, multi-agent system, long-term memory, prompt engineering, evaluation,
 autonomous investigation, report generation, workflow builder, conversational AI,

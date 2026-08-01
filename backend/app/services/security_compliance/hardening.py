@@ -1,4 +1,4 @@
-"""Container & Kubernetes hardening assessment (Milestone 9).
+"""Container & Kubernetes hardening assessment.
 
 Reads the real Dockerfile, docker-compose and Kubernetes manifests in the repo
 and checks them against a hardening baseline (non-root, resource limits, network

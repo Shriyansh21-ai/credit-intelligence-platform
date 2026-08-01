@@ -1,6 +1,6 @@
-"""Document Intelligence persistence models (Phase 2, Task 8).
+"""Document Intelligence persistence models.
 
-`Document` holds metadata + a storage URI (files live in the storage backend,
+`Document` holds metadata + a storage URI (files live in the storage backend
 never as DB blobs). `DocumentExtraction` holds each extraction/edit as a
 versioned row so the review history is preserved.
 """

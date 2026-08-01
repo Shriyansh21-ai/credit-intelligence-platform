@@ -1,14 +1,14 @@
-"""Dashboard aggregation API (Phase 5, Milestone 11).
+"""Dashboard aggregation API.
 
 One endpoint per enterprise dashboard, each returning ready-to-render aggregates.
 
-    GET /api/dashboards/operations   Credit Operations   (applications.view)
-    GET /api/dashboards/admin        Administrator        (users.manage)
-    GET /api/dashboards/analyst      Analyst (self)       (tasks.view)
-    GET /api/dashboards/manager      Manager              (approvals.view)
-    GET /api/dashboards/portfolio    Portfolio            (portfolio.view)
-    GET /api/dashboards/compliance   Compliance           (audit.view)
-    GET /api/dashboards/monitoring   Monitoring           (monitoring.view)
+    GET /api/dashboards/operations Credit Operations (applications.view)
+    GET /api/dashboards/admin Administrator (users.manage)
+    GET /api/dashboards/analyst Analyst (self) (tasks.view)
+    GET /api/dashboards/manager Manager (approvals.view)
+    GET /api/dashboards/portfolio Portfolio (portfolio.view)
+    GET /api/dashboards/compliance Compliance (audit.view)
+    GET /api/dashboards/monitoring Monitoring (monitoring.view)
 """
 
 from __future__ import annotations

@@ -1,7 +1,7 @@
 """M7 — Alternative Data Intelligence.
 
-Convert non-traditional signals — satellite, shipping, supply-chain, web traffic,
-customer reviews, social media, news sentiment, patents, hiring, payments,
+Convert non-traditional signals — satellite, shipping, supply-chain, web traffic
+customer reviews, social media, news sentiment, patents, hiring, payments
 merchant analytics, footfall, digital presence — into normalized *enterprise
 risk signals* (direction, magnitude, confidence, score) that can feed the credit
 and portfolio engines. Deterministic normalization; ``source`` is stored so live

@@ -1,4 +1,4 @@
-"""Milestone 2 tests: the 20-ratio engine."""
+""" tests: the 20-ratio engine."""
 
 import unittest
 

@@ -1,4 +1,4 @@
-"""Approval workflow models (Phase 5, Milestone 2).
+"""Approval workflow models.
 
 ``ApprovalWorkflow`` is a configurable, ordered set of approval stages (stored as
 JSON so the matrix can be edited without a migration). ``ApprovalDecision`` is an
@@ -21,7 +21,7 @@ class ApprovalWorkflow(Base):
     is_default = Column(Boolean, nullable=False, default=False)
     is_active = Column(Boolean, nullable=False, default=True)
 
-    # Ordered list of stage dicts:
+    # Ordered list of stage dicts
     # {key, name, order, status, permission, role}.
     stages = Column(JSON, nullable=False, default=list)
 

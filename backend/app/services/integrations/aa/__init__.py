@@ -1,4 +1,4 @@
-"""Account Aggregator integration (Phase 7, Milestone 4)."""
+"""Account Aggregator integration."""
 
 from backend.app.services.integrations.aa.connector import (
     AAConnector,

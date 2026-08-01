@@ -46,7 +46,7 @@ _Assess creditworthiness, detect fraud, and make explainable lending decisions a
 
 ---
 
-## 📖 Table of Contents
+## Table of Contents
 
 - [Executive Summary](#-executive-summary)
 - [Platform Overview](#-platform-overview)
@@ -72,7 +72,7 @@ _Assess creditworthiness, detect fraud, and make explainable lending decisions a
 
 ---
 
-## 🎯 Executive Summary
+## Executive Summary
 
 Credit decisions still move at the speed of paperwork. Analysts stitch together
 bureau pulls, bank statements, GST filings and spreadsheets by hand; fraud is
@@ -99,7 +99,7 @@ control plane with RBAC, workflow, approvals, and bank-grade security.
 
 ---
 
-## 🌐 Platform Overview
+## Platform Overview
 
 The platform is a **credit decision operating system**. It spans the full lending
 lifecycle — from a raw document to a monitored, risk-rated position on the book.
@@ -108,10 +108,10 @@ lifecycle — from a raw document to a monitored, risk-rated position on the boo
 
 ```mermaid
 flowchart LR
-    A[📄 Ingest<br/>docs · bureau · GST · MCA · bank feeds] --> B[🧠 Assess<br/>ML scoring · financial analysis]
-    B --> C[🛡️ Screen<br/>fraud · AML · anomaly detection]
-    C --> D[⚖️ Decide<br/>policy engine · approvals · workflow]
-    D --> E[📈 Monitor<br/>EWS · portfolio · stress testing]
+    A[Ingest<br/>docs · bureau · GST · MCA · bank feeds] --> B[Assess<br/>ML scoring · financial analysis]
+    B --> C[Screen<br/>fraud · AML · anomaly detection]
+    C --> D[Decide<br/>policy engine · approvals · workflow]
+    D --> E[Monitor<br/>EWS · portfolio · stress testing]
     E -->|feedback loop| B
 ```
 
@@ -121,22 +121,22 @@ flowchart LR
 
 | Segment | What the platform delivers |
 |---------|----------------------------|
-| 🏛️ **Banks** | End-to-end underwriting, Basel III / IFRS 9 analytics, portfolio & treasury intelligence, regulator-ready audit. |
-| 💳 **NBFCs** | Fast alternative-data underwriting, automated document intelligence, real-time fraud screening. |
-| 🚀 **Fintechs** | API-first credit-as-a-service, multi-tenant SaaS, developer platform, embeddable decisioning. |
-| 💼 **Credit funds** | Portfolio optimization, RAROC, concentration & stress analysis, scenario simulation. |
-| 🏢 **Enterprise lenders** | Configurable workflow, RBAC, approvals, SLA monitoring, plugin marketplace. |
-| 🏦 **Government institutions** | Explainable, auditable decisioning; compliance dashboards; data-residency-aware deployment. |
+| **Banks** | End-to-end underwriting, Basel III / IFRS 9 analytics, portfolio & treasury intelligence, regulator-ready audit. |
+| **NBFCs** | Fast alternative-data underwriting, automated document intelligence, real-time fraud screening. |
+| **Fintechs** | API-first credit-as-a-service, multi-tenant SaaS, developer platform, embeddable decisioning. |
+| **Credit funds** | Portfolio optimization, RAROC, concentration & stress analysis, scenario simulation. |
+| **Enterprise lenders** | Configurable workflow, RBAC, approvals, SLA monitoring, plugin marketplace. |
+| **Government institutions** | Explainable, auditable decisioning; compliance dashboards; data-residency-aware deployment. |
 
 ---
 
-## 🧩 Core Modules
+## Core Modules
 
 The platform is organized as **additive capability layers**, each fully backward
 compatible. Every module exposes REST APIs, a dedicated UI surface, RBAC
 permissions and its own tests.
 
-### 🔎 Credit & Risk Core
+### Credit & Risk Core
 
 | Module | Purpose | Key capabilities | Business value |
 |--------|---------|------------------|----------------|
@@ -148,7 +148,7 @@ permissions and its own tests.
 | **Decision Engine** | Turn signals into decisions | Policy rules, thresholds, override handling | Codified, auditable policy |
 | **Portfolio Analysis** | See the book, not just the loan | Segmentation, approval rates, health metrics, concentration | Portfolio-level control |
 
-### 🤖 AI & ML Platform
+### AI & ML Platform
 
 | Module | Purpose | Key capabilities | Business value |
 |--------|---------|------------------|----------------|
@@ -160,7 +160,7 @@ permissions and its own tests.
 | **Knowledge Graph** | Model relationships & exposure | Entities (companies/directors/suppliers/lenders), traversal, risk propagation | Sees hidden connected risk |
 | **Scenario Simulation & Digital Twin** | Ask "what if?" | PD/rating/limit re-scoring, stress testing, financial digital twin | Forward-looking risk management |
 
-### 🏢 Enterprise & Platform
+### Enterprise & Platform
 
 | Module | Purpose | Key capabilities | Business value |
 |--------|---------|------------------|----------------|
@@ -176,7 +176,7 @@ permissions and its own tests.
 
 ---
 
-## 🏗️ Architecture
+## Architecture
 
 A layered, additive architecture: a React SPA talks to a FastAPI service layer,
 which orchestrates ML, AI, and banking-connector services over a relational
@@ -184,16 +184,16 @@ store and object storage, with an optional LLM strictly for phrasing.
 
 ```mermaid
 flowchart TB
-    subgraph Client["🖥️ Client Layer"]
+    subgraph Client[" Client Layer"]
         UI["React 19 SPA<br/>TanStack Router/Query · Tailwind · Recharts"]
     end
 
-    subgraph API["⚙️ API Layer — FastAPI"]
+    subgraph API[" API Layer — FastAPI"]
         RT["REST Routers<br/>/api/* · auth · RBAC · rate-limit"]
         MW["Security Middleware<br/>headers · JWT · audit"]
     end
 
-    subgraph SVC["🧠 Service Layer"]
+    subgraph SVC[" Service Layer"]
         CR["Credit & Fraud Services"]
         MLS["ML Platform / MLOps"]
         AIS["AI Platform<br/>RAG · Agents · Copilot · Memory"]
@@ -201,13 +201,13 @@ flowchart TB
         SAAS["SaaS · RBAC · Workflow · Audit"]
     end
 
-    subgraph DATA["💾 Data Layer"]
+    subgraph DATA[" Data Layer"]
         DB[("Relational DB<br/>SQLAlchemy · Alembic")]
         OBJ[("Object Storage<br/>documents · artifacts")]
         CACHE[("Cache / Queue<br/>Redis · workers")]
     end
 
-    subgraph EXT["🔌 External"]
+    subgraph EXT[" External"]
         CONN["Banking Connectors<br/>GST · MCA · AA · bureau · ERP"]
         LLM["LLM (optional)<br/>phrasing only — grounded"]
     end
@@ -230,11 +230,11 @@ flowchart TB
 | **LLMs** | Optional, gated adapter used **only** to phrase deterministic facts. Offline-safe local default. |
 | **Enterprise Modules** | Multi-tenancy, workflow, approvals, marketplace, developer platform, executive center. |
 
-📚 Deep dives: **[System Architecture](docs/architecture/index.md)** · **[AI Architecture](docs/ai/AI_ARCHITECTURE.md)** · **[Database Architecture](docs/architecture/DATABASE_ARCHITECTURE_FINAL.md)**.
+Deep dives: **[System Architecture](docs/architecture/index.md)** · **[AI Architecture](docs/ai/AI_ARCHITECTURE.md)** · **[Database Architecture](docs/architecture/DATABASE_ARCHITECTURE_FINAL.md)**.
 
 ---
 
-## 🛠️ Technology Stack
+## Technology Stack
 
 | Domain | Technologies |
 |--------|-------------|
@@ -252,7 +252,7 @@ flowchart TB
 
 ---
 
-## 📁 Repository Structure
+## Repository Structure
 
 ```
 ai_credit_system/
@@ -285,7 +285,7 @@ ai_credit_system/
 │   ├── k8s/{base,overlays}/     # Kustomize manifests
 │   └── monitoring/              # Prometheus, Grafana, Loki, Tempo, Alertmanager
 ├── infra/terraform/             # multi-cloud IaC (AWS/Azure/GCP), remote state
-├── docs/                        # 📚 the documentation hub (see docs/index.md)
+├── docs/                        # the documentation hub (see docs/index.md)
 ├── .github/                     # CI/CD workflows, CODEOWNERS, issue/PR templates
 ├── docker-compose.yml           # local full-stack orchestration
 ├── Dockerfile                   # multi-stage app/worker/scheduler build
@@ -295,7 +295,7 @@ ai_credit_system/
 
 ---
 
-## 📦 Installation
+## Installation
 
 ### Prerequisites
 
@@ -350,7 +350,7 @@ All settings are additive with safe defaults — see **[Configuration](docs/depl
 
 ---
 
-## ⚡ Quick Start
+## Quick Start
 
 ```bash
 # 1. Clone
@@ -378,7 +378,7 @@ cd frontend && bun install && bun run dev
 
 ---
 
-## 📸 Screenshots
+## Screenshots
 
 > [!NOTE]
 > Screenshot placeholders — drop images into `docs/assets/` and update the paths.
@@ -391,7 +391,7 @@ cd frontend && bun install && bun run dev
 
 ---
 
-## 🔌 API Overview
+## API Overview
 
 All endpoints are served under `/api/*` and documented interactively at `/docs`
 (OpenAPI). Auth is JWT bearer; access is enforced per-endpoint via RBAC.
@@ -412,11 +412,11 @@ All endpoints are served under `/api/*` and documented interactively at `/docs`
 | **SaaS** | `/api/saas/*` | tenancy, billing, flags, quotas |
 | **Platform** | `/api/rbac`, `/api/audit`, `/api/approvals`, `/api/monitoring` | governance & operations |
 
-📖 Full reference: **[API Reference Guide](docs/api/API_REFERENCE_GUIDE.md)** · platform conventions: **[API Platform](docs/api/API_PLATFORM.md)**.
+Full reference: **[API Reference Guide](docs/api/API_REFERENCE_GUIDE.md)** · platform conventions: **[API Platform](docs/api/API_PLATFORM.md)**.
 
 ---
 
-## 🧠 AI Architecture
+## AI Architecture
 
 The AI layer is **grounded and governed** — it augments deterministic decisioning,
 it does not replace it.
@@ -448,11 +448,11 @@ flowchart LR
 | **Monitoring** | Drift, quality and usage monitoring for AI/ML in production. |
 | **Model Governance** | Model registry, approvals, and lifecycle controls. |
 
-📚 See **[AI Architecture](docs/ai/AI_ARCHITECTURE.md)**, **[RAG](docs/ai/RAG_ARCHITECTURE.md)**, **[Agents](docs/ai/AGENT_FRAMEWORK.md)**, **[Governance](docs/ai/AI_GOVERNANCE.md)**.
+See **[AI Architecture](docs/ai/AI_ARCHITECTURE.md)**, **[RAG](docs/ai/RAG_ARCHITECTURE.md)**, **[Agents](docs/ai/AGENT_FRAMEWORK.md)**, **[Governance](docs/ai/AI_GOVERNANCE.md)**.
 
 ---
 
-## 🏢 Enterprise Architecture
+## Enterprise Architecture
 
 | Capability | Description |
 |------------|-------------|
@@ -466,11 +466,11 @@ flowchart LR
 | **Enterprise Search** | Semantic search across platform data and documents. |
 | **Executive Dashboards** | Real-time command center, recommendations and NL analytics. |
 
-📚 See **[Enterprise Platform Report](docs/reports/ENTERPRISE_PLATFORM_REPORT.md)**, **[Compliance](docs/security/COMPLIANCE.md)**, **[Security Architecture](docs/security/SECURITY_ARCHITECTURE.md)**.
+See **[Enterprise Platform Report](docs/reports/ENTERPRISE_PLATFORM_REPORT.md)**, **[Compliance](docs/security/COMPLIANCE.md)**, **[Security Architecture](docs/security/SECURITY_ARCHITECTURE.md)**.
 
 ---
 
-## 🔄 Development Workflow
+## Development Workflow
 
 ```bash
 # local development
@@ -499,7 +499,7 @@ builds on every PR. See **[CI/CD](docs/deployment/CICD.md)** and
 
 ---
 
-## ✅ Testing
+## Testing
 
 - **1,300+ automated tests** across **115 test modules** (`backend/tests/`).
 - Run the full suite from the repo root:
@@ -516,7 +516,7 @@ re-upgrade round-trips in CI. See **[Testing](docs/testing/index.md)**.
 
 ---
 
-## 🔐 Security
+## Security
 
 | Control | Implementation |
 |---------|----------------|
@@ -534,7 +534,7 @@ details in **[Security Architecture](docs/security/SECURITY_ARCHITECTURE.md)**.
 
 ---
 
-## 🚀 Performance
+## Performance
 
 | Concern | Approach |
 |---------|----------|
@@ -548,7 +548,7 @@ See **[Performance](docs/operations/PERFORMANCE.md)**, **[Scaling Guide](docs/de
 
 ---
 
-## 📦 Deployment
+## Deployment
 
 ```mermaid
 flowchart LR
@@ -570,14 +570,14 @@ See **[Deployment](docs/deployment/index.md)** · **[Containers](docs/deployment
 
 ---
 
-## 🗺️ Roadmap
+## Roadmap
 
-**✅ Completed** — Phases 1–10 and Tracks 1–4 delivered the full platform, reaching
+** Completed** — Phases 1–10 and Tracks 1–4 delivered the full platform, reaching
 **v1.0.0 Commercial GA**: credit & fraud core, ML/AI platforms, banking connectors,
 multi-tenant SaaS, autonomous intelligence, financial intelligence, and enterprise
 productization.
 
-**🔭 Future & Research** — deeper streaming fraud, expanded regulatory packs,
+** Future & Research** — deeper streaming fraud, expanded regulatory packs,
 additional cloud/data-residency options, and continued AI evaluation research.
 
 Full history in the **[Changelog](CHANGELOG.md)**; forward-looking plans in the
@@ -585,7 +585,7 @@ Full history in the **[Changelog](CHANGELOG.md)**; forward-looking plans in the
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 Contributions follow a professional, additive workflow — Conventional Commits,
 DCO sign-off, Code-Owner review and green CI. Existing APIs, migrations and
@@ -596,14 +596,14 @@ before opening a PR. New here? Start with **[Onboarding](docs/development/ONBOAR
 
 ---
 
-## 📄 License
+## License
 
 This project is **proprietary and confidential**. Copyright © 2026 Shriyansh Dev.
 All rights reserved. See **[LICENSE](LICENSE)**.
 
 ---
 
-## 🙏 Acknowledgements
+## Acknowledgements
 
 Built on the shoulders of the open-source community — **FastAPI**, **React**,
 **TanStack**, **SQLAlchemy**, **scikit-learn**, **Pydantic**, **Alembic**,

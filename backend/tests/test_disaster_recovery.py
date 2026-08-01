@@ -1,4 +1,4 @@
-"""Phase 11, M11 — disaster recovery tests (backup/restore/PITR/drill)."""
+""" disaster recovery tests (backup/restore/PITR/drill)."""
 
 import tempfile
 import unittest

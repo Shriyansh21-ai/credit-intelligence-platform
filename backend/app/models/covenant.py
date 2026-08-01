@@ -1,4 +1,4 @@
-"""Covenant monitoring models (Phase 5, Milestone 5).
+"""Covenant monitoring models.
 
 A ``Covenant`` is a threshold condition attached to an application/loan (e.g.
 "Minimum DSCR >= 1.25"). Each ``CovenantMeasurement`` records the metric's value

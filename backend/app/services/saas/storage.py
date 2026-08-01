@@ -1,4 +1,4 @@
-"""Cloud storage platform (Phase 8, Milestone 7).
+"""Cloud storage platform.
 
 A tenant-scoped object store with a pluggable backend abstraction, object
 versioning, at-rest encryption, lifecycle policies, signed URLs and large-file

@@ -1,8 +1,8 @@
-"""Shared helpers for Phase 9 Autonomous Intelligence tests (not a test module).
+"""Shared helpers for Autonomous Intelligence tests (not a test module).
 
 Builds an in-memory SQLite session with the full schema (importing the app
-registers every model) plus TestClients wired to the Phase 9 routers with auth +
-db overridden, mirroring the Phase 6/7/8 helper pattern.
+registers every model) plus TestClients wired to the routers with auth +
+db overridden, mirroring the /7/8 helper pattern.
 """
 
 from __future__ import annotations

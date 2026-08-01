@@ -1,12 +1,12 @@
-"""Unsupervised anomaly detectors for the fraud ML engine (Phase 6, M10).
+"""Unsupervised anomaly detectors for the fraud ML engine.
 
 A small abstraction, :class:`AnomalyDetector`, unifies several unsupervised
 methods behind ``fit`` / ``anomaly_score`` (higher = more anomalous, normalised
-to ~[0, 1]):
+to ~[0, 1])
 
-* :class:`IsolationForestDetector`     — tree-isolation outlier scoring.
-* :class:`LocalOutlierFactorDetector`  — density-based (novelty) scoring.
-* :class:`ReconstructionDetector`      — PCA reconstruction error, the
+* :class:`IsolationForestDetector` — tree-isolation outlier scoring.
+* :class:`LocalOutlierFactorDetector` — density-based (novelty) scoring.
+* :class:`ReconstructionDetector` — PCA reconstruction error, the
   autoencoder-ready abstraction (swap the PCA transform for a trained
   autoencoder without changing the interface).
 

@@ -1,4 +1,4 @@
-"""Phase 7 — Integration Platform API tests (HTTP + RBAC)."""
+""" Integration Platform API tests (HTTP + RBAC)."""
 
 import unittest
 import warnings

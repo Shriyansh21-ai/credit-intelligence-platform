@@ -1,4 +1,4 @@
-"""Phase 8 — Feature flags (M5) + white-label branding (M3)."""
+""" Feature flags (M5) + white-label branding (M3)."""
 
 import unittest
 import warnings

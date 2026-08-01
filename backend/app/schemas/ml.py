@@ -1,4 +1,4 @@
-"""Enterprise AI Risk Intelligence API schemas (Phase 4).
+"""Enterprise AI Risk Intelligence API schemas.
 
 ML payloads (feature vectors, predictions, explanations) are engine-driven and
 deeply nested, so the GET endpoints return the engine payload as-is. Only the
@@ -15,7 +15,7 @@ from pydantic import BaseModel, Field, model_validator
 class _FinancialSource(BaseModel):
     """A financials source shared by the ML compute endpoints.
 
-    Provide exactly one of:
+    Provide exactly one of
       * ``engine_input`` — a flattened assessment engine-input dict (has banking
         and qualitative fields, so it yields the richest feature set), or
       * ``financials`` — a mapping whose keys match ``FinancialStatement`` fields.

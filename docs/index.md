@@ -1,4 +1,4 @@
-# 📚 Documentation
+# Documentation
 
 *Documentation hub for the AI Credit Intelligence Platform.*
 

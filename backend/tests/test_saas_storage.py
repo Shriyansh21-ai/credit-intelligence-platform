@@ -1,4 +1,4 @@
-"""Phase 8 — Cloud storage platform (M7)."""
+""" Cloud storage platform (M7)."""
 
 import unittest
 import warnings

@@ -1,6 +1,6 @@
-"""Phase 11, M8 — security hardening tests.
+""" security hardening tests.
 
-Covers field-level encryption + key rotation, signed URLs, PII masking,
+Covers field-level encryption + key rotation, signed URLs, PII masking
 retention + secure deletion, JWT key rotation, refresh-token rotation with reuse
 detection, password policy, account lockout, TOTP MFA, risk-based auth, and the
 security-headers middleware.

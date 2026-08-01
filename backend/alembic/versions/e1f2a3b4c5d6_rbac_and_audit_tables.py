@@ -1,4 +1,4 @@
-"""RBAC and audit tables (Phase 5, Milestones 3 & 4)
+"""RBAC and audit tables
 
 Creates the roles / permissions / association tables and the audit log, then
 seeds the canonical RBAC catalog and backfills existing users with the default

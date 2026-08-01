@@ -1,4 +1,4 @@
-"""Phase 7 — connector domain + import/snapshot tests (M2, M3, M4, M6, M7, M8).
+""" connector domain + import/snapshot tests (M2, M3, M4, M6, M7, M8).
 
 Exercises every connector (GST, MCA, AA, bureau, ERP, payments) through the
 factory + resilience stack, the versioned snapshot store, provider-mode config

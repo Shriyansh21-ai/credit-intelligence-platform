@@ -1,8 +1,8 @@
-"""Customer 360 aggregation (Milestone 10).
+"""Customer 360 aggregation.
 
-Assembles one unified enterprise profile from every subsystem — the application,
+Assembles one unified enterprise profile from every subsystem — the application
 assessment, financial analysis, ML results, documents, GST/MCA/bureau/ERP/payment
-snapshots, bank-statement analytics, collateral, monitoring, tasks, approvals,
+snapshots, bank-statement analytics, collateral, monitoring, tasks, approvals
 audit and a derived relationship network + timeline.
 
 Each section is loaded defensively: a missing table (isolated test) or absent

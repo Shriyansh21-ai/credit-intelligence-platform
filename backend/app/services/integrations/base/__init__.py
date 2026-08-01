@@ -1,15 +1,15 @@
-"""Universal connector framework (Phase 7, Milestone 1).
+"""Universal connector framework.
 
-The public surface every integration is built on:
+The public surface every integration is built on
 
 * :class:`~.types.ProviderMode` — mock / sandbox / production.
-* :class:`~.types.ConnectorRequest` / :class:`~.types.ConnectorResponse` —
+* :class:`~.types.ConnectorRequest` / :class:`~.types.ConnectorResponse`
   the neutral envelope that flows through every connector.
 * :class:`~.connector.BaseConnector` — the abstract base that wraps a provider's
-  ``_execute`` with auth, retries, rate limiting, timeout, circuit breaking,
+  ``_execute`` with auth, retries, rate limiting, timeout, circuit breaking
   caching, audit logging, metrics and health checks.
 * :class:`~.registry.ConnectorRegistry` — config-driven provider selection.
-* :class:`~.resilience` — the resilience primitives (retry, circuit breaker,
+* :class:`~.resilience` — the resilience primitives (retry, circuit breaker
   rate limiter) as standalone, independently testable pieces.
 """
 

@@ -1,4 +1,4 @@
-# Phase 5 — Enterprise Credit Decision Platform
+# Enterprise Credit Decision Platform
 ## Engineering Report
 
 Phase 5 transforms the platform from an AI risk-analysis application into a

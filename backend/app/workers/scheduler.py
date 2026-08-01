@@ -1,16 +1,16 @@
-"""Scheduler process (Phase 11, M2).
+"""Scheduler process.
 
 Ticks recurring job schedules (``services.saas.jobs.tick_schedules``) and
 notifies owners of due/overdue tasks (``services.tasks.scan_due_tasks``) on a
-fixed interval. Run as:
+fixed interval. Run as
 
     python -m backend.app.workers.scheduler
 
 Run exactly one scheduler replica (it is the single writer of schedule
 next-run timestamps); scale the worker independently to add job throughput.
 
-Configuration (see ``core.settings``):
-    SCHEDULER_INTERVAL   seconds between ticks (default: 15.0)
+Configuration (see ``core.settings``)
+    SCHEDULER_INTERVAL seconds between ticks (default: 15.0)
 """
 
 from __future__ import annotations

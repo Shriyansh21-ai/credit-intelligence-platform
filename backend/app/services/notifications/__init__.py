@@ -1,4 +1,4 @@
-"""Centralized Notification Engine (Phase 5, Milestone 10).
+"""Centralized Notification Engine.
 
 A single ``notify()`` entry point fans an event out across enabled channels.
 In-app delivery persists a :class:`Notification`; email and webhook channels are

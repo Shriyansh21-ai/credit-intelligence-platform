@@ -1,4 +1,4 @@
-"""Super-admin console service (Phase 8, Milestone 12).
+"""Super-admin console service.
 
 Cross-tenant, platform-operator views. These functions deliberately bypass the
 tenant scope (the operator is a platform super-admin) and aggregate the state an

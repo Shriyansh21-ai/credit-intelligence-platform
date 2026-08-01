@@ -1,4 +1,4 @@
-"""Liveness healthcheck for the worker/scheduler containers (Phase 11, M2).
+"""Liveness healthcheck for the worker/scheduler containers.
 
 Exits 0 if the process wrote its heartbeat within ``--max-age`` seconds, else 1.
 Used as the Docker ``HEALTHCHECK`` command and the Kubernetes exec liveness

@@ -1,4 +1,4 @@
-"""Track 2 M4 — Prompt engineering platform tests."""
+""" M4 — Prompt engineering platform tests."""
 
 import unittest
 

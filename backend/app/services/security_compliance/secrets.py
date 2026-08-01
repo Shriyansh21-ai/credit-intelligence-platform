@@ -1,4 +1,4 @@
-"""Secret management audit (Milestone 5).
+"""Secret management audit.
 
 Inventories the platform's managed secrets from the live settings, reports the
 configured secrets provider, and flags weak / default / missing values using the

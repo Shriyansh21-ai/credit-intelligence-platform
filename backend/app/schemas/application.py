@@ -1,4 +1,4 @@
-"""Pydantic schemas for the application lifecycle & approval APIs (Phase 5)."""
+"""Pydantic schemas for the application lifecycle & approval APIs."""
 
 from __future__ import annotations
 

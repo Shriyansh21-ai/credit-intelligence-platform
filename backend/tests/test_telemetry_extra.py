@@ -1,4 +1,4 @@
-"""Phase 11, M14 — expanded telemetry, logging & tracing tests."""
+""" expanded telemetry, logging & tracing tests."""
 
 import logging
 import os

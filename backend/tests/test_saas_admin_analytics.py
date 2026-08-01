@@ -1,4 +1,4 @@
-"""Phase 8 — Admin console (M12) + analytics platform (M13)."""
+""" Admin console (M12) + analytics platform (M13)."""
 
 import unittest
 import warnings

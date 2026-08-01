@@ -1,7 +1,7 @@
 """Feature registry — the versioned catalogue of enterprise features.
 
 The registry is the single source of truth for *what* features exist, how they
-are computed and which category and data source they belong to. Model training,
+are computed and which category and data source they belong to. Model training
 inference and explainability all read feature order and metadata from here, so a
 model trained against ``FEATURE_SET_VERSION`` can always be reconciled with the
 features presented at inference time.

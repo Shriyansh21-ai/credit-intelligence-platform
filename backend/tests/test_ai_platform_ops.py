@@ -1,4 +1,4 @@
-"""Track 2 M11-M14 — learning, governance, explainability, monitoring tests."""
+""" M11-M14 — learning, governance, explainability, monitoring tests."""
 
 import unittest
 

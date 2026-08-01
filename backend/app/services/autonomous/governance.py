@@ -1,12 +1,12 @@
 """M13 — Model Governance Platform.
 
-A governance layer *on top of* the Phase 6 model registry (it never rewrites it).
+A governance layer *on top of* the model registry (it never rewrites it).
 It adds the formal controls a regulated bank needs around ML: a validation gate
 (``model_validations``), an immutable governance audit trail
 (``model_governance_events``), champion/challenger comparison, model lineage, and
 a governance-aware approval that refuses to approve a model that has not passed
 validation. Registry mechanics (versioning, promote, rollback, deployment history)
-are delegated to the existing Phase 6 ``services.ml.registry``.
+are delegated to the existing ``services.ml.registry``.
 """
 
 from __future__ import annotations
@@ -99,7 +99,7 @@ def approve_with_governance(db: Session, model_id: int, *, actor: Optional[str] 
     if require_validation and (val is None or val.status == "failed"):
         raise ValueError("model must pass validation before governance approval")
     reg = _registry()
-    # Phase 6 registry expects submit->approve; submit is idempotent-ish, guard it.
+    # registry expects submit->approve; submit is idempotent-ish, guard it.
     try:
         reg.submit_for_approval(db, model_id, actor=actor)
     except Exception:

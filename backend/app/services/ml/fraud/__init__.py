@@ -1,4 +1,4 @@
-"""Advanced Fraud ML engine (Phase 6, Milestone 10)."""
+"""Advanced Fraud ML engine."""
 
 from . import detectors, service
 from .service import cluster_profiles, get_detector, history, score, score_batch

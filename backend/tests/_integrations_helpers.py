@@ -1,4 +1,4 @@
-"""Shared helpers for Phase 7 integration tests (not a test module).
+"""Shared helpers for integration tests (not a test module).
 
 Builds an in-memory SQLite session with exactly the tables the integration
 platform needs (plus users/applications/assessments for linkage + RBAC). A

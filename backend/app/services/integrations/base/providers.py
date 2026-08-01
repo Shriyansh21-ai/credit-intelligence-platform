@@ -1,6 +1,6 @@
-"""Reusable provider mixins (Milestone 1).
+"""Reusable provider mixins.
 
-Each integration domain ships three providers behind one interface:
+Each integration domain ships three providers behind one interface
 
 * **Mock** — deterministic, offline, always available (the default).
 * **Sandbox** — points at a provider's test environment. Here it reuses the mock
@@ -30,7 +30,7 @@ _DEFAULT_SANDBOX_TOKEN = "sandbox-token"
 class SandboxProviderMixin:
     """Authenticates against a sandbox token; otherwise behaves like the mock."""
 
-    #: Secret name checked for a sandbox token (falls back to a default).
+    # Secret name checked for a sandbox token (falls back to a default).
     sandbox_secret: str = "sandbox.token"
 
     def _authenticate(self) -> None:  # type: ignore[override]
@@ -47,12 +47,12 @@ class ProductionProviderMixin:
     """Production wiring that requires real credentials.
 
     ``_authenticate`` resolves the required secret (raising ``ConfigurationError``
-    when unset — the "configure credentials" path). Even with a secret present,
+    when unset — the "configure credentials" path). Even with a secret present
     ``_execute`` raises a clear ``ProviderError`` because real HTTP wiring is
     intentionally not shipped in this build; a real deployment implements it here.
     """
 
-    #: Secret that must be configured to use the live provider.
+    # Secret that must be configured to use the live provider.
     production_secret: str = "api_key"
 
     def _authenticate(self) -> None:  # type: ignore[override]

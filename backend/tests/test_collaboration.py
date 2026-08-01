@@ -1,4 +1,4 @@
-"""Phase 5, Milestone 8 tests: notes, threads, mentions, pins, activity feed."""
+""" tests: notes, threads, mentions, pins, activity feed."""
 
 import unittest
 

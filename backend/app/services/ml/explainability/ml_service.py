@@ -1,4 +1,4 @@
-"""DB-integrated enterprise explanation service (Phase 6, Milestone 5).
+"""DB-integrated enterprise explanation service.
 
 Resolves the served model (production or requested), produces the full
 enterprise explainability payload and persists it to :class:`MLExplanation` for

@@ -1,4 +1,4 @@
-# Phase 10 — Architecture Report
+# Architecture Report
 
 ## Position in the platform
 Phase 10 is the **AI-native operating-system layer** sitting on top of the Phases 1–9

@@ -1,10 +1,10 @@
-"""Data Drift Detection (Phase 6, Milestone 7).
+"""Data Drift Detection.
 
 Detects when the live applicant population has drifted away from the data a
 model was trained on — the leading indicator that a model needs retraining.
-It computes, per feature and overall:
+It computes, per feature and overall
 
-* **Population Stability Index (PSI)** — the industry-standard drift measure,
+* **Population Stability Index (PSI)** — the industry-standard drift measure
   with the conventional bands (<0.1 stable, 0.1–0.25 moderate, >0.25 significant).
 * **Feature drift** — PSI plus mean shift for every feature.
 * **Target drift** — shift in the predicted-PD distribution.

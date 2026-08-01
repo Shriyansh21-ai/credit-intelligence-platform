@@ -1,7 +1,7 @@
-"""Tenant-resolution middleware (Phase 8, Milestone 1).
+"""Tenant-resolution middleware.
 
 Establishes the ambient :class:`TenantContext` for each request so tenant-aware
-repositories, caches and loggers scope automatically. Resolution order:
+repositories, caches and loggers scope automatically. Resolution order
 
 1. ``X-Tenant-ID`` header (integer tenant id) — the fast path used by the SPA
    and service-to-service calls behind the gateway.

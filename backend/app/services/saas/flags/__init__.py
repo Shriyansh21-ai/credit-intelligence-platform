@@ -1,4 +1,4 @@
-"""Feature-flag system (Phase 8, Milestone 5)."""
+"""Feature-flag system."""
 
 from backend.app.services.saas.flags import catalog, service
 

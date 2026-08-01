@@ -1,12 +1,12 @@
 """Canonical security & compliance catalogs — pure data, no I/O.
 
-Single source of truth for the Stage 4 security programme: STRIDE categories,
+Single source of truth for the Stage 4 security programme: STRIDE categories
 trust boundaries, the platform attack surface, OWASP Top 10 / API Top 10 / ASVS
 controls, compliance frameworks (SOC 2, ISO 27001, GDPR, PCI DSS, RBI Digital
 Lending, RBI Cyber Security, NIST CSF), the PII catalog and data-classification
 levels.
 
-Kept free of ORM/SQLAlchemy imports so it can be consumed from migrations,
+Kept free of ORM/SQLAlchemy imports so it can be consumed from migrations
 tests, docs generators and the runtime alike (mirrors ``rbac/catalog.py``).
 """
 
@@ -16,7 +16,7 @@ from typing import Dict, List, TypedDict
 
 
 # ===========================================================================
-# STRIDE (Milestone 1)
+# STRIDE
 # ===========================================================================
 STRIDE_CATEGORIES: Dict[str, str] = {
     "spoofing": "Impersonating an identity (authentication threats).",
@@ -122,7 +122,7 @@ STRIDE_THREATS: List[StrideThreat] = [
 
 
 # ===========================================================================
-# Trust / privilege / authentication boundaries + attack surface (Milestone 1)
+# Trust / privilege / authentication boundaries + attack surface
 # ===========================================================================
 TRUST_BOUNDARIES: List[Dict[str, str]] = [
     {"name": "Internet -> Edge", "description": "Untrusted clients cross into the reverse proxy / TLS termination.",
@@ -164,7 +164,7 @@ ATTACK_SURFACE: List[Dict[str, str]] = [
 
 
 # ===========================================================================
-# OWASP (Milestone 2)
+# OWASP
 # ===========================================================================
 class OwaspControl(TypedDict):
     id: str
@@ -289,7 +289,7 @@ ASVS_CHAPTERS: List[Dict[str, str]] = [
 
 
 # ===========================================================================
-# Data classification & PII catalog (Milestone 6)
+# Data classification & PII catalog
 # ===========================================================================
 DATA_CLASSIFICATIONS: List[Dict[str, str]] = [
     {"level": "public", "rank": "0", "description": "Non-sensitive, publicly shareable.",
@@ -336,7 +336,7 @@ PII_CATALOG: List[PiiField] = [
 
 
 # ===========================================================================
-# Compliance frameworks (Milestone 7)
+# Compliance frameworks
 # ===========================================================================
 class ComplianceControl(TypedDict):
     id: str

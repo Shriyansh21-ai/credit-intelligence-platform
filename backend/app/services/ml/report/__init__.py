@@ -1,4 +1,4 @@
-"""Enterprise Analyst Copilot (Phase 4, Milestone 8).
+"""Enterprise Analyst Copilot.
 
 Generates a professional, bank-grade credit memo by composing the outputs of the
 scoring engine, financial analysis, feature store, explainability layer and

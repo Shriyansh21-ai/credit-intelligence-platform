@@ -1,7 +1,7 @@
-"""Inbound Pydantic schemas for the AI Intelligence Platform APIs (Track 2).
+"""Inbound Pydantic schemas for the AI Intelligence Platform APIs.
 
 Request bodies only — responses are plain JSON dicts assembled by the services
-(mirroring the Phase 9/10 convention). Grouped by milestone.
+(mirroring the /10 convention). Grouped by milestone.
 """
 
 from __future__ import annotations

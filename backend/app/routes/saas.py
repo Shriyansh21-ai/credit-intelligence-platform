@@ -1,22 +1,22 @@
-"""Multi-Tenant Enterprise SaaS Platform APIs (Phase 8).
+"""Multi-Tenant Enterprise SaaS Platform APIs.
 
 A set of focused, additive routers exposing the whole SaaS surface under
 ``/api/saas/*`` (plus unauthenticated k8s probes at the root). Every router is
 new; no existing route is modified.
 
-    /api/saas/tenancy         organizations, tenants, hierarchy, members, invites
-    /api/saas/branding        white-label theming + custom domains
-    /api/saas/billing         plans, subscriptions, usage, invoices, analytics
-    /api/saas/flags           feature flags + overrides + evaluation
-    /api/saas/jobs            background job platform + schedules + DLQ
-    /api/saas/storage         cloud object storage + signed URLs
-    /api/saas/realtime        activity stream, presence, live WebSocket
-    /api/saas/observability   tracing, metrics, health, errors
-    /api/saas/cache           tenant-aware cache admin
-    /api/saas/security        secrets, sessions, devices, IP allow-list, IdPs
-    /api/saas/analytics       SaaS executive analytics
-    /api/saas/admin           super-admin console (cross-tenant)
-    /healthz /livez /readyz   deployment probes (M11)
+    /api/saas/tenancy organizations, tenants, hierarchy, members, invites
+    /api/saas/branding white-label theming + custom domains
+    /api/saas/billing plans, subscriptions, usage, invoices, analytics
+    /api/saas/flags feature flags + overrides + evaluation
+    /api/saas/jobs background job platform + schedules + DLQ
+    /api/saas/storage cloud object storage + signed URLs
+    /api/saas/realtime activity stream, presence, live WebSocket
+    /api/saas/observability tracing, metrics, health, errors
+    /api/saas/cache tenant-aware cache admin
+    /api/saas/security secrets, sessions, devices, IP allow-list, IdPs
+    /api/saas/analytics SaaS executive analytics
+    /api/saas/admin super-admin console (cross-tenant)
+    /healthz /livez /readyz deployment probes (M11)
 """
 
 from __future__ import annotations

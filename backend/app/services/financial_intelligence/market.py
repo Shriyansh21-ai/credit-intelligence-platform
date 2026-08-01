@@ -1,6 +1,6 @@
 """M6 — Market Intelligence Platform.
 
-Market data & intelligence: interest/yield curves, bond yields, equity indices,
+Market data & intelligence: interest/yield curves, bond yields, equity indices
 commodities, FX, credit spreads, CDS and volatility, plus corporate/industry/
 macro news with sentiment, summaries and impact analysis, and an economic
 calendar. The architecture is provider-agnostic: instruments and quotes are

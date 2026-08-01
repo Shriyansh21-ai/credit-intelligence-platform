@@ -1,11 +1,11 @@
-"""Tenant-aware repository base (Phase 8, Milestone 1).
+"""Tenant-aware repository base.
 
 Every read/write against a tenant-scoped table goes through a
-:class:`TenantRepository`. It:
+:class:`TenantRepository`. It
 
 * auto-filters every query by the active tenant (from :mod:`context` or an
-  explicit ``tenant_id``),
-* stamps ``tenant_id`` on inserts,
+  explicit ``tenant_id``)
+* stamps ``tenant_id`` on inserts
 * guards fetch-by-id against cross-tenant access (returns ``None`` / raises
   rather than leaking another tenant's row).
 

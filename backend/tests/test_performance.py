@@ -1,4 +1,4 @@
-"""Phase 5, Milestone 14 tests: TTL cache, background jobs, batch processing."""
+""" tests: TTL cache, background jobs, batch processing."""
 
 import unittest
 

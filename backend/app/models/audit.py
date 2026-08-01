@@ -1,6 +1,6 @@
-"""Audit log persistence (Phase 5, Milestone 4).
+"""Audit log persistence.
 
-A single append-only table captures every material action on the platform:
+A single append-only table captures every material action on the platform
 logins, API calls, predictions, uploads, edits, approvals, exports, and more.
 Rows are never updated or deleted by application code.
 """

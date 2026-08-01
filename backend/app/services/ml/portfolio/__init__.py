@@ -1,6 +1,6 @@
-"""Portfolio risk intelligence (Phase 4, Milestone 6).
+"""Portfolio risk intelligence.
 
-Aggregates individual enterprise assessments into portfolio-level intelligence:
+Aggregates individual enterprise assessments into portfolio-level intelligence
 portfolio health, exposure and expected/unexpected loss, distributions by
 industry / rating / region, concentration (HHI), and the top risk clients.
 

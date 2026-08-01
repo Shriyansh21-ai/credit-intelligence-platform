@@ -1,4 +1,4 @@
-"""Pydantic schemas for the RBAC API (Phase 5, Milestone 3)."""
+"""Pydantic schemas for the RBAC API."""
 
 from __future__ import annotations
 

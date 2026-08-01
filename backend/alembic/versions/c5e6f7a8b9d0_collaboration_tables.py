@@ -1,4 +1,4 @@
-"""Collaboration tables: notes, mentions, attachments (Phase 5, M8)
+"""Collaboration tables: notes, mentions, attachments
 
 Revision ID: c5e6f7a8b9d0
 Revises: b4d5e6f7a8c9

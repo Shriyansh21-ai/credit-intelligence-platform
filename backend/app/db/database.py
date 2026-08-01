@@ -1,7 +1,7 @@
 """SQLAlchemy engine and session factory.
 
 The connection string and pool tuning come from the centralized settings
-(Phase 11, M1). The historical zero-config SQLite default is preserved when
+. The historical zero-config SQLite default is preserved when
 ``DATABASE_URL`` is unset, so every existing dev/test flow keeps working; set
 ``DATABASE_URL`` to a PostgreSQL DSN (plus the ``DB_POOL_*`` knobs) for
 staging/production. ``DATABASE_URL`` remains importable for Alembic.

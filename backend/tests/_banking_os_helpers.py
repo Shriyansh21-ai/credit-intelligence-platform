@@ -1,8 +1,8 @@
-"""Shared helpers for Phase 10 Banking OS tests (not a test module).
+"""Shared helpers for Banking OS tests (not a test module).
 
 Builds an in-memory SQLite session with the full schema (importing the app
-registers every model) plus a TestClient wired to the Phase 10 routers with auth
-+ db overridden, mirroring the Phase 6/7/8/9 helper pattern.
+registers every model) plus a TestClient wired to the routers with auth
++ db overridden, mirroring the /7/8/9 helper pattern.
 """
 
 from __future__ import annotations

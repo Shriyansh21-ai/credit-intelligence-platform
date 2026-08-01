@@ -40,7 +40,7 @@ class DeterministicRiskModel(BaseRiskModel):
     algorithm = "Deterministic Additive Log-Odds"
     model_version = "1.0"
     feature_set_version = "1.0"
-    #: Module used only to report whether the real backend is installed.
+    # Module used only to report whether the real backend is installed.
     probe_module = "sklearn"
     description = "Transparent additive log-odds risk estimator."
 
@@ -52,7 +52,7 @@ class DeterministicRiskModel(BaseRiskModel):
     def load_model(self, path: Optional[str] = None) -> "DeterministicRiskModel":
         """Load a trained artifact if one exists; otherwise stay in
         deterministic-fallback mode. Never raises for a missing artifact — a
-        model with no trained weights is a valid state in Phase 4."""
+        model with no trained weights is a valid state in ."""
         artifact_path = Path(path) if path else ARTIFACTS_DIR / f"{self.model_type}.joblib"
         if artifact_path.exists():
             import joblib  # local import: only needed when an artifact exists

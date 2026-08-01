@@ -1,8 +1,8 @@
-"""Enterprise ML engine (Phase 4, Milestone 2).
+"""Enterprise ML engine.
 
 A modular, configurable inference architecture. Every model implements
 :class:`BaseRiskModel`, so business logic depends only on the interface and
-never on a concrete algorithm. New algorithms are added by registering a class —
+never on a concrete algorithm. New algorithms are added by registering a class
 no change to callers.
 
 No models are trained yet (per the phase brief). Until a trained artifact is

@@ -1,12 +1,12 @@
-"""Document Intelligence API (Phase 2, Task 11).
+"""Document Intelligence API.
 
-    POST   /documents/upload         multi-file upload
-    POST   /documents/{id}/extract   run OCR + field extraction
-    GET    /documents/{id}           document + current extraction
-    PUT    /documents/{id}/review    save corrected values (new version)
-    DELETE /documents/{id}           remove document + file
-    GET    /documents/history        user's documents
-    GET    /documents/{id}/file      stream original for the viewer
+    POST /documents/upload multi-file upload
+    POST /documents/{id}/extract run OCR + field extraction
+    GET /documents/{id} document + current extraction
+    PUT /documents/{id}/review save corrected values (new version)
+    DELETE /documents/{id} remove document + file
+    GET /documents/history user's documents
+    GET /documents/{id}/file stream original for the viewer
 """
 
 from __future__ import annotations

@@ -1,12 +1,12 @@
-"""Task management API (Phase 5, Milestone 9).
+"""Task management API.
 
-    GET   /api/tasks/types                    supported task types
-    POST  /api/tasks                          create a task
-    GET   /api/tasks                          list (filter: application_id, owner_id, status, mine)
-    GET   /api/tasks/{id}                      task detail (+ comments)
-    PATCH /api/tasks/{id}                      update (status, reassign, ...)
-    POST  /api/tasks/{id}/comments            add a comment
-    GET   /api/tasks/{id}/comments            list comments
+    GET /api/tasks/types supported task types
+    POST /api/tasks create a task
+    GET /api/tasks list (filter: application_id, owner_id, status, mine)
+    GET /api/tasks/{id} task detail (+ comments)
+    PATCH /api/tasks/{id} update (status, reassign, ...)
+    POST /api/tasks/{id}/comments add a comment
+    GET /api/tasks/{id}/comments list comments
 """
 
 from __future__ import annotations

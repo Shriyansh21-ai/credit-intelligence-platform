@@ -1,11 +1,11 @@
-"""ORM model registry (Phase 11, M2).
+"""ORM model registry.
 
 Importing this module imports every ORM model module under
 ``backend.app.models`` so that all SQLAlchemy mappers and their inter-model
 relationships (e.g. ``User.user_roles``) are registered on ``Base.metadata``.
 
 The FastAPI app registers models via its own explicit import block in
-``main.py``; standalone processes (the worker and scheduler) have no such block,
+``main.py``; standalone processes (the worker and scheduler) have no such block
 so they import this instead. Using package introspection keeps the registry
 complete automatically as new model modules are added.
 """

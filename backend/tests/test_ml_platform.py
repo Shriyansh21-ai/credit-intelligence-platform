@@ -1,7 +1,7 @@
-"""Phase 6 — Enterprise ML Platform service-level tests.
+""" Enterprise ML Platform service-level tests.
 
-Covers the training pipeline, model registry, serving engine, explainability,
-monitoring, performance, drift detection, retraining, fraud ML, portfolio ML,
+Covers the training pipeline, model registry, serving engine, explainability
+monitoring, performance, drift detection, retraining, fraud ML, portfolio ML
 stress testing and the enterprise feature store.
 """
 

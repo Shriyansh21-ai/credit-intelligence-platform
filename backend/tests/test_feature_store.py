@@ -1,4 +1,4 @@
-"""Phase 4 Milestone 1 tests: versioned persistence of feature vectors."""
+""" tests: versioned persistence of feature vectors."""
 
 import unittest
 

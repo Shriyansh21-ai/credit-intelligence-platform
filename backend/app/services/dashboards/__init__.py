@@ -1,4 +1,4 @@
-"""Dashboard aggregation service (Phase 5, Milestone 11).
+"""Dashboard aggregation service.
 
 Server-side aggregates that back the enterprise dashboards, so the frontend reads
 real numbers from one endpoint per dashboard instead of stitching many calls or

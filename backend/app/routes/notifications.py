@@ -1,14 +1,14 @@
-"""Notification API (Phase 5, Milestone 10).
+"""Notification API.
 
 All endpoints operate on the *current user's* own notifications.
 
-    GET   /api/notifications                 list (unread filter + paginate)
-    GET   /api/notifications/unread-count     unread badge count
-    GET   /api/notifications/events           event catalog
-    POST  /api/notifications/{id}/read        mark one read
-    POST  /api/notifications/read-all         mark all read
-    GET   /api/notifications/preferences      per-event channel preferences
-    PUT   /api/notifications/preferences      update a preference
+    GET /api/notifications list (unread filter + paginate)
+    GET /api/notifications/unread-count unread badge count
+    GET /api/notifications/events event catalog
+    POST /api/notifications/{id}/read mark one read
+    POST /api/notifications/read-all mark all read
+    GET /api/notifications/preferences per-event channel preferences
+    PUT /api/notifications/preferences update a preference
 """
 
 from __future__ import annotations

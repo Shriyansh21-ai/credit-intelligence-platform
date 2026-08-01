@@ -3,9 +3,9 @@
 Visual, versioned, BPMN-like workflows (drag-and-drop on the frontend) with a
 deterministic execution engine. A definition is a directed graph of typed nodes
 (start / task / decision / approval / automation / notification / end) connected
-by edges that may carry a condition. The engine walks the graph from ``start``,
+by edges that may carry a condition. The engine walks the graph from ``start``
 resolves decision branches by evaluating edge conditions against the run context
-(reusing the Phase 10 policy condition evaluator), records a full step trace, and
+(reusing the policy condition evaluator), records a full step trace, and
 pauses at ``approval`` nodes unless the context authorizes auto-approval.
 
 Deterministic and loop-guarded — every run is reproducible and auditable.

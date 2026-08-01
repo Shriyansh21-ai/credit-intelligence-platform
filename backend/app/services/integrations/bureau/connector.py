@@ -1,4 +1,4 @@
-"""Credit Bureau connector interface + providers (Milestone 6).
+"""Credit Bureau connector interface + providers.
 
 Supports multiple bureau providers (mock CIBIL-style + Experian-style sandbox)
 behind one interface and **normalizes** their differing raw shapes into a single
@@ -83,7 +83,7 @@ class BureauConnector(BaseConnector):
 
 
 class MockBureauConnector(BureauConnector):
-    #: Which bureau this mock emulates (drives raw field naming).
+    # Which bureau this mock emulates (drives raw field naming).
     bureau_name = "MockBureau"
 
     def __init__(self, **kwargs):

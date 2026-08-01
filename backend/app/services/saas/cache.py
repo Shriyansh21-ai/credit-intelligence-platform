@@ -1,4 +1,4 @@
-"""Cache platform (Phase 8, Milestone 10).
+"""Cache platform.
 
 A tenant-aware cache with a pluggable backend abstraction, TTLs, tag/prefix
 invalidation, cache warming and hit/miss statistics. The default

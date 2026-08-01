@@ -1,4 +1,4 @@
-"""Track 2 M8 — AI workflow builder + execution engine tests."""
+""" M8 — AI workflow builder + execution engine tests."""
 
 import unittest
 
@@ -7,7 +7,7 @@ from backend.tests._ai_platform_helpers import (
 )
 
 # A workflow: start → agent committee → condition(decision==APPROVE) →
-#   true: report ; false: approval gate → end
+# true: report ; false: approval gate → end
 GRAPH = {
     "start": "n_start",
     "nodes": [

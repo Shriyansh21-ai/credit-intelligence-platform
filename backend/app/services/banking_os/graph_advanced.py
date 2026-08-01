@@ -1,10 +1,10 @@
 """M1 — Enterprise Knowledge Graph: advanced analytics.
 
-Extends the Phase 9 knowledge graph (``kg_entities`` / ``kg_relationships``) with
+Extends the knowledge graph (``kg_entities`` / ``kg_relationships``) with
 the regulated-lending analytics banks need: **Ultimate Beneficial Owner** (UBO)
 resolution with effective ownership, **connected-lending** detection (credit
 extended to related parties), **cross-holding** cycle detection, and an entity
-**timeline**. Read-only over the Phase 9 tables — nothing in Phase 9 is modified.
+**timeline**. Read-only over the tables — nothing in is modified.
 """
 
 from __future__ import annotations

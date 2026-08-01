@@ -1,4 +1,4 @@
-"""Phase 4 Milestone 2 tests: the ML engine architecture (interface,
+""" tests: the ML engine architecture (interface
 registry, deterministic estimator, inference service)."""
 
 import unittest

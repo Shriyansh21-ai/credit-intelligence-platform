@@ -1,4 +1,4 @@
-"""Enterprise Model Registry (Phase 6, Milestone 3)."""
+"""Enterprise Model Registry."""
 
 from . import service
 from .service import (

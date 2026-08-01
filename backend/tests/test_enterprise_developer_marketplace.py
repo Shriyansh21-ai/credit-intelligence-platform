@@ -1,4 +1,4 @@
-"""Track 4 M3 (Developer) + M4 (Marketplace) tests."""
+""" M3 (Developer) + M4 (Marketplace) tests."""
 
 from backend.tests._enterprise_platform_helpers import admin_client
 
@@ -58,7 +58,7 @@ def test_marketplace_lifecycle():
     # need version id — list via detail; approve latest by fetching versions is not exposed, so approve via review needs version_id
     # fetch the version id through a fresh add path: approve the initial submission
     # (initial version was created at publish; find it by re-submitting review on version 1)
-    # We expose review by version_id; retrieve it from the DB-less API by publishing a new version:
+    # We expose review by version_id; retrieve it from the DB-less API by publishing a new version
     r = client.post("/api/ent/marketplace/versions", json={"plugin_id": pid, "version": "1.1.0",
                                                           "changelog": "improvements"})
     vid = r.json()["version_id"]

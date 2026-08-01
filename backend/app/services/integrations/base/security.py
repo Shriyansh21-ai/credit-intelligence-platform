@@ -1,15 +1,15 @@
-"""Connector security primitives (Milestone 14).
+"""Connector security primitives.
 
-Enterprise integrations touch credentials and PII, so the framework provides:
+Enterprise integrations touch credentials and PII, so the framework provides
 
 * :class:`SecretResolver` — a secret abstraction. Secrets are referenced by name
-  (``"gst.api_key"``) and resolved from an injected store or the environment,
+  (``"gst.api_key"``) and resolved from an injected store or the environment
   never hard-coded in configs. A reference that cannot be resolved raises, so
   production connectors fail loudly rather than silently running unauthenticated.
 * :func:`encrypt_secret` / :func:`decrypt_secret` — a reversible envelope for
-  credentials stored at rest. Uses a keyed, salted transform (dependency-free);
+  credentials stored at rest. Uses a keyed, salted transform (dependency-free)
   the interface is what matters — swap in KMS/Fernet in a real deployment.
-* :func:`mask_pii` / :func:`mask_value` — data-masking helpers that redact PANs,
+* :func:`mask_pii` / :func:`mask_value` — data-masking helpers that redact PANs
   GSTINs, account numbers, emails and phone numbers for logs and audit trails.
 
 The goal is a clean, swappable security surface, not novel cryptography.
@@ -35,7 +35,7 @@ _DEFAULT_ENV_PREFIX = "CONNECTOR_SECRET_"
 class SecretResolver:
     """Resolves named secret references to their values.
 
-    Resolution order: an explicit in-memory ``store`` (highest precedence),
+    Resolution order: an explicit in-memory ``store`` (highest precedence)
     then the process environment (``CONNECTOR_SECRET_<UPPER_NAME>``). Names are
     normalised (``"gst.api_key"`` → ``GST_API_KEY``).
     """

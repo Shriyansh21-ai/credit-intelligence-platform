@@ -1,17 +1,17 @@
-"""Enterprise Feature Store (Phase 4, Milestone 1).
+"""Enterprise Feature Store.
 
 Turns the deterministic financial signals produced by the ratio/health engines
-into versioned, ML-ready feature vectors. Each feature carries its ``value``,
+into versioned, ML-ready feature vectors. Each feature carries its ``value``
 ``feature_name``, ``description``, ``version``, ``generated_time``, ``source``
 and ``confidence`` — the exact contract the phase brief specifies.
 
 Public surface
 --------------
-* :mod:`feature_registry`   - the versioned catalogue of feature definitions
-* :mod:`feature_builder`    - computes :class:`Feature` values for a context
-* :mod:`feature_pipeline`   - high-level entrypoints (engine input / statement)
+* :mod:`feature_registry` - the versioned catalogue of feature definitions
+* :mod:`feature_builder` - computes :class:`Feature` values for a context
+* :mod:`feature_pipeline` - high-level entrypoints (engine input / statement)
 * :mod:`feature_serializer` - (de)serialisation to/from persistence & API
-* :mod:`feature_store`      - versioned persistence of feature vectors
+* :mod:`feature_store` - versioned persistence of feature vectors
 
 The layer is intentionally read-only with respect to the scoring engines: it
 consumes their outputs and never mutates them.

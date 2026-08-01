@@ -32,14 +32,14 @@ changes** and full backward compatibility.
 
 | Dimension | Status | Evidence |
 |-----------|--------|----------|
-| Build & release | ✅ | CI matrix (OS×Py), migration round-trip, semver release, GHCR |
-| Deployability | ✅ | Docker (3 targets) + k8s overlays + Terraform; env-gated deploy + auto-rollback |
-| Observability | ✅ | metrics/logs/traces correlated; SLOs + alerting |
-| Security | ✅ | encryption, auth hardening, headers, SAST/deps/secret scanning |
-| Reliability / DR | ✅ | backups, PITR, drills, HA topology, PDB/HPA |
-| Compliance | ✅ | control mapping + privacy machinery |
-| Documentation | ✅ | architecture, runbooks, incident response, ADRs |
-| Test coverage | ✅ | 1212 tests, all green |
+| Build & release | | CI matrix (OS×Py), migration round-trip, semver release, GHCR |
+| Deployability | | Docker (3 targets) + k8s overlays + Terraform; env-gated deploy + auto-rollback |
+| Observability | | metrics/logs/traces correlated; SLOs + alerting |
+| Security | | encryption, auth hardening, headers, SAST/deps/secret scanning |
+| Reliability / DR | | backups, PITR, drills, HA topology, PDB/HPA |
+| Compliance | | control mapping + privacy machinery |
+| Documentation | | architecture, runbooks, incident response, ADRs |
+| Test coverage | | 1212 tests, all green |
 
 ## Conditions before go-live
 

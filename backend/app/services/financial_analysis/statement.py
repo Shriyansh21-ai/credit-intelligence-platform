@@ -2,8 +2,8 @@
 
 :class:`FinancialStatement` is the single input contract for every engine in
 this package. It is deliberately source-agnostic: adapters build it from either
-the enterprise assessment ``engine_input`` (Phase 1) or from reviewed document
-extraction fields (Phase 2). Each numeric field is ``Optional`` so a genuine
+the enterprise assessment ``engine_input`` or from reviewed document
+extraction fields. Each numeric field is ``Optional`` so a genuine
 ``0`` is distinguishable from a *missing* figure — the engines return
 "unavailable" for ratios whose inputs are absent instead of inventing values.
 

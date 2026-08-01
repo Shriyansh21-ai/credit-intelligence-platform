@@ -1,7 +1,7 @@
-"""Shared helpers for Phase 8 SaaS-platform tests (not a test module).
+"""Shared helpers for SaaS-platform tests (not a test module).
 
-Builds an in-memory SQLite session with the Phase 8 tables plus the users/RBAC
-tables needed for auth. Uses a targeted ``create_all`` (like the Phase 7 helper)
+Builds an in-memory SQLite session with the tables plus the users/RBAC
+tables needed for auth. Uses a targeted ``create_all`` (like the helper)
 to avoid unrelated cross-model FK ordering issues.
 """
 

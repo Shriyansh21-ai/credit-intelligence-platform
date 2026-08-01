@@ -1,4 +1,4 @@
-"""Phase 11, Milestone 2 — worker & scheduler process tests.
+""" worker & scheduler process tests.
 
 Exercises the shared poll-loop runtime, the liveness heartbeat/healthcheck, and
 the worker/scheduler ticks against a throwaway in-memory database using the

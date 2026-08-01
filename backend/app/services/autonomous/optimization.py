@@ -1,9 +1,9 @@
 """M7 — Portfolio Optimization AI.
 
 Turns the live book (latest assessment per company) into an actionable
-optimization view: sector/geographic exposure, concentration (HHI + top-name),
+optimization view: sector/geographic exposure, concentration (HHI + top-name)
 expected return, RAROC, capital allocation and risk-adjusted rebalancing
-suggestions. All figures derive from stored assessment data (exposure, PD, LGD,
+suggestions. All figures derive from stored assessment data (exposure, PD, LGD
 interest rate) — nothing is fabricated; positions missing a figure are excluded
 from that particular calculation and flagged in ``coverage``.
 """

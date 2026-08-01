@@ -31,14 +31,14 @@ attestation) that are organisational rather than code-level.
 
 | Domain | Status | Evidence |
 |---|---|---|
-| Access control (least privilege) | ✅ satisfied | RBAC catalog, `require_permission` |
-| Encryption (transit + at rest) | ✅ satisfied | TLS/HSTS, FieldCipher AES-256-GCM |
-| Authentication (MFA-ready) | ✅ satisfied | JWT rotation, TOTP, lockout, password policy |
-| Logging & monitoring | ✅ satisfied | Audit middleware, OpenTelemetry, metrics |
-| Change management | ✅ satisfied | Alembic migrations, CI/CD, code review |
-| Backup & DR | ✅ satisfied | DR module, backup cronjob, PITR |
-| Data-subject rights (access/erasure/portability) | ✅ satisfied | Privacy (DSAR) workflow + crypto-shredding |
-| Data minimisation & retention | ✅ satisfied | PII catalog, RetentionRegistry |
+| Access control (least privilege) | satisfied | RBAC catalog, `require_permission` |
+| Encryption (transit + at rest) | satisfied | TLS/HSTS, FieldCipher AES-256-GCM |
+| Authentication (MFA-ready) | satisfied | JWT rotation, TOTP, lockout, password policy |
+| Logging & monitoring | satisfied | Audit middleware, OpenTelemetry, metrics |
+| Change management | satisfied | Alembic migrations, CI/CD, code review |
+| Backup & DR | satisfied | DR module, backup cronjob, PITR |
+| Data-subject rights (access/erasure/portability) | satisfied | Privacy (DSAR) workflow + crypto-shredding |
+| Data minimisation & retention | satisfied | PII catalog, RetentionRegistry |
 
 ## Open gaps (deployment / organisational)
 

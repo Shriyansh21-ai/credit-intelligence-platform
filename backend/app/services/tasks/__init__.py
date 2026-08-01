@@ -1,4 +1,4 @@
-"""Task Management (Phase 5, Milestone 9).
+"""Task Management.
 
 Application-scoped tasks with owner / priority / due date / status / comments.
 Assignment, completion and due/overdue scans emit notifications via the M10

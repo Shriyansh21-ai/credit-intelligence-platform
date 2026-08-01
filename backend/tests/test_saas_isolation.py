@@ -1,4 +1,4 @@
-"""Phase 8 — Tenant isolation via the tenant-aware repository (M1)."""
+""" Tenant isolation via the tenant-aware repository (M1)."""
 
 import unittest
 import warnings

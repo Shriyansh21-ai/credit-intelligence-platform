@@ -1,4 +1,4 @@
-"""Post-Disbursement Monitoring engine (Phase 5, Milestone 6).
+"""Post-Disbursement Monitoring engine.
 
 Tracks the ongoing health of disbursed loans and raises deterioration alerts
 (health-score drops, rating downgrades, late/defaulted payments) automatically.

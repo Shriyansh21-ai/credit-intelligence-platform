@@ -2,7 +2,7 @@
 
 External payloads (GST profile/returns, MCA master, bureau report, ERP
 financials, payment analytics) are persisted as :class:`IntegrationSnapshot`
-rows. Snapshots are **versioned** and **content-hashed**:
+rows. Snapshots are **versioned** and **content-hashed**
 
 * Saving identical content again is a no-op that returns the existing current
   snapshot (idempotent refresh — no version churn when nothing changed).

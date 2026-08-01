@@ -1,6 +1,6 @@
 """M4 — Enterprise prompt engineering platform.
 
-A governed prompt registry so no prompt is ever hardcoded in application logic:
+A governed prompt registry so no prompt is ever hardcoded in application logic
 
     register → add_version → evaluate → approve → deploy → (rollback)
                             └────────── A/B experiment ──────────┘

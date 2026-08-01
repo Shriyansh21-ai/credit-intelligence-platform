@@ -1,4 +1,4 @@
-# Track 3 — Advanced Financial Intelligence Platform · Architecture
+# Advanced Financial Intelligence Platform · Architecture
 
 Track 3 evolves the platform into an **Advanced Financial Intelligence Platform**
 for enterprise banking, investment banking, commercial lending, treasury,
@@ -77,7 +77,7 @@ coupled and avoiding cross-model FK-ordering issues in targeted test schemas.
   optimization, executive and strategic engines.
 - **Economic Scenario Engine (M4)** propagates macro shocks into every
   assessment's stressed PD/EL and feeds the digital twin and strategic reports.
-- **AI Platform (Track 2)** conventions (grounding blocks, checksums, provider
+- **AI Platform** conventions (grounding blocks, checksums, provider
   gating) are reused; strategic reports mirror the investigation→report pattern.
 - **SaaS multi-tenancy** — `_tenant()` resolves the current tenant identically to
   Track 2.

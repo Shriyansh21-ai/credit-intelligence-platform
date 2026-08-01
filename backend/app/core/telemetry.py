@@ -1,9 +1,9 @@
-"""Enterprise telemetry layer (Phase 11, M7).
+"""Enterprise telemetry layer.
 
 Turns the platform's existing in-process observability primitives
 (``services.saas.observability``) into a production-grade, standards-based
 telemetry surface **without duplicating** the metric registry or the
-correlation/trace context that already exist:
+correlation/trace context that already exist
 
 * :func:`render_prometheus` — renders the live :class:`MetricsRegistry`
   snapshot into Prometheus text exposition format, served at ``GET /metrics``

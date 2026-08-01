@@ -1,4 +1,4 @@
-"""MCA (Ministry of Corporate Affairs) integration (Phase 7, Milestone 3)."""
+"""MCA (Ministry of Corporate Affairs) integration."""
 
 from backend.app.services.integrations.mca.connector import (
     MCAConnector,

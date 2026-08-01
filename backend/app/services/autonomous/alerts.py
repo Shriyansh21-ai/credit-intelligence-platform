@@ -1,9 +1,9 @@
 """Unified intelligence-alert store (M2 / M3 / M11).
 
-A single, deduplicated, prioritized alert lifecycle shared by the monitoring,
+A single, deduplicated, prioritized alert lifecycle shared by the monitoring
 early-warning and recommendation engines so the platform has one inbox for
 "the AI thinks you should look at this". Best-effort notification fan-out reuses
-the Phase 5 notifications service when available (never breaks the caller).
+the notifications service when available (never breaks the caller).
 """
 
 from __future__ import annotations

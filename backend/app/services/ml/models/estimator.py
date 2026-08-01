@@ -2,13 +2,13 @@
 
 Until real models are trained, every model in the engine shares this estimator
 so predictions are **deterministic, monotonic and fully explainable** — never
-random or fabricated. It is a transparent additive log-odds model:
+random or fabricated. It is a transparent additive log-odds model
 
-    logit(PD) = intercept + Σ  wᵢ · dirᵢ · squash((xᵢ − centerᵢ) / scaleᵢ)
+    logit(PD) = intercept + Σ wᵢ · dirᵢ · squash((xᵢ − centerᵢ) / scaleᵢ)
 
 Each term is a signed contribution in log-odds space; risk-increasing features
 push the logit up. Because the contributions are additive and exact, they double
-as the ground truth for the explainability layer (Milestone 3) — no separate
+as the ground truth for the explainability layer — no separate
 SHAP approximation is needed for the placeholder model, and a trained model can
 later expose true SHAP values through the same contribution contract.
 
@@ -23,7 +23,7 @@ from typing import Dict, List, Mapping, Optional, Tuple
 
 Number = Optional[float]
 
-# Score band aligned with the enterprise scorecard (Phase 1).
+# Score band aligned with the enterprise scorecard.
 SCORE_MIN, SCORE_MAX = 300, 900
 
 
@@ -124,7 +124,7 @@ class DeterministicRiskEstimator:
         return self.contributions(features).probability_of_default
 
     def global_importance(self) -> Dict[str, float]:
-        """Model-level importances: the absolute influence weight of each driver,
+        """Model-level importances: the absolute influence weight of each driver
         normalised to sum to 1. Deterministic and independent of any single
         borrower — the placeholder analogue of a trained model's importances."""
         total = sum(abs(w.weight) for w in self.weights) or 1.0

@@ -1,20 +1,20 @@
-"""Banking Ecosystem Integration Platform persistence (Phase 7).
+"""Banking Ecosystem Integration Platform persistence.
 
 All tables are **additive** — nothing from Phases 1–6 is touched. Schema is
 created by the Alembic migration ``b8c9d0e1f2a3_integration_platform_phase7``
-(never ``create_all`` in the app). Grouped by milestone:
+(never ``create_all`` in the app). Grouped by milestone
 
 Framework / observability / security (M1, M13, M14)
-    * :class:`ConnectorConfig`  — per-connector provider mode + (encrypted) config.
+    * :class:`ConnectorConfig` — per-connector provider mode + (encrypted) config.
     * :class:`ConnectorCallLog` — one durable row per connector call.
 
 Imported external data, versioned snapshots (M2, M3, M6, M7, M8)
     * :class:`IntegrationSnapshot` — versioned, hashed snapshot of any provider
-      payload (GST profile/returns, MCA master, bureau report, ERP financials,
+      payload (GST profile/returns, MCA master, bureau report, ERP financials
       payment analytics), keyed by (connector, entity_ref, version).
 
 Account Aggregator + statement analytics (M4, M5)
-    * :class:`ConsentArtifact`   — AA consent lifecycle.
+    * :class:`ConsentArtifact` — AA consent lifecycle.
     * :class:`BankStatement` / :class:`BankTransaction` — imported statements.
     * :class:`StatementAnalytics`— derived analytics per statement/entity.
 

@@ -1,13 +1,13 @@
 """M6 — Autonomous company investigation.
 
 Runs the full investigative workflow end-to-end and records every stage for
-traceability:
+traceability
 
     receive company → collect documents → search knowledge → analyze statements
     → check fraud → verify compliance → compare industry → calculate risk
     → explain reasoning → prepare recommendation → produce executive report
 
-Each stage assembles deterministic grounding (the Phase 1-10 engines via
+Each stage assembles deterministic grounding (the -10 engines via
 ``autonomous.data_access``, the M1 RAG index and the M2 specialist agents) and
 appends an ``aip_investigation_steps`` row with its output + evidence, so the
 whole chain is auditable. The final stage produces an M7 due-diligence report and

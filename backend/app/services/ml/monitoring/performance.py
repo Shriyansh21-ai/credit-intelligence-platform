@@ -1,6 +1,6 @@
-"""Model Performance Monitoring (Phase 6, Milestone 8).
+"""Model Performance Monitoring.
 
-Tracks a model's predictive quality against realised outcomes over time:
+Tracks a model's predictive quality against realised outcomes over time
 accuracy, precision, recall, F1, ROC-AUC, KS, Gini, Brier, calibration and the
 confusion matrix, plus business KPIs (approval rate, expected loss). Each
 evaluation is stored as an :class:`MLPerformanceRecord` so performance trends

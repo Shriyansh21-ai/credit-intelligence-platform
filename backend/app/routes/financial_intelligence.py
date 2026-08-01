@@ -1,24 +1,24 @@
-"""Advanced Financial Intelligence Platform APIs (Track 3).
+"""Advanced Financial Intelligence Platform APIs.
 
 Additive routers exposing the whole quantitative financial layer under
 ``/api/fin/*``. Every route is new; no existing route is modified. RBAC is
-enforced with the Track 3 permission catalog (``fin.*``). Routers are collected
+enforced with the permission catalog (``fin.*``). Routers are collected
 into ``ROUTERS`` and mounted in ``main.py``.
 
-    /api/fin/treasury    treasury intelligence (M1)
-    /api/fin/portfolio   portfolio intelligence (M2)
-    /api/fin/regulatory  Basel III / IFRS 9 (M3)
-    /api/fin/economic    economic scenario engine (M4)
-    /api/fin/esg         climate & ESG intelligence (M5)
-    /api/fin/market      market intelligence (M6)
-    /api/fin/altdata     alternative data intelligence (M7)
-    /api/fin/forecast    enterprise forecasting (M8)
-    /api/fin/quant       quantitative risk (M9)
-    /api/fin/benchmark   corporate benchmarking (M10)
-    /api/fin/executive   executive intelligence center (M11)
-    /api/fin/optimize    decision optimization (M12)
-    /api/fin/twin        financial digital twin (M13)
-    /api/fin/strategic   strategic intelligence (M14)
+    /api/fin/treasury treasury intelligence (M1)
+    /api/fin/portfolio portfolio intelligence (M2)
+    /api/fin/regulatory Basel III / IFRS 9 (M3)
+    /api/fin/economic economic scenario engine (M4)
+    /api/fin/esg climate & ESG intelligence (M5)
+    /api/fin/market market intelligence (M6)
+    /api/fin/altdata alternative data intelligence (M7)
+    /api/fin/forecast enterprise forecasting (M8)
+    /api/fin/quant quantitative risk (M9)
+    /api/fin/benchmark corporate benchmarking (M10)
+    /api/fin/executive executive intelligence center (M11)
+    /api/fin/optimize decision optimization (M12)
+    /api/fin/twin financial digital twin (M13)
+    /api/fin/strategic strategic intelligence (M14)
 """
 
 from __future__ import annotations

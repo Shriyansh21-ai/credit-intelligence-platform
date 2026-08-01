@@ -1,4 +1,4 @@
-"""Milestone 1 tests: primitives + FinancialStatement DTO + adapters."""
+""" tests: primitives + FinancialStatement DTO + adapters."""
 
 import unittest
 

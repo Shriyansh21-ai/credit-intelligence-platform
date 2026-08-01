@@ -1,6 +1,6 @@
-"""Task management models (Phase 5, Milestone 9).
+"""Task management models.
 
-A ``Task`` is a unit of work usually attached to an application (collect GST,
+A ``Task`` is a unit of work usually attached to an application (collect GST
 verify bank statement, review financials, ...), with an owner, priority, due
 date and status. ``TaskComment`` threads discussion on a task.
 """

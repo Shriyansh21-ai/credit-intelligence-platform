@@ -1,8 +1,8 @@
-"""Connector observability dashboard (Milestone 13).
+"""Connector observability dashboard.
 
-Aggregates the live in-process metrics (:data:`base.observability.metrics`),
+Aggregates the live in-process metrics (:data:`base.observability.metrics`)
 durable call logs and per-connector circuit/health state into the payloads that
-back the observability dashboard: latency, availability, failure rate, retries,
+back the observability dashboard: latency, availability, failure rate, retries
 success %, response times, health status, circuit-breaker state and provider
 metrics.
 """

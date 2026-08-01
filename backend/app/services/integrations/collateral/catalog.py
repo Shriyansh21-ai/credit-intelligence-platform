@@ -1,4 +1,4 @@
-"""Collateral type catalog — pure data (Milestone 9).
+"""Collateral type catalog — pure data.
 
 Regulatory-style default haircuts per collateral type. Kept dependency-free so it
 can be imported anywhere. Haircuts are the fraction of market value discounted

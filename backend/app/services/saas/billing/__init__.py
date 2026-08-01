@@ -1,4 +1,4 @@
-"""Subscription & billing engine (Phase 8, Milestone 4)."""
+"""Subscription & billing engine."""
 
 from backend.app.services.saas.billing import catalog, gateway, service
 

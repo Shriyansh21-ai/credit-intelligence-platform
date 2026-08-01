@@ -1,8 +1,8 @@
 """Generic integration import service (M2, M3, M6, M7, M8).
 
-One reusable path used by every snapshot-backed domain (GST, MCA, bureau, ERP,
-payments): call the configured connector for an operation, and — on success —
-persist a versioned, refresh-scheduled snapshot. Domain modules add thin,
+One reusable path used by every snapshot-backed domain (GST, MCA, bureau, ERP
+payments): call the configured connector for an operation, and — on success
+persist a versioned, refresh-scheduled snapshot. Domain modules add thin
 readable wrappers on top (e.g. ``import_gst_bundle``).
 """
 

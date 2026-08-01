@@ -1,6 +1,6 @@
 """M10 — Corporate Benchmarking Platform.
 
-Compare a company against an industry peer set automatically: financial, growth,
+Compare a company against an industry peer set automatically: financial, growth
 profitability, liquidity, leverage, ESG, risk and credit rankings, with
 percentile positioning and a synthesized competitive position. The peer set is
 drawn from the platform's live assessments in the same industry (falling back to

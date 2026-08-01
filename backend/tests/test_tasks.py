@@ -1,4 +1,4 @@
-"""Phase 5, Milestone 9 tests: task CRUD, notifications on assign/complete, API."""
+""" tests: task CRUD, notifications on assign/complete, API."""
 
 import unittest
 from datetime import datetime, timedelta

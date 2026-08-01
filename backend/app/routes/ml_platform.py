@@ -1,19 +1,19 @@
-"""Enterprise ML Platform APIs (Phase 6).
+"""Enterprise ML Platform APIs.
 
 One module exposing the full MLOps surface as a set of focused routers, all under
-``/api/ml/*`` and additive to the existing AI Risk Intelligence router:
+``/api/ml/*`` and additive to the existing AI Risk Intelligence router
 
-    /api/ml/feature-store   feature catalog, lineage, point-in-time (M1)
-    /api/ml/training        training + algorithms (M2)
-    /api/ml/registry        model registry + governance (M3, M14)
-    /api/ml/serving         real-time / batch / portfolio / async inference (M4)
-    /api/ml/explainability  SHAP, reason codes, narratives (M5)
-    /api/ml/monitoring      operational + performance monitoring (M6, M8)
-    /api/ml/drift           data & target drift detection (M7)
-    /api/ml/retraining      champion/challenger retraining (M9)
-    /api/ml/fraud           ML fraud / anomaly scoring (M10)
-    /api/ml/portfolio-ml    portfolio ML analytics (M11)
-    /api/ml/stress-ml       ML-driven macro stress testing (M12)
+    /api/ml/feature-store feature catalog, lineage, point-in-time (M1)
+    /api/ml/training training + algorithms (M2)
+    /api/ml/registry model registry + governance (M3, M14)
+    /api/ml/serving real-time / batch / portfolio / async inference (M4)
+    /api/ml/explainability SHAP, reason codes, narratives (M5)
+    /api/ml/monitoring operational + performance monitoring (M6, M8)
+    /api/ml/drift data & target drift detection (M7)
+    /api/ml/retraining champion/challenger retraining (M9)
+    /api/ml/fraud ML fraud / anomaly scoring (M10)
+    /api/ml/portfolio-ml portfolio ML analytics (M11)
+    /api/ml/stress-ml ML-driven macro stress testing (M12)
 
 Permissions: ``mlops.view`` (read), ``mlops.train`` (train), ``mlops.deploy``
 (governance/retrain), ``mlops.predict`` (inference), ``mlops.fraud`` (fraud).
@@ -211,7 +211,7 @@ def list_datasets(db: Session = Depends(get_db),
 @registry_router.get("/models/{model_id}/reproducibility")
 def model_reproducibility(model_id: int, db: Session = Depends(get_db),
                           _user: User = Depends(require_permission("mlops.view"))):
-    """Governance (M14): the complete trail needed to reproduce a model exactly —
+    """Governance (M14): the complete trail needed to reproduce a model exactly
     dataset spec + content hash, hyperparameters, feature set and lineage."""
     from backend.app.models.ml_platform import MLDataset
     model = _require_model(db, model_id)

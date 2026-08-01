@@ -1,6 +1,6 @@
-"""Enterprise Report Generator (Phase 5, Milestone 7).
+"""Enterprise Report Generator.
 
-Composes banking-style reports (credit memo, executive summary, financial, risk,
+Composes banking-style reports (credit memo, executive summary, financial, risk
 committee pack, portfolio, compliance, audit) from the platform's existing
 engines, and renders them to JSON, HTML, PDF (reportlab), CSV (Excel-openable)
 and RTF (Word-openable).

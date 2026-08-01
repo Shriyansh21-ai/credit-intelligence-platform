@@ -1,4 +1,4 @@
-"""Phase 4 Milestone 7 tests: the Early Warning System."""
+""" tests: the Early Warning System."""
 
 import unittest
 

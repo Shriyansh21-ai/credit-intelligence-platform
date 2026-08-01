@@ -1,9 +1,9 @@
-"""AI Intelligence Platform tables (Track 2)
+"""AI Intelligence Platform tables
 
-Fully additive: creates the RAG, multi-agent, memory, prompt-engineering,
-evaluation, investigation, report, workflow, conversational, research,
+Fully additive: creates the RAG, multi-agent, memory, prompt-engineering
+evaluation, investigation, report, workflow, conversational, research
 continuous-learning, governance, explainability and monitoring tables. Nothing
-from Phases 1-11 / Track 1 is altered or dropped.
+from Phases 1-11 / is altered or dropped.
 
 The table set is derived from the ORM metadata for the ``aip_*`` tables defined
 in :mod:`backend.app.models.ai_platform`, so the migration can never drift from

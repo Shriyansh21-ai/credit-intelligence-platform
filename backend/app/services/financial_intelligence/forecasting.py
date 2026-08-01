@@ -1,8 +1,8 @@
 """M8 — Enterprise Forecasting Platform.
 
-Multi-horizon forecasting for revenue, cash flow, working capital, profit,
+Multi-horizon forecasting for revenue, cash flow, working capital, profit
 growth, industry, portfolio, risk, expected-default and recovery — always with
-confidence intervals. Forecasts use a deterministic *ensemble* (linear trend,
+confidence intervals. Forecasts use a deterministic *ensemble* (linear trend
 damped trend, and mean-reversion) over a supplied history, or derive a seed
 history from the company profile when none is given. No external ML deps; every
 band widens with the square-root of horizon.

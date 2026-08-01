@@ -1,4 +1,4 @@
-"""Data protection engine (Milestone 6).
+"""Data protection engine.
 
 Data classification, PII catalog, and a live demonstration of the masking /
 encryption primitives from ``core.crypto`` so the report is grounded in the

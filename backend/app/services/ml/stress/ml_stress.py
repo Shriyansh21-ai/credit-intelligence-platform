@@ -1,8 +1,8 @@
-"""ML-driven Stress Testing (Phase 6, Milestone 12).
+"""ML-driven Stress Testing.
 
 Applies macroeconomic scenarios directly to model features, re-scores the book
-through the trained model, and measures the model-predicted portfolio impact —
-a complement to the deterministic Phase 4 stress engine (:mod:`stress_engine`),
+through the trained model, and measures the model-predicted portfolio impact
+a complement to the deterministic stress engine (:mod:`stress_engine`)
 which shocks raw financials.
 
 A scenario is a set of feature operations (additive or multiplicative shifts)

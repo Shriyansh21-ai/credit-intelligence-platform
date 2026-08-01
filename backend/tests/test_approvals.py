@@ -1,4 +1,4 @@
-"""Phase 5, Milestone 2 tests: approval workflow + decisions + API."""
+""" tests: approval workflow + decisions + API."""
 
 import unittest
 

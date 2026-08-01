@@ -1,7 +1,7 @@
-"""Covenant Monitoring engine (Phase 5, Milestone 5).
+"""Covenant Monitoring engine.
 
 Tracks loan covenants (DSCR, debt ratio, current ratio, interest coverage, net
-worth, EBITDA, ...), evaluates measurements against thresholds, records trend,
+worth, EBITDA, ...), evaluates measurements against thresholds, records trend
 and raises breach alerts automatically.
 """
 

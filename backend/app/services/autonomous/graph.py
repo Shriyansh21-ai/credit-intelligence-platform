@@ -1,18 +1,18 @@
 """M1 — Enterprise Knowledge Graph.
 
 A directed, weighted property graph over companies and their connected entities
-(directors, promoters, subsidiaries, suppliers, customers, lenders, guarantors,
+(directors, promoters, subsidiaries, suppliers, customers, lenders, guarantors
 shareholders, sectors, regions, collateral). Backed by ``kg_entities`` /
-``kg_relationships``; pure-graph algorithms (traversal, scoring, similarity,
+``kg_relationships``; pure-graph algorithms (traversal, scoring, similarity
 connected exposure, risk propagation) are implemented in-memory over the loaded
 edge set so they work on SQLite and Postgres alike.
 
-Design:
+Design
 * Repository functions (``upsert_entity``, ``add_relationship``) are idempotent on
   the natural keys (``uq_kg_entity_ref`` / ``uq_kg_edge``).
 * Analytical functions build a lightweight adjacency view once and operate on it.
 * ``seed_from_assessment`` / ``ingest_network`` wire real platform data (company +
-  the Customer-360 relationship network from Phase 7) into the graph.
+  the Customer-360 relationship network from ) into the graph.
 """
 
 from __future__ import annotations
@@ -414,7 +414,7 @@ def ingest_network(db: Session, company_ref: str, relationships: Iterable[dict],
                    tenant_id: Optional[int] = None) -> Dict[str, int]:
     """Ingest a list of ``{entity_type, ref, name, rel_type, strength, exposure}`` edges.
 
-    Compatible with the Phase 7 Customer-360 ``relationship_network`` shape, so a
+    Compatible with the Customer-360 ``relationship_network`` shape, so a
     bank's connector data flows straight into the graph.
     """
     company = upsert_entity(db, entity_type="company", ref=company_ref, name=company_ref,

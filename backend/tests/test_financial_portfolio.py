@@ -1,4 +1,4 @@
-"""Track 3 M2 — Enterprise Portfolio Intelligence tests."""
+""" M2 — Enterprise Portfolio Intelligence tests."""
 
 from backend.tests._financial_intelligence_helpers import (
     admin_client, fresh_session, seed_rbac, make_user, client_for, seed_portfolio_companies,

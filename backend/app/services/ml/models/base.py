@@ -77,9 +77,9 @@ class BaseRiskModel(ABC):
     or persisted.
     """
 
-    #: Stable identifier used for registry lookup and configuration.
+    # Stable identifier used for registry lookup and configuration.
     model_type: str = "base"
-    #: Human-facing algorithm name.
+    # Human-facing algorithm name.
     algorithm: str = "Base Risk Model"
 
     @abstractmethod

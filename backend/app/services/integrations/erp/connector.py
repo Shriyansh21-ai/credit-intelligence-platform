@@ -1,8 +1,8 @@
-"""ERP connector interface + providers (Milestone 7).
+"""ERP connector interface + providers.
 
-One connector, many ERP/accounting systems (SAP, Oracle ERP, Microsoft Dynamics,
+One connector, many ERP/accounting systems (SAP, Oracle ERP, Microsoft Dynamics
 Zoho Books, QuickBooks, Tally) selected by the ``system`` param/config. Imports
-financial statements, invoices, purchase orders, inventory, receivables,
+financial statements, invoices, purchase orders, inventory, receivables
 payables, the general ledger and the trial balance — all normalized to a common
 shape so the platform is ERP-agnostic.
 """

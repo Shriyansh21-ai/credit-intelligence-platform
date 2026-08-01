@@ -1,4 +1,4 @@
-"""Feature-flag persistence (Phase 8, Milestone 5).
+"""Feature-flag persistence.
 
 A global flag registry (:class:`FeatureFlag`) plus per-scope overrides
 (:class:`FeatureFlagOverride`). Evaluation supports global on/off, tenant and

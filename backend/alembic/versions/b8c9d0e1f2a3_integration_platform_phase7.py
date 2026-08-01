@@ -1,4 +1,4 @@
-"""Banking Ecosystem Integration Platform tables (Phase 7)
+"""Banking Ecosystem Integration Platform tables
 
 Revision ID: b8c9d0e1f2a3
 Revises: a7b8c9d0e1f2

@@ -1,6 +1,6 @@
 """M5 — Scenario Simulation Engine.
 
-Re-scores a company under one or more what-if shocks and reports the new PD,
+Re-scores a company under one or more what-if shocks and reports the new PD
 rating, recommended limit and recommendations, plus a side-by-side comparison
 and financial impact. Deterministic elasticity model: each scenario maps its
 magnitude to a bounded impact on the 300-900 credit score; the score change then

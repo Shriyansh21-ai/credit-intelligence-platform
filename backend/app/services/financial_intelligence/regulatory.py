@@ -1,8 +1,8 @@
 """M3 — Basel III / IFRS 9 Platform.
 
-Enterprise regulatory calculations, fully explainable and deterministic:
+Enterprise regulatory calculations, fully explainable and deterministic
     IFRS 9 — PD / LGD / EAD, 12-month & lifetime ECL, staging, provisioning
-    Basel III — IRB & standardized RWA, capital requirements, CAR, leverage,
+    Basel III — IRB & standardized RWA, capital requirements, CAR, leverage
                 and a consolidated regulatory dashboard.
 
 Every calculation returns an ``explanation`` block naming the formula and the

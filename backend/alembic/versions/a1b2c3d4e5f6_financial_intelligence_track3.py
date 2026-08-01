@@ -1,7 +1,7 @@
-"""Advanced Financial Intelligence Platform tables (Track 3)
+"""Advanced Financial Intelligence Platform tables
 
-Fully additive: creates the treasury, portfolio, Basel/IFRS9, economic-scenario,
-ESG, market, alternative-data, forecasting, quantitative-risk, benchmarking,
+Fully additive: creates the treasury, portfolio, Basel/IFRS9, economic-scenario
+ESG, market, alternative-data, forecasting, quantitative-risk, benchmarking
 executive, optimization, digital-twin and strategic-intelligence tables. Nothing
 from Phases 1-11 / Tracks 1-2 is altered or dropped.
 

@@ -1,4 +1,4 @@
-"""Multi-Stage Approval Workflow (Phase 5, Milestone 2).
+"""Multi-Stage Approval Workflow.
 
 Configurable, ordered approval stages driving the application lifecycle. Every
 approver action (approve / reject / request changes / escalate / hold / comment)

@@ -1,4 +1,4 @@
-"""Phase 5, Milestone 10 tests: notification dispatch, preferences, read state."""
+""" tests: notification dispatch, preferences, read state."""
 
 import unittest
 

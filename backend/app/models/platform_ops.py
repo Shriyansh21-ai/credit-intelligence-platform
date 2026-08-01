@@ -1,9 +1,9 @@
-"""Platform-operations persistence (Phase 8, Milestones 6-9).
+"""Platform-operations persistence.
 
 Additive, tenant-scoped tables for the background-job platform (M6), cloud
 storage metadata (M7), the real-time activity stream + presence (M8) and
-observability traces/metrics (M9). Ephemeral concerns (in-memory queue state,
-live socket connections, cache) live in the service layer behind abstractions;
+observability traces/metrics (M9). Ephemeral concerns (in-memory queue state
+live socket connections, cache) live in the service layer behind abstractions
 these tables are the durable record.
 """
 

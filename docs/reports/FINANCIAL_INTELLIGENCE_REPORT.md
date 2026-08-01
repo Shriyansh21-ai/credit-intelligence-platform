@@ -1,4 +1,4 @@
-# Track 3 — Advanced Financial Intelligence Platform · Work Summary
+# Advanced Financial Intelligence Platform · Work Summary
 
 Track 3 turns the platform into an enterprise-grade **Advanced Financial
 Intelligence Platform** across 14 delivered milestones plus validation (M15).

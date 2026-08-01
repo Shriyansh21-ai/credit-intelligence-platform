@@ -1,8 +1,8 @@
-"""Centralized, profile-aware application configuration (Phase 11, Milestone 1).
+"""Centralized, profile-aware application configuration.
 
 This module is the single source of truth for every runtime configuration value
 in the platform. It replaces the scattered ``os.getenv`` calls and hardcoded
-constants that previously lived in ``config.py``, ``core/security.py``,
+constants that previously lived in ``config.py``, ``core/security.py``
 ``db/database.py`` and the individual service modules.
 
 Design
@@ -347,7 +347,7 @@ class AppSettings(BaseSettings):
 
     @property
     def sqlalchemy_engine_kwargs(self) -> dict[str, Any]:
-        """Engine keyword args. Pooling knobs apply only to real DB servers;
+        """Engine keyword args. Pooling knobs apply only to real DB servers
         SQLite (esp. in-memory) does not use a sized connection pool."""
         kwargs: dict[str, Any] = {
             "connect_args": self.sqlalchemy_connect_args,
