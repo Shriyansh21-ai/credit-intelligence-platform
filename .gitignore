@@ -44,6 +44,9 @@ build/
 .vinxi/
 .tanstack/
 .nitro/
+# Frontend dev-only scratch/editor artifacts (not part of the app)
+frontend/temp_root.html
+frontend/.lovable/
 
 # Logs
 logs/

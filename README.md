@@ -232,6 +232,8 @@ flowchart TB
 
 Deep dives: **[System Architecture](docs/architecture/index.md)** · **[AI Architecture](docs/ai/AI_ARCHITECTURE.md)** · **[Database Architecture](docs/architecture/DATABASE_ARCHITECTURE_FINAL.md)**.
 
+> **[Full diagram gallery →](docs/architecture/DIAGRAMS.md)** — 22 rendered Mermaid diagrams covering the system, frontend, backend, data model, AI/ML/OCR/RAG pipelines, agents, security, auth/authz, deployment, Kubernetes, multi-tenancy, banking ecosystem, knowledge graph, digital twin, and workflow engine.
+
 ---
 
 ## Technology Stack
