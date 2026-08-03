@@ -21,9 +21,22 @@ export function getAuthHeaders(): HeadersInit {
   };
 }
 
+/**
+ * Redirect an unauthenticated user to the login page — but never when we are
+ * already on an auth page. Without this guard, a global component (e.g. the
+ * command palette) that fetches on mount would redirect `/login` → `/login` in
+ * a full-page-reload loop, preventing the page from ever hydrating.
+ */
+function redirectToLogin() {
+  if (typeof window === "undefined") return;
+  const path = window.location.pathname;
+  if (path === "/login" || path === "/signup") return;
+  window.location.href = "/login";
+}
+
 function requireAuth() {
   if (typeof window !== "undefined" && !localStorage.getItem("token")) {
-    window.location.href = "/login";
+    redirectToLogin();
     throw new Error("Not authenticated");
   }
 }
@@ -31,7 +44,7 @@ function requireAuth() {
 async function handle<T>(response: Response): Promise<T> {
   if (response.status === 401 && typeof window !== "undefined") {
     localStorage.removeItem("token");
-    window.location.href = "/login";
+    redirectToLogin();
     throw new Error("Session expired");
   }
   if (!response.ok) {

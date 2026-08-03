@@ -20,7 +20,9 @@ export function CommandPalette() {
   const [query, setQuery] = useState("");
   const [active, setActive] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
-  const catalog = useCommandCatalog();
+  // Only load the catalog once the palette is opened — avoids an auth-gated
+  // fetch on every page (including /login, where it caused a redirect loop).
+  const catalog = useCommandCatalog(undefined, open);
 
   useEffect(() => {
     function onKey(e: KeyboardEvent) {

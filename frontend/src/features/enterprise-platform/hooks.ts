@@ -11,8 +11,8 @@ export const useSavePreferences = () => {
   return useMutation({ mutationFn: api.savePreferences,
     onSuccess: () => qc.invalidateQueries({ queryKey: [KEY, "prefs"] }) });
 };
-export const useCommandCatalog = (query?: string) =>
-  useQuery({ queryKey: [KEY, "commands", query ?? ""], queryFn: () => api.commandCatalog(query) });
+export const useCommandCatalog = (query?: string, enabled = true) =>
+  useQuery({ queryKey: [KEY, "commands", query ?? ""], queryFn: () => api.commandCatalog(query), enabled });
 
 // M2 Workspaces
 export const useWorkspaces = () => useQuery({ queryKey: [KEY, "workspaces"], queryFn: api.listWorkspaces });

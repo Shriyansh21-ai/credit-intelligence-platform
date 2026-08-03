@@ -15,9 +15,19 @@ function getAuthHeaders(): HeadersInit {
   };
 }
 
+// Redirect to login, but never when already on an auth page — otherwise a
+// mount-time fetch on /login redirects to /login in a reload loop and the page
+// never hydrates.
+function redirectToLogin() {
+  if (typeof window === "undefined") return;
+  const path = window.location.pathname;
+  if (path === "/login" || path === "/signup") return;
+  window.location.href = "/login";
+}
+
 function checkAuth() {
   if (typeof window !== "undefined" && !localStorage.getItem("token")) {
-    window.location.href = "/login";
+    redirectToLogin();
     throw new Error("No token found");
   }
 }
@@ -82,7 +92,7 @@ export async function getDashboard(): Promise<DashboardData> {
   if (!response.ok) {
     if (response.status === 401) {
       localStorage.removeItem("token");
-      window.location.href = "/login";
+      redirectToLogin();
     }
     throw new Error("Failed to fetch dashboard data");
   }
