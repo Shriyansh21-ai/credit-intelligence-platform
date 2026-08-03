@@ -20,11 +20,11 @@ function BiPage() {
         </div>
         <SectionCard title={`${category} analytics`}>
           <StateWrap loading={analytics.isLoading} empty={!analytics.data}>
-            <pre className="rounded bg-muted p-2 text-xs whitespace-pre-wrap">{JSON.stringify(analytics.data?.metrics, null, 2).slice(0, 1400)}</pre>
+            <pre className="rounded bg-muted p-2 text-xs whitespace-pre-wrap">{JSON.stringify(analytics.data?.metrics ?? {}, null, 2).slice(0, 1400)}</pre>
           </StateWrap>
         </SectionCard>
         <SectionCard title="Board report">
-          {board.data && <div><p className="mb-2 text-sm">{board.data.headline}</p><pre className="rounded bg-muted p-2 text-xs whitespace-pre-wrap">{JSON.stringify(board.data.sections, null, 2).slice(0, 1200)}</pre></div>}
+          {board.data && <div><p className="mb-2 text-sm">{board.data.headline}</p><pre className="rounded bg-muted p-2 text-xs whitespace-pre-wrap">{JSON.stringify(board.data.sections ?? {}, null, 2).slice(0, 1200)}</pre></div>}
         </SectionCard>
       </div>
     </OpsLayout>

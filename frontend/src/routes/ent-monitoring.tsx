@@ -19,7 +19,7 @@ function MonitoringPage() {
             <div className="rounded border bg-card p-3"><div className="text-xs text-muted-foreground">monthly cost</div><div className="text-lg font-semibold">${d?.cost?.total_usd ?? "—"}</div></div>
           </div>
           <SectionCard title="Service dependency graph">
-            <pre className="rounded bg-muted p-2 text-xs whitespace-pre-wrap">{JSON.stringify(d?.dependency_graph, null, 2).slice(0, 900)}</pre>
+            <pre className="rounded bg-muted p-2 text-xs whitespace-pre-wrap">{JSON.stringify(d?.dependency_graph ?? {}, null, 2).slice(0, 900)}</pre>
           </SectionCard>
           <SectionCard title="Cost breakdown">
             <pre className="rounded bg-muted p-2 text-xs whitespace-pre-wrap">{JSON.stringify(d?.cost, null, 2)}</pre>

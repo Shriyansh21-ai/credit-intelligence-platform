@@ -15,7 +15,30 @@ feature_columns = load_artifact("feature_columns.pkl")
 
 logger = logging.getLogger(__name__)
 
+# Map API-friendly underscore field names to the space-separated dataset
+# column names the model/encoders/explainer were trained on. Callers may pass
+# either form; normalization here keeps every entry point (predict route,
+# analyst report, batch jobs) consistent and idempotent.
+_COLUMN_ALIASES = {
+    "Saving_accounts": "Saving accounts",
+    "Checking_account": "Checking account",
+    "Credit_amount": "Credit amount",
+}
+
+
+def _normalize_columns(data):
+    """Return a copy of ``data`` with alias keys mapped to dataset columns."""
+    normalized = dict(data)
+    for alias, canonical in _COLUMN_ALIASES.items():
+        if alias in normalized and canonical not in normalized:
+            normalized[canonical] = normalized.pop(alias)
+    return normalized
+
+
 def predict_credit(data):
+
+    # Accept both underscore and dataset-style column names.
+    data = _normalize_columns(data)
 
     # Convert input to dataframe
     df = pd.DataFrame([data])
