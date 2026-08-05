@@ -14,6 +14,7 @@ import { Route as StressTesting9RouteImport } from './routes/stress-testing-9'
 import { Route as StressTestingRouteImport } from './routes/stress-testing'
 import { Route as SimulationRouteImport } from './routes/simulation'
 import { Route as SignupRouteImport } from './routes/signup'
+import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as SecurityDashboardRouteImport } from './routes/security-dashboard'
 import { Route as ScenarioPlanningRouteImport } from './routes/scenario-planning'
 import { Route as ScenarioRouteImport } from './routes/scenario'
@@ -135,6 +136,11 @@ const SimulationRoute = SimulationRouteImport.update({
 const SignupRoute = SignupRouteImport.update({
   id: '/signup',
   path: '/signup',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SettingsRoute = SettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SecurityDashboardRoute = SecurityDashboardRouteImport.update({
@@ -722,6 +728,7 @@ export interface FileRoutesByFullPath {
   '/scenario': typeof ScenarioRoute
   '/scenario-planning': typeof ScenarioPlanningRoute
   '/security-dashboard': typeof SecurityDashboardRoute
+  '/settings': typeof SettingsRoute
   '/signup': typeof SignupRoute
   '/simulation': typeof SimulationRoute
   '/stress-testing': typeof StressTestingRoute
@@ -826,6 +833,7 @@ export interface FileRoutesByTo {
   '/scenario': typeof ScenarioRoute
   '/scenario-planning': typeof ScenarioPlanningRoute
   '/security-dashboard': typeof SecurityDashboardRoute
+  '/settings': typeof SettingsRoute
   '/signup': typeof SignupRoute
   '/simulation': typeof SimulationRoute
   '/stress-testing': typeof StressTestingRoute
@@ -931,6 +939,7 @@ export interface FileRoutesById {
   '/scenario': typeof ScenarioRoute
   '/scenario-planning': typeof ScenarioPlanningRoute
   '/security-dashboard': typeof SecurityDashboardRoute
+  '/settings': typeof SettingsRoute
   '/signup': typeof SignupRoute
   '/simulation': typeof SimulationRoute
   '/stress-testing': typeof StressTestingRoute
@@ -1037,6 +1046,7 @@ export interface FileRouteTypes {
     | '/scenario'
     | '/scenario-planning'
     | '/security-dashboard'
+    | '/settings'
     | '/signup'
     | '/simulation'
     | '/stress-testing'
@@ -1141,6 +1151,7 @@ export interface FileRouteTypes {
     | '/scenario'
     | '/scenario-planning'
     | '/security-dashboard'
+    | '/settings'
     | '/signup'
     | '/simulation'
     | '/stress-testing'
@@ -1245,6 +1256,7 @@ export interface FileRouteTypes {
     | '/scenario'
     | '/scenario-planning'
     | '/security-dashboard'
+    | '/settings'
     | '/signup'
     | '/simulation'
     | '/stress-testing'
@@ -1350,6 +1362,7 @@ export interface RootRouteChildren {
   ScenarioRoute: typeof ScenarioRoute
   ScenarioPlanningRoute: typeof ScenarioPlanningRoute
   SecurityDashboardRoute: typeof SecurityDashboardRoute
+  SettingsRoute: typeof SettingsRoute
   SignupRoute: typeof SignupRoute
   SimulationRoute: typeof SimulationRoute
   StressTestingRoute: typeof StressTestingRoute
@@ -1392,6 +1405,13 @@ declare module '@tanstack/react-router' {
       path: '/signup'
       fullPath: '/signup'
       preLoaderRoute: typeof SignupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/settings': {
+      id: '/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/security-dashboard': {
@@ -2174,6 +2194,7 @@ const rootRouteChildren: RootRouteChildren = {
   ScenarioRoute: ScenarioRoute,
   ScenarioPlanningRoute: ScenarioPlanningRoute,
   SecurityDashboardRoute: SecurityDashboardRoute,
+  SettingsRoute: SettingsRoute,
   SignupRoute: SignupRoute,
   SimulationRoute: SimulationRoute,
   StressTestingRoute: StressTestingRoute,

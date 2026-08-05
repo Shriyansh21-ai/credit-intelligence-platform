@@ -41,6 +41,7 @@ import {
   type NavModule,
 } from "@/navigation";
 import { WorkspaceSwitcher } from "@/components/navigation/WorkspaceSwitcher";
+import { useProfile } from "@/lib/profile";
 import { cn } from "@/lib/utils";
 
 const RAIL_WIDTH = 68;
@@ -51,7 +52,7 @@ interface SidebarProps {
 }
 
 export function Sidebar({ open, onClose }: SidebarProps) {
-  const { collapsed, width, setWidth, hydrated } = useNavigation();
+  const { collapsed, hidden, width, setWidth, hydrated } = useNavigation();
   const [hovered, setHovered] = useState(false);
   const resizingRef = useRef(false);
 
@@ -111,34 +112,38 @@ export function Sidebar({ open, onClose }: SidebarProps) {
       </aside>
 
       {/* Desktop sidebar: a flow spacer of `flowWidth`, with a fixed panel that can
-          hover-expand over the content without shifting layout. */}
-      <aside
-        className="relative hidden shrink-0 lg:block"
-        style={{ width: flowWidth }}
-        aria-label="Primary navigation"
-      >
-        <div
-          onMouseEnter={() => setHovered(true)}
-          onMouseLeave={() => setHovered(false)}
-          className={cn(
-            "fixed inset-y-0 left-0 z-30 flex h-screen flex-col border-r border-sidebar-border bg-sidebar",
-            !resizingRef.current && "transition-[width] duration-200 ease-out",
-          )}
-          style={{ width: panelWidth }}
+          hover-expand over the content without shifting layout. In full-screen
+          (focus) mode the entire desktop sidebar is removed so the content spans
+          the full width; the mobile drawer and the top-bar restore button remain. */}
+      {!(hydrated && hidden) && (
+        <aside
+          className="relative hidden shrink-0 lg:block"
+          style={{ width: flowWidth }}
+          aria-label="Primary navigation"
         >
-          <SidebarBody collapsed={effectiveCollapsed} />
-          {/* Resize handle (expanded only) */}
-          {!effectiveCollapsed && (
-            <div
-              onMouseDown={startResize}
-              role="separator"
-              aria-orientation="vertical"
-              aria-label="Resize sidebar"
-              className="absolute inset-y-0 right-0 z-40 w-1 cursor-col-resize hover:bg-primary/40"
-            />
-          )}
-        </div>
-      </aside>
+          <div
+            onMouseEnter={() => setHovered(true)}
+            onMouseLeave={() => setHovered(false)}
+            className={cn(
+              "fixed inset-y-0 left-0 z-30 flex h-screen flex-col border-r border-sidebar-border bg-sidebar",
+              !resizingRef.current && "transition-[width] duration-200 ease-out",
+            )}
+            style={{ width: panelWidth }}
+          >
+            <SidebarBody collapsed={effectiveCollapsed} />
+            {/* Resize handle (expanded only) */}
+            {!effectiveCollapsed && (
+              <div
+                onMouseDown={startResize}
+                role="separator"
+                aria-orientation="vertical"
+                aria-label="Resize sidebar"
+                className="absolute inset-y-0 right-0 z-40 w-1 cursor-col-resize hover:bg-primary/40"
+              />
+            )}
+          </div>
+        </aside>
+      )}
     </>
   );
 }
@@ -486,6 +491,7 @@ function NavItemLink({
 }
 
 function UserFooter() {
+  const profile = useProfile();
   function handleLogout() {
     localStorage.removeItem("token");
     window.location.href = "/login";
@@ -493,13 +499,23 @@ function UserFooter() {
   return (
     <div className="m-3 rounded-xl border border-sidebar-border bg-sidebar-accent/40 p-3">
       <div className="flex items-center gap-3">
-        <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-accent text-sm font-semibold text-accent-foreground">
-          SD
-        </div>
-        <div className="min-w-0 flex-1">
-          <div className="truncate text-sm font-medium text-sidebar-foreground">Shriyansh Dev</div>
-          <div className="truncate text-xs text-muted-foreground">Head of Risk</div>
-        </div>
+        <Link
+          to="/settings"
+          className="flex min-w-0 flex-1 items-center gap-3 rounded-lg -m-1 p-1 transition-colors hover:bg-sidebar-accent/60"
+          title="Profile & settings"
+        >
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-accent text-sm font-semibold text-accent-foreground">
+            {profile.initials}
+          </div>
+          <div className="min-w-0 flex-1">
+            <div className="truncate text-sm font-medium text-sidebar-foreground">
+              {profile.displayName}
+            </div>
+            <div className="truncate text-xs text-muted-foreground">
+              {profile.email ?? profile.jobTitle}
+            </div>
+          </div>
+        </Link>
         <button
           onClick={handleLogout}
           className="rounded-md p-1.5 text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground"
@@ -593,18 +609,20 @@ function RailLink({
 }
 
 function RailFooter() {
+  const profile = useProfile();
   function handleLogout() {
     localStorage.removeItem("token");
     window.location.href = "/login";
   }
   return (
     <div className="flex flex-col items-center gap-2 py-3">
-      <div
+      <Link
+        to="/settings"
         className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-accent text-sm font-semibold text-accent-foreground"
-        title="Shriyansh Dev · Head of Risk"
+        title={`${profile.displayName}${profile.email ? ` · ${profile.email}` : ""} — profile & settings`}
       >
-        SD
-      </div>
+        {profile.initials}
+      </Link>
       <button
         onClick={handleLogout}
         className="rounded-md p-1.5 text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground"

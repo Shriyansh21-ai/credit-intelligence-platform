@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Menu, Search, LogOut, FlaskConical } from "lucide-react";
+import { Menu, Search, LogOut, FlaskConical, PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { isDemoMode, toggleDemoMode } from "@/lib/demo";
 import { useNavigation } from "@/navigation";
@@ -12,7 +12,7 @@ interface TopbarProps {
 
 export function Topbar({ title = "", onMenu }: TopbarProps) {
   const [demo, setDemo] = useState(false);
-  const { openPalette } = useNavigation();
+  const { openPalette, hidden, toggleHidden } = useNavigation();
   useEffect(() => setDemo(isDemoMode()), []);
 
   function handleLogout() {
@@ -36,6 +36,17 @@ export function Topbar({ title = "", onMenu }: TopbarProps) {
           className="rounded-md p-2 text-muted-foreground hover:bg-accent/10 lg:hidden"
         >
           <Menu className="h-5 w-5" />
+        </button>
+
+        {/* Desktop full-screen toggle: hide/show the sidebar for a distraction-free view. */}
+        <button
+          onClick={toggleHidden}
+          aria-label={hidden ? "Show sidebar" : "Hide sidebar (full screen)"}
+          aria-pressed={hidden}
+          title={hidden ? "Show sidebar (Ctrl+\\)" : "Full screen — hide sidebar (Ctrl+\\)"}
+          className="hidden rounded-md p-2 text-muted-foreground transition-colors hover:bg-accent/10 hover:text-foreground lg:inline-flex"
+        >
+          {hidden ? <PanelLeftOpen className="h-5 w-5" /> : <PanelLeftClose className="h-5 w-5" />}
         </button>
 
         <div className="min-w-0 flex-1">

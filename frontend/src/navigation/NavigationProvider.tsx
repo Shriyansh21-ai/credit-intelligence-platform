@@ -36,6 +36,8 @@ interface StoredPrefs {
   recents: string[];
   pinned: string[];
   collapsed: boolean;
+  /** Full-screen / focus mode — the sidebar is hidden entirely (not just collapsed). */
+  hidden: boolean;
   width: number;
   workspace: WorkspaceId;
 }
@@ -45,6 +47,7 @@ const DEFAULTS: StoredPrefs = {
   recents: [],
   pinned: [],
   collapsed: false,
+  hidden: false,
   width: DEFAULT_WIDTH,
   workspace: "all",
 };
@@ -70,6 +73,10 @@ interface NavigationContextValue {
   collapsed: boolean;
   setCollapsed: (v: boolean) => void;
   toggleCollapsed: () => void;
+  /** Full-screen mode: the sidebar is hidden entirely for a distraction-free view. */
+  hidden: boolean;
+  setHidden: (v: boolean) => void;
+  toggleHidden: () => void;
   width: number;
   setWidth: (v: number) => void;
 
@@ -113,6 +120,7 @@ export function NavigationProvider({ children }: { children: ReactNode }) {
           recents: parsed.recents ?? [],
           pinned: parsed.pinned ?? [],
           collapsed: parsed.collapsed ?? false,
+          hidden: parsed.hidden ?? false,
           width: clampWidth(parsed.width ?? DEFAULT_WIDTH),
           workspace: parsed.workspace ?? "all",
         });
@@ -168,6 +176,8 @@ export function NavigationProvider({ children }: { children: ReactNode }) {
 
   const setCollapsed = useCallback((v: boolean) => setPrefs((p) => ({ ...p, collapsed: v })), []);
   const toggleCollapsed = useCallback(() => setPrefs((p) => ({ ...p, collapsed: !p.collapsed })), []);
+  const setHidden = useCallback((v: boolean) => setPrefs((p) => ({ ...p, hidden: v })), []);
+  const toggleHidden = useCallback(() => setPrefs((p) => ({ ...p, hidden: !p.hidden })), []);
   const setWidth = useCallback((v: number) => setPrefs((p) => ({ ...p, width: clampWidth(v) })), []);
   const setWorkspace = useCallback((w: WorkspaceId) => setPrefs((p) => ({ ...p, workspace: w })), []);
 
@@ -197,6 +207,12 @@ export function NavigationProvider({ children }: { children: ReactNode }) {
       if (mod && key === "b") {
         e.preventDefault();
         setPrefs((p) => ({ ...p, collapsed: !p.collapsed }));
+        return;
+      }
+      // Ctrl/⌘+\ — hide/show the sidebar entirely (full-screen / focus mode).
+      if (mod && key === "\\") {
+        e.preventDefault();
+        setPrefs((p) => ({ ...p, hidden: !p.hidden }));
         return;
       }
       // Alt+Left / Alt+Right — history back / forward.
@@ -245,6 +261,9 @@ export function NavigationProvider({ children }: { children: ReactNode }) {
       collapsed: prefs.collapsed,
       setCollapsed,
       toggleCollapsed,
+      hidden: prefs.hidden,
+      setHidden,
+      toggleHidden,
       width: prefs.width,
       setWidth,
       workspace: prefs.workspace,
@@ -263,6 +282,8 @@ export function NavigationProvider({ children }: { children: ReactNode }) {
       togglePinned,
       setCollapsed,
       toggleCollapsed,
+      setHidden,
+      toggleHidden,
       setWidth,
       setWorkspace,
       paletteOpen,

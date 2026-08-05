@@ -181,6 +181,7 @@ const RAW_MODULES: RawModule[] = [
       { id: "monitoring-dashboard", title: "Monitoring Dashboard", href: "/monitoring-dashboard", icon: HeartPulse, description: "Live monitoring", keywords: ["monitoring", "health", "live"] },
       { id: "compliance-dashboard", title: "Compliance Dashboard", href: "/compliance-dashboard", icon: ShieldQuestion, description: "Compliance operations", keywords: ["compliance", "audit", "controls"] },
       { id: "admin-dashboard", title: "Administrator", href: "/admin-dashboard", icon: Settings, description: "Administration console", keywords: ["admin", "users", "roles", "settings"] },
+      { id: "settings", title: "Profile & Settings", href: "/settings", icon: UserCog, description: "Your account details and workspace preferences", keywords: ["profile", "settings", "account", "username", "preferences", "full screen", "sidebar"] },
     ],
   },
   {

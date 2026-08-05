@@ -232,6 +232,115 @@ export const fraudAlerts: FraudAlert[] = [
   },
 ];
 
+/**
+ * Compact sparkline series (last ~12 points) per KPI key — presentation-only,
+ * used to render the trend micro-chart on each KPI card.
+ */
+export const kpiSparklines: Record<string, number[]> = {
+  score: [726, 728, 731, 730, 734, 736, 735, 738, 740, 739, 741, 742],
+  approval: [61, 62, 63, 64, 63, 65, 66, 66, 67, 67, 68, 68.4],
+  predictions: [96, 101, 108, 112, 115, 118, 121, 123, 124, 126, 127, 128.4],
+  fraud: [0.61, 0.58, 0.55, 0.54, 0.5, 0.49, 0.47, 0.46, 0.45, 0.44, 0.43, 0.42],
+  enterprise_score: [700, 704, 708, 710, 712, 715, 716, 718, 719, 720, 721, 722],
+  enterprise_assessments: [18, 19, 20, 21, 22, 24, 25, 27, 28, 29, 30, 31],
+  high_risk_accounts: [58, 56, 55, 53, 52, 50, 49, 47, 46, 45, 43, 41],
+  fraud_checks: [88, 92, 98, 104, 108, 112, 116, 120, 123, 126, 128, 132],
+  fraud_detected: [64, 61, 58, 55, 52, 50, 47, 45, 43, 41, 38, 33],
+  customers: [201, 205, 210, 214, 218, 221, 225, 228, 231, 235, 239, 243],
+  alerts: [58, 55, 52, 49, 47, 45, 43, 41, 40, 39, 38, 37],
+};
+
+/** Human-readable comparison window shown under each KPI value. */
+export const KPI_COMPARE_LABEL = "vs prior 30 days";
+
+export type ActivityKind =
+  | "decision"
+  | "fraud"
+  | "workflow"
+  | "model"
+  | "alert"
+  | "report";
+
+export interface ActivityItem {
+  id: string;
+  kind: ActivityKind;
+  actor: string;
+  action: string;
+  target: string;
+  time: string;
+  status?: "success" | "warning" | "danger" | "info";
+}
+
+/**
+ * Recent activity / workflow stream for the dashboard — a modern enterprise
+ * feed (decisions, fraud, workflow, model ops). Presentation-only demo data.
+ */
+export const activityFeed: ActivityItem[] = [
+  {
+    id: "a1",
+    kind: "decision",
+    actor: "Priya Raman",
+    action: "approved credit line for",
+    target: "Orbital AI · ₹4.2Cr",
+    time: "2m ago",
+    status: "success",
+  },
+  {
+    id: "a2",
+    kind: "fraud",
+    actor: "Fraud Engine",
+    action: "flagged a velocity anomaly on",
+    target: "CR-10247 · Yara Khalil",
+    time: "6m ago",
+    status: "danger",
+  },
+  {
+    id: "a3",
+    kind: "workflow",
+    actor: "Credit Committee",
+    action: "advanced to stage 3 —",
+    target: "Northwind Foods facility",
+    time: "18m ago",
+    status: "info",
+  },
+  {
+    id: "a4",
+    kind: "model",
+    actor: "MLOps",
+    action: "detected drift on feature",
+    target: "utilization_ratio (4.1σ)",
+    time: "41m ago",
+    status: "warning",
+  },
+  {
+    id: "a5",
+    kind: "decision",
+    actor: "Devon Okafor",
+    action: "sent to manual review",
+    target: "Lumen Co · ₹1.1Cr",
+    time: "1h ago",
+    status: "info",
+  },
+  {
+    id: "a6",
+    kind: "report",
+    actor: "Analyst Studio",
+    action: "generated Q2 portfolio memo for",
+    target: "Meridian Holdings",
+    time: "2h ago",
+    status: "success",
+  },
+  {
+    id: "a7",
+    kind: "alert",
+    actor: "Early Warning",
+    action: "raised a watchlist signal on",
+    target: "Vela Co · covenant breach",
+    time: "3h ago",
+    status: "warning",
+  },
+];
+
 export const insights = [
   {
     title: "Approval rate up 12%",

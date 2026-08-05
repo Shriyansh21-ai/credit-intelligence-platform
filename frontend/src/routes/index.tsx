@@ -9,8 +9,10 @@ import { RiskDonut, VolumeArea, ApprovalBar } from "@/components/dashboard/Chart
 import { AssessmentsTable } from "@/components/dashboard/AssessmentsTable";
 import { FraudCenter } from "@/components/dashboard/FraudCenter";
 import { AiInsights } from "@/components/dashboard/AiInsights";
+import { ActivityFeed } from "@/components/dashboard/ActivityFeed";
 import { QuickActions } from "@/components/dashboard/QuickActions";
 import { getDashboard, type DashboardData } from "@/lib/api";
+import { kpiSparklines, KPI_COMPARE_LABEL } from "@/lib/dashboard-data";
 
 export const Route = createFileRoute('/')({
   head: () => ({
@@ -183,7 +185,7 @@ function DashboardPage() {
       <div className="flex min-w-0 flex-1 flex-col">
         <Topbar title="Dashboard" onMenu={() => setMenuOpen(true)} />
 
-        <main className="mx-auto w-full max-w-7xl flex-1 space-y-6 p-4 md:p-6 lg:p-8">
+        <main className="mx-auto w-full max-w-7xl flex-1 space-y-5 p-4 md:p-6 lg:p-8">
           {loading ? (
             <DashboardSkeleton metrics={6} rows={5} />
           ) : error ? (
@@ -197,9 +199,12 @@ function DashboardPage() {
                   <h2 className="text-sm font-semibold tracking-tight text-foreground">
                     Executive overview
                   </h2>
-                  <span className="text-xs text-muted-foreground">Real-time data</span>
+                  <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground">
+                    <span className="h-1.5 w-1.5 rounded-full bg-success" />
+                    Real-time · {KPI_COMPARE_LABEL}
+                  </span>
                 </div>
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+                <div className="grid grid-cols-2 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
                   {kpis.map((k, i) => (
                     <KpiCard
                       key={k.key}
@@ -209,6 +214,8 @@ function DashboardPage() {
                       delta={k.delta}
                       trend={k.trend}
                       icon={k.icon}
+                      spark={kpiSparklines[k.key]}
+                      compareLabel={KPI_COMPARE_LABEL}
                     />
                   ))}
                 </div>
@@ -221,8 +228,12 @@ function DashboardPage() {
                 </div>
               </section>
 
-              <section>
-                <ApprovalBar />
+              {/* Live activity alongside the weekly decision trend. */}
+              <section className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+                <div className="lg:col-span-2">
+                  <ApprovalBar />
+                </div>
+                <ActivityFeed />
               </section>
 
               <section className="grid grid-cols-1 gap-4 xl:grid-cols-3">
