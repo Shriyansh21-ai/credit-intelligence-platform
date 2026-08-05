@@ -1,237 +1,49 @@
+/**
+ * Enterprise navigation sidebar.
+ *
+ * Generated entirely from the navigation registry (no hardcoded links). Features:
+ *  - Expanded / collapsed (icon-rail) modes, hover-to-expand when collapsed, and
+ *    a drag-to-resize handle. All persisted per-user via NavigationProvider.
+ *  - Smart single-open accordion: only the active module is expanded.
+ *  - Favourites and Recent pages pinned to the top; pinnable modules.
+ *  - Workspace filtering (e.g. the ML workspace hides Treasury pages) — nothing
+ *    is removed, only filtered.
+ *  - Search launcher (opens the ⌘K command palette).
+ *
+ * The same {open, onClose} contract as before is preserved, so every call-site
+ * (AppShell, the operations/risk layouts and the handful of pages that mount the
+ * sidebar directly) keeps working untouched.
+ */
+
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useRouterState } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import {
-  LayoutDashboard,
-  Brain,
-  Briefcase,
-  FileStack,
-  ShieldAlert,
-  ShieldCheck,
-  BarChart3,
-  LineChart,
-  Settings,
+  ChevronDown,
   LogOut,
+  Pin,
+  PinOff,
+  PanelLeftClose,
+  PanelLeftOpen,
+  Search,
   Sparkles,
+  Star,
   X,
-  Gauge,
-  Microscope,
-  SlidersHorizontal,
-  Activity,
-  PieChart,
-  Layers,
-  Siren,
-  FileText,
-  ClipboardList,
-  ShieldQuestion,
-  UserCog,
-  Users,
-  Wallet,
-  HeartPulse,
-  Cpu,
-  Boxes,
-  Waves,
-  Plug,
-  Download,
-  Landmark,
-  RefreshCw,
-  Webhook,
-  Network,
-  Radar,
-  Bot,
-  FlaskConical,
-  TrendingUp,
-  MessageSquareText,
-  GitBranch,
-  Compass,
+  type LucideIcon,
 } from "lucide-react";
+
+import {
+  moduleInWorkspace,
+  NAV_MODULES,
+  resolvePathToItem,
+  useNavigation,
+  type NavItem,
+  type NavModule,
+} from "@/navigation";
+import { WorkspaceSwitcher } from "@/components/navigation/WorkspaceSwitcher";
 import { cn } from "@/lib/utils";
 
-const primaryNav = [
-  { label: "Dashboard", icon: LayoutDashboard, href: "/" },
-  { label: "Enterprise Assessment", icon: Briefcase, href: "/enterprise" },
-  { label: "Documents", icon: FileStack, href: "/documents" },
-  { label: "Financial Analysis", icon: LineChart, href: "/analysis" },
-  { label: "Fraud Detection", icon: ShieldAlert, href: "/fraud" },
-  { label: "Fraud History", icon: ShieldCheck, href: "/fraud" },
-  { label: "Analytics", icon: BarChart3, href: "/" },
-  { label: "Settings", icon: Settings, href: "/" },
-];
-
-// Phase 4 — Enterprise AI Risk Intelligence layer.
-const riskNav = [
-  { label: "Risk Intelligence", icon: Gauge, href: "/risk-intelligence" },
-  { label: "Explainability", icon: Microscope, href: "/explainability" },
-  { label: "Scenario Simulator", icon: SlidersHorizontal, href: "/scenario" },
-  { label: "Stress Testing", icon: Activity, href: "/stress-testing" },
-  { label: "Portfolio Intelligence", icon: PieChart, href: "/portfolio-intelligence" },
-  { label: "Feature Importance", icon: Layers, href: "/feature-importance" },
-  { label: "Risk Alerts", icon: Siren, href: "/alerts" },
-  { label: "Analyst Report", icon: FileText, href: "/analyst-report" },
-];
-
-// Phase 5 — Credit Decision Platform: enterprise operations dashboards.
-const operationsNav = [
-  { label: "Credit Operations", icon: ClipboardList, href: "/operations" },
-  { label: "Analyst Dashboard", icon: UserCog, href: "/analyst-dashboard" },
-  { label: "Manager Dashboard", icon: Users, href: "/manager-dashboard" },
-  { label: "Portfolio Dashboard", icon: Wallet, href: "/portfolio-dashboard" },
-  { label: "Monitoring Dashboard", icon: HeartPulse, href: "/monitoring-dashboard" },
-  { label: "Compliance Dashboard", icon: ShieldQuestion, href: "/compliance-dashboard" },
-  { label: "Administrator", icon: Settings, href: "/admin-dashboard" },
-];
-
-// Phase 6 — Enterprise ML Platform (MLOps) dashboards.
-const mlPlatformNav = [
-  { label: "Training", icon: Cpu, href: "/ml-training" },
-  { label: "Model Registry", icon: Boxes, href: "/ml-registry" },
-  { label: "Inference", icon: Gauge, href: "/ml-inference" },
-  { label: "Performance", icon: BarChart3, href: "/ml-performance" },
-  { label: "Feature Importance", icon: Layers, href: "/ml-feature-importance" },
-  { label: "Drift Detection", icon: Waves, href: "/ml-drift" },
-  { label: "ML Stress Testing", icon: Activity, href: "/ml-stress" },
-];
-
-// Phase 7 — Banking Ecosystem Integration Platform.
-const integrationsNav = [
-  { label: "Connectors", icon: Plug, href: "/integrations-connectors" },
-  { label: "Data Imports", icon: Download, href: "/integrations-import" },
-  { label: "Account Aggregator", icon: Landmark, href: "/account-aggregator" },
-  { label: "Collateral", icon: Boxes, href: "/collateral" },
-  { label: "Customer 360", icon: Users, href: "/customer360" },
-  { label: "Portfolio Sync", icon: RefreshCw, href: "/integrations-sync" },
-  { label: "Open API Platform", icon: Webhook, href: "/api-platform" },
-];
-
-// Phase 9 — Autonomous AI Banking Intelligence Platform (the "AI Brain").
-const autonomousNav = [
-  { label: "Knowledge Graph", icon: Network, href: "/knowledge-graph" },
-  { label: "Risk Monitoring", icon: Radar, href: "/risk-monitoring" },
-  { label: "Early Warning", icon: Siren, href: "/early-warning" },
-  { label: "AI Copilot", icon: Bot, href: "/copilot" },
-  { label: "Scenario Simulation", icon: FlaskConical, href: "/simulation" },
-  { label: "Stress Testing (Portfolio)", icon: Activity, href: "/stress-testing-9" },
-  { label: "Portfolio Optimization", icon: TrendingUp, href: "/portfolio-optimization" },
-  { label: "RM Workspace", icon: UserCog, href: "/rm-workspace" },
-  { label: "Command Center", icon: Compass, href: "/command-center" },
-  { label: "NL Analytics", icon: MessageSquareText, href: "/nl-analytics" },
-  { label: "Model Governance", icon: GitBranch, href: "/model-governance" },
-];
-
-// Phase 10 — Enterprise Banking Operating System (the AI-native control plane).
-const bankingOsNav = [
-  { label: "Executive Center", icon: PieChart, href: "/executive-center" },
-  { label: "Policy Engine", icon: ShieldQuestion, href: "/policy-engine" },
-  { label: "Enterprise Search", icon: Layers, href: "/enterprise-search" },
-  { label: "Committee Workspace", icon: Users, href: "/committee-workspace" },
-  { label: "Scenario Planning", icon: SlidersHorizontal, href: "/scenario-planning" },
-  { label: "Workflow Studio", icon: GitBranch, href: "/workflow-studio" },
-  { label: "Recommendation Marketplace", icon: Plug, href: "/recommendation-marketplace" },
-  { label: "Data Fabric", icon: Boxes, href: "/data-fabric" },
-  { label: "Graph Analytics", icon: Network, href: "/graph-analytics" },
-  { label: "Prompt Studio", icon: MessageSquareText, href: "/prompt-studio" },
-  { label: "Multi-LLM Console", icon: Cpu, href: "/llm-console" },
-  { label: "Fairness & Drift", icon: Waves, href: "/fairness-governance" },
-];
-
-// Track 2 — Enterprise AI Intelligence Platform (RAG, agents, memory, prompts,
-// eval, investigation, reports, workflows, chat, research, learning, governance,
-// explainability, monitoring). Additive AI layer over every prior phase.
-const aiPlatformNav = [
-  { label: "RAG Platform", icon: Layers, href: "/aip-rag" },
-  { label: "Multi-Agent System", icon: Bot, href: "/aip-agents" },
-  { label: "Long-Term Memory", icon: Brain, href: "/aip-memory" },
-  { label: "Prompt Engineering", icon: MessageSquareText, href: "/aip-prompts" },
-  { label: "AI Evaluation", icon: Gauge, href: "/aip-evaluation" },
-  { label: "Investigation", icon: Microscope, href: "/aip-investigation" },
-  { label: "Report Generation", icon: FileText, href: "/aip-reports" },
-  { label: "Workflow Builder", icon: GitBranch, href: "/aip-workflows" },
-  { label: "AI Assistant", icon: Sparkles, href: "/aip-assistant" },
-  { label: "Research Assistant", icon: FlaskConical, href: "/aip-research" },
-  { label: "Continuous Learning", icon: RefreshCw, href: "/aip-learning" },
-  { label: "AI Governance", icon: ShieldQuestion, href: "/aip-governance" },
-  { label: "Explainable AI", icon: Compass, href: "/aip-explainability" },
-  { label: "AI Monitoring", icon: HeartPulse, href: "/aip-monitoring" },
-];
-
-// Track 3 — Advanced Financial Intelligence Platform (treasury, portfolio,
-// regulatory, economic, ESG, market, alt-data, forecasting, quant, benchmarking,
-// executive, optimization, digital twin, strategic). Additive quantitative layer.
-const financialIntelligenceNav = [
-  { label: "Treasury Intelligence", icon: Wallet, href: "/fin-treasury" },
-  { label: "Portfolio Intelligence", icon: PieChart, href: "/fin-portfolio" },
-  { label: "Basel III / IFRS 9", icon: Landmark, href: "/fin-regulatory" },
-  { label: "Economic Scenarios", icon: LineChart, href: "/fin-economic" },
-  { label: "Climate & ESG", icon: Activity, href: "/fin-esg" },
-  { label: "Market Intelligence", icon: Radar, href: "/fin-market" },
-  { label: "Alternative Data", icon: Network, href: "/fin-altdata" },
-  { label: "Forecasting", icon: Gauge, href: "/fin-forecast" },
-  { label: "Quantitative Risk", icon: SlidersHorizontal, href: "/fin-quant" },
-  { label: "Benchmarking", icon: Boxes, href: "/fin-benchmark" },
-  { label: "Executive Center", icon: Briefcase, href: "/fin-executive" },
-  { label: "Decision Optimization", icon: Sparkles, href: "/fin-optimize" },
-  { label: "Financial Digital Twin", icon: Cpu, href: "/fin-twin" },
-  { label: "Strategic Intelligence", icon: FileStack, href: "/fin-strategic" },
-];
-
-// Track 4 — Enterprise Productization & Commercial Readiness. The productization
-// surfaces that make the platform look, behave and scale like a commercial product.
-const enterprisePlatformNav = [
-  { label: "Enterprise UX", icon: Sparkles, href: "/ent-ux" },
-  { label: "Workspaces", icon: Layers, href: "/ent-workspaces" },
-  { label: "Developer Platform", icon: Cpu, href: "/ent-developer" },
-  { label: "Plugin Marketplace", icon: Plug, href: "/ent-marketplace" },
-  { label: "Integration Studio", icon: Webhook, href: "/ent-integration" },
-  { label: "Data Management", icon: FileStack, href: "/ent-data" },
-  { label: "Operations Center", icon: Activity, href: "/ent-operations" },
-  { label: "Security Center", icon: ShieldCheck, href: "/ent-security" },
-  { label: "Customer Success", icon: Users, href: "/ent-success" },
-  { label: "Deployment", icon: RefreshCw, href: "/ent-deployment" },
-  { label: "Monitoring", icon: Radar, href: "/ent-monitoring" },
-  { label: "Business Intelligence", icon: PieChart, href: "/ent-bi" },
-  { label: "Launch Readiness", icon: ClipboardList, href: "/ent-launch" },
-];
-
-// Stage 4 — Enterprise Security & Compliance Platform. The security control
-// plane: posture, threat model, OWASP, compliance, findings and risk register.
-const securityNav = [
-  { label: "Security Center", icon: ShieldCheck, href: "/security-dashboard" },
-];
-
-// Consumer-credit scoring predates the enterprise pivot. Retained as a legacy
-// tool but demoted from the primary workflow.
-const legacyNav = [{ label: "Credit Prediction", icon: Brain, href: "/predict" }];
-
-interface NavItem {
-  label: string;
-  icon: typeof LayoutDashboard;
-  href: string;
-}
-
-function NavLink({ label, icon: Icon, href, pathname }: NavItem & { pathname: string }) {
-  const isActive = href === "/" ? pathname === "/" : pathname.startsWith(href);
-
-  return (
-    <Link
-      to={href}
-      aria-current={isActive ? "page" : undefined}
-      className={cn(
-        "group relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
-        isActive
-          ? "bg-sidebar-accent text-sidebar-accent-foreground"
-          : "text-sidebar-foreground/75 hover:bg-sidebar-accent/60 hover:text-sidebar-foreground",
-      )}
-    >
-      {isActive && (
-        <motion.span
-          layoutId="sidebar-active"
-          className="absolute left-0 top-1/2 h-6 w-0.5 -translate-y-1/2 rounded-r-full bg-gradient-primary"
-        />
-      )}
-      <Icon className="h-4 w-4 opacity-90" />
-      <span>{label}</span>
-    </Link>
-  );
-}
+const RAIL_WIDTH = 68;
 
 interface SidebarProps {
   open: boolean;
@@ -239,10 +51,47 @@ interface SidebarProps {
 }
 
 export function Sidebar({ open, onClose }: SidebarProps) {
-  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const { collapsed, width, setWidth, hydrated } = useNavigation();
+  const [hovered, setHovered] = useState(false);
+  const resizingRef = useRef(false);
+
+  // Before hydration, always render expanded defaults so SSR and the first client
+  // render agree (avoids collapsed/expanded flicker mismatch).
+  const effectiveCollapsed = hydrated ? collapsed && !hovered : false;
+  const flowWidth = hydrated && collapsed ? RAIL_WIDTH : width;
+  const panelWidth = effectiveCollapsed ? RAIL_WIDTH : width;
+
+  // Drag-to-resize (expanded mode only).
+  useEffect(() => {
+    function onMove(e: MouseEvent) {
+      if (!resizingRef.current) return;
+      setWidth(e.clientX);
+    }
+    function onUp() {
+      if (resizingRef.current) {
+        resizingRef.current = false;
+        document.body.style.userSelect = "";
+        document.body.style.cursor = "";
+      }
+    }
+    window.addEventListener("mousemove", onMove);
+    window.addEventListener("mouseup", onUp);
+    return () => {
+      window.removeEventListener("mousemove", onMove);
+      window.removeEventListener("mouseup", onUp);
+    };
+  }, [setWidth]);
+
+  function startResize(e: React.MouseEvent) {
+    e.preventDefault();
+    resizingRef.current = true;
+    document.body.style.userSelect = "none";
+    document.body.style.cursor = "col-resize";
+  }
+
   return (
     <>
-      {/* Mobile overlay */}
+      {/* Mobile drawer overlay */}
       {open && (
         <div
           onClick={onClose}
@@ -251,143 +100,519 @@ export function Sidebar({ open, onClose }: SidebarProps) {
         />
       )}
 
+      {/* Mobile drawer (always full width, never collapsed) */}
       <aside
         className={cn(
-          "fixed inset-y-0 left-0 z-50 w-72 transform border-r border-sidebar-border bg-sidebar transition-transform duration-300 lg:sticky lg:top-0 lg:h-screen lg:translate-x-0",
+          "fixed inset-y-0 left-0 z-50 w-72 transform border-r border-sidebar-border bg-sidebar transition-transform duration-300 lg:hidden",
           open ? "translate-x-0" : "-translate-x-full",
         )}
       >
-        <div className="flex h-full flex-col">
-          <div className="flex items-center justify-between px-5 py-5">
-            <a href="#" className="flex items-center gap-2.5">
-              <div className="relative flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-primary shadow-glow">
-                <Sparkles className="h-4.5 w-4.5 text-primary-foreground" strokeWidth={2.5} />
-              </div>
-              <div className="leading-tight">
-                <div className="text-sm font-semibold tracking-tight text-sidebar-foreground">
-                  AI Credit
-                </div>
-                <div className="text-[11px] uppercase tracking-[0.14em] text-muted-foreground">
-                  Intelligence
-                </div>
-              </div>
-            </a>
-            <button
-              onClick={onClose}
-              className="rounded-md p-1.5 text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground lg:hidden"
-              aria-label="Close menu"
-            >
-              <X className="h-4 w-4" />
-            </button>
-          </div>
+        <SidebarBody collapsed={false} onNavigate={onClose} onClose={onClose} mobile />
+      </aside>
 
-          <nav aria-label="Primary" className="hide-scrollbar flex-1 space-y-1 overflow-y-auto px-3 pb-2">
-            <div className="px-3 pb-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-              Workspace
-            </div>
-            {primaryNav.map((item) => (
-              <NavLink key={item.label} {...item} pathname={pathname} />
-            ))}
-
-            <div className="px-3 pb-2 pt-4 text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-              AI Risk Intelligence
-            </div>
-            {riskNav.map((item) => (
-              <NavLink key={item.label} {...item} pathname={pathname} />
-            ))}
-
-            <div className="px-3 pb-2 pt-4 text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-              Credit Operations
-            </div>
-            {operationsNav.map((item) => (
-              <NavLink key={item.label} {...item} pathname={pathname} />
-            ))}
-
-            <div className="px-3 pb-2 pt-4 text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-              ML Platform
-            </div>
-            {mlPlatformNav.map((item) => (
-              <NavLink key={item.label} {...item} pathname={pathname} />
-            ))}
-
-            <div className="px-3 pb-2 pt-4 text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-              Banking Ecosystem
-            </div>
-            {integrationsNav.map((item) => (
-              <NavLink key={item.label} {...item} pathname={pathname} />
-            ))}
-
-            <div className="px-3 pb-2 pt-4 text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-              Autonomous Intelligence
-            </div>
-            {autonomousNav.map((item) => (
-              <NavLink key={item.label} {...item} pathname={pathname} />
-            ))}
-
-            <div className="px-3 pb-2 pt-4 text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-              Banking OS
-            </div>
-            {bankingOsNav.map((item) => (
-              <NavLink key={item.label} {...item} pathname={pathname} />
-            ))}
-
-            <div className="px-3 pb-2 pt-4 text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-              AI Intelligence Platform
-            </div>
-            {aiPlatformNav.map((item) => (
-              <NavLink key={item.label} {...item} pathname={pathname} />
-            ))}
-
-            <div className="px-3 pb-2 pt-4 text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-              Financial Intelligence Platform
-            </div>
-            {financialIntelligenceNav.map((item) => (
-              <NavLink key={item.label} {...item} pathname={pathname} />
-            ))}
-
-            <div className="px-3 pb-2 pt-4 text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-              Enterprise Platform
-            </div>
-            {enterprisePlatformNav.map((item) => (
-              <NavLink key={item.label} {...item} pathname={pathname} />
-            ))}
-
-            <div className="px-3 pb-2 pt-4 text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-              Security & Compliance
-            </div>
-            {securityNav.map((item) => (
-              <NavLink key={item.label} {...item} pathname={pathname} />
-            ))}
-
-            <div className="px-3 pb-2 pt-4 text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-              Legacy
-            </div>
-            {legacyNav.map((item) => (
-              <NavLink key={item.label} {...item} pathname={pathname} />
-            ))}
-          </nav>
-
-          <div className="m-3 rounded-xl border border-sidebar-border bg-sidebar-accent/40 p-3">
-            <div className="flex items-center gap-3">
-              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-accent text-sm font-semibold text-accent-foreground">
-                SD
-              </div>
-              <div className="min-w-0 flex-1">
-                <div className="truncate text-sm font-medium text-sidebar-foreground">
-                  Shriyansh Dev
-                </div>
-                <div className="truncate text-xs text-muted-foreground">Head of Risk</div>
-              </div>
-              <button
-                className="rounded-md p-1.5 text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground"
-                aria-label="Log out"
-              >
-                <LogOut className="h-4 w-4" />
-              </button>
-            </div>
-          </div>
+      {/* Desktop sidebar: a flow spacer of `flowWidth`, with a fixed panel that can
+          hover-expand over the content without shifting layout. */}
+      <aside
+        className="relative hidden shrink-0 lg:block"
+        style={{ width: flowWidth }}
+        aria-label="Primary navigation"
+      >
+        <div
+          onMouseEnter={() => setHovered(true)}
+          onMouseLeave={() => setHovered(false)}
+          className={cn(
+            "fixed inset-y-0 left-0 z-30 flex h-screen flex-col border-r border-sidebar-border bg-sidebar",
+            !resizingRef.current && "transition-[width] duration-200 ease-out",
+          )}
+          style={{ width: panelWidth }}
+        >
+          <SidebarBody collapsed={effectiveCollapsed} />
+          {/* Resize handle (expanded only) */}
+          {!effectiveCollapsed && (
+            <div
+              onMouseDown={startResize}
+              role="separator"
+              aria-orientation="vertical"
+              aria-label="Resize sidebar"
+              className="absolute inset-y-0 right-0 z-40 w-1 cursor-col-resize hover:bg-primary/40"
+            />
+          )}
         </div>
       </aside>
     </>
+  );
+}
+
+// ---------------------------------------------------------------------------
+
+function SidebarBody({
+  collapsed,
+  onNavigate,
+  onClose,
+  mobile,
+}: {
+  collapsed: boolean;
+  onNavigate?: () => void;
+  onClose?: () => void;
+  mobile?: boolean;
+}) {
+  const {
+    toggleCollapsed,
+    openPalette,
+    workspace,
+    favoriteItems,
+    recentItems,
+    isFavorite,
+    toggleFavorite,
+    pinned,
+    togglePinned,
+  } = useNavigation();
+
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const activeItem = useMemo(() => resolvePathToItem(pathname), [pathname]);
+  const activeModuleId = activeItem?.moduleId;
+
+  // Single-open accordion: only the active module is expanded; user can switch.
+  const [openModule, setOpenModule] = useState<string | undefined>(activeModuleId);
+  useEffect(() => {
+    if (activeModuleId) setOpenModule(activeModuleId);
+  }, [activeModuleId]);
+
+  const visibleModules = useMemo(
+    () => NAV_MODULES.filter((m) => moduleInWorkspace(m, workspace)),
+    [workspace],
+  );
+  const pinnedModules = useMemo(() => NAV_MODULES.filter((m) => pinned.includes(m.id)), [pinned]);
+  const unpinnedVisible = visibleModules.filter((m) => !pinned.includes(m.id));
+
+  function handleNavigate() {
+    onNavigate?.();
+  }
+
+  // ---- Collapsed icon rail --------------------------------------------------
+  if (collapsed) {
+    return (
+      <div className="flex h-full flex-col">
+        <RailHeader />
+        <div className="hide-scrollbar flex flex-1 flex-col items-center gap-1 overflow-y-auto px-2 py-2">
+          <RailButton icon={Search} label="Search (⌘K)" onClick={openPalette} />
+          {favoriteItems.length > 0 && <RailDivider />}
+          {favoriteItems.map((item) => (
+            <RailLink key={item.id} item={item} active={item.id === activeItem?.id} onNavigate={handleNavigate} />
+          ))}
+          <RailDivider />
+          {visibleModules.map((m) => (
+            <RailLink
+              key={m.id}
+              item={m.items[0]}
+              icon={m.icon}
+              label={m.title}
+              active={m.id === activeModuleId}
+              onNavigate={handleNavigate}
+            />
+          ))}
+        </div>
+        <RailFooter />
+      </div>
+    );
+  }
+
+  // ---- Expanded body --------------------------------------------------------
+  return (
+    <div className="flex h-full flex-col">
+      {/* Header */}
+      <div className="flex items-center justify-between px-4 py-4">
+        <Link to="/" onClick={handleNavigate} className="flex items-center gap-2.5">
+          <div className="relative flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-primary shadow-glow">
+            <Sparkles className="h-[1.125rem] w-[1.125rem] text-primary-foreground" strokeWidth={2.5} />
+          </div>
+          <div className="leading-tight">
+            <div className="text-sm font-semibold tracking-tight text-sidebar-foreground">AI Credit</div>
+            <div className="text-[11px] uppercase tracking-[0.14em] text-muted-foreground">Intelligence</div>
+          </div>
+        </Link>
+        {mobile ? (
+          <button
+            onClick={onClose}
+            className="rounded-md p-1.5 text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground"
+            aria-label="Close menu"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        ) : (
+          <button
+            onClick={toggleCollapsed}
+            className="rounded-md p-1.5 text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground"
+            aria-label="Collapse sidebar"
+            title="Collapse sidebar (Ctrl+B)"
+          >
+            <PanelLeftClose className="h-4 w-4" />
+          </button>
+        )}
+      </div>
+
+      {/* Search launcher + workspace switcher */}
+      <div className="space-y-2 px-3 pb-2">
+        <button
+          onClick={openPalette}
+          className="flex w-full items-center gap-2 rounded-lg border border-sidebar-border bg-sidebar-accent/30 px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-sidebar-accent hover:text-sidebar-foreground"
+        >
+          <Search className="h-4 w-4" />
+          <span className="flex-1 text-left">Search…</span>
+          <kbd className="rounded border border-sidebar-border bg-sidebar px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground">
+            ⌘K
+          </kbd>
+        </button>
+        <WorkspaceSwitcher />
+      </div>
+
+      {/* Scrollable navigation */}
+      <nav aria-label="Primary" className="hide-scrollbar flex-1 space-y-1 overflow-y-auto px-3 pb-3">
+        {favoriteItems.length > 0 && (
+          <Section label="Favorites">
+            {favoriteItems.map((item) => (
+              <NavItemLink
+                key={item.id}
+                item={item}
+                active={item.id === activeItem?.id}
+                favorite={isFavorite(item.id)}
+                onToggleFavorite={toggleFavorite}
+                onNavigate={handleNavigate}
+              />
+            ))}
+          </Section>
+        )}
+
+        {recentItems.length > 0 && (
+          <Section label="Recent">
+            {recentItems.slice(0, 5).map((item) => (
+              <NavItemLink
+                key={item.id}
+                item={item}
+                active={item.id === activeItem?.id}
+                favorite={isFavorite(item.id)}
+                onToggleFavorite={toggleFavorite}
+                onNavigate={handleNavigate}
+              />
+            ))}
+          </Section>
+        )}
+
+        {pinnedModules.length > 0 && (
+          <Section label="Pinned">
+            {pinnedModules.map((m) => (
+              <ModuleGroup
+                key={m.id}
+                module={m}
+                isOpen={openModule === m.id}
+                onToggleOpen={() => setOpenModule((o) => (o === m.id ? undefined : m.id))}
+                activeItemId={activeItem?.id}
+                pinned
+                onTogglePin={togglePinned}
+                isFavorite={isFavorite}
+                onToggleFavorite={toggleFavorite}
+                onNavigate={handleNavigate}
+              />
+            ))}
+          </Section>
+        )}
+
+        <Section label={pinnedModules.length > 0 ? "Modules" : undefined}>
+          {unpinnedVisible.map((m) => (
+            <ModuleGroup
+              key={m.id}
+              module={m}
+              isOpen={openModule === m.id}
+              onToggleOpen={() => setOpenModule((o) => (o === m.id ? undefined : m.id))}
+              activeItemId={activeItem?.id}
+              pinned={false}
+              onTogglePin={togglePinned}
+              isFavorite={isFavorite}
+              onToggleFavorite={toggleFavorite}
+              onNavigate={handleNavigate}
+            />
+          ))}
+        </Section>
+      </nav>
+
+      <UserFooter />
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Expanded building blocks.
+// ---------------------------------------------------------------------------
+
+function Section({ label, children }: { label?: string; children: React.ReactNode }) {
+  return (
+    <div className="pt-1">
+      {label && (
+        <div className="px-3 pb-1 pt-3 text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+          {label}
+        </div>
+      )}
+      <div className="space-y-0.5">{children}</div>
+    </div>
+  );
+}
+
+function ModuleGroup({
+  module,
+  isOpen,
+  onToggleOpen,
+  activeItemId,
+  pinned,
+  onTogglePin,
+  isFavorite,
+  onToggleFavorite,
+  onNavigate,
+}: {
+  module: NavModule;
+  isOpen: boolean;
+  onToggleOpen: () => void;
+  activeItemId?: string;
+  pinned: boolean;
+  onTogglePin: (id: string) => void;
+  isFavorite: (id: string) => boolean;
+  onToggleFavorite: (id: string) => void;
+  onNavigate: () => void;
+}) {
+  const Icon = module.icon;
+  const hasActive = module.items.some((it) => it.id === activeItemId);
+
+  return (
+    <div>
+      <div
+        className={cn(
+          "group flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+          hasActive ? "text-sidebar-foreground" : "text-sidebar-foreground/80 hover:bg-sidebar-accent/50",
+        )}
+      >
+        <button onClick={onToggleOpen} className="flex min-w-0 flex-1 items-center gap-2.5 text-left">
+          <Icon className="h-4 w-4 shrink-0 opacity-90" />
+          <span className="truncate">{module.title}</span>
+        </button>
+        <button
+          onClick={() => onTogglePin(module.id)}
+          aria-label={pinned ? "Unpin module" : "Pin module"}
+          title={pinned ? "Unpin module" : "Pin module"}
+          className={cn(
+            "shrink-0 rounded p-0.5 text-muted-foreground opacity-0 transition-opacity hover:text-sidebar-foreground group-hover:opacity-100",
+            pinned && "opacity-100 text-primary",
+          )}
+        >
+          {pinned ? <PinOff className="h-3.5 w-3.5" /> : <Pin className="h-3.5 w-3.5" />}
+        </button>
+        <button onClick={onToggleOpen} aria-label={isOpen ? "Collapse" : "Expand"} className="shrink-0">
+          <ChevronDown
+            className={cn("h-4 w-4 text-muted-foreground transition-transform", isOpen && "rotate-180")}
+          />
+        </button>
+      </div>
+
+      {isOpen && (
+        <motion.div
+          initial={{ height: 0, opacity: 0 }}
+          animate={{ height: "auto", opacity: 1 }}
+          transition={{ duration: 0.18, ease: "easeOut" }}
+          className="overflow-hidden pl-3"
+        >
+          <div className="space-y-0.5 border-l border-sidebar-border/70 pl-2 pt-0.5">
+            {module.items.map((item) => (
+              <NavItemLink
+                key={item.id}
+                item={item}
+                active={item.id === activeItemId}
+                favorite={isFavorite(item.id)}
+                onToggleFavorite={onToggleFavorite}
+                onNavigate={onNavigate}
+                nested
+              />
+            ))}
+          </div>
+        </motion.div>
+      )}
+    </div>
+  );
+}
+
+function NavItemLink({
+  item,
+  active,
+  favorite,
+  onToggleFavorite,
+  onNavigate,
+  nested,
+}: {
+  item: NavItem;
+  active: boolean;
+  favorite: boolean;
+  onToggleFavorite: (id: string) => void;
+  onNavigate: () => void;
+  nested?: boolean;
+}) {
+  const Icon = item.icon;
+  return (
+    <div
+      className={cn(
+        "group relative flex items-center gap-2 rounded-lg pr-2 text-sm font-medium transition-colors",
+        nested ? "pl-2" : "pl-3",
+        active
+          ? "bg-sidebar-accent text-sidebar-accent-foreground"
+          : "text-sidebar-foreground/75 hover:bg-sidebar-accent/60 hover:text-sidebar-foreground",
+      )}
+    >
+      {active && (
+        <span className="absolute left-0 top-1/2 h-6 w-0.5 -translate-y-1/2 rounded-r-full bg-gradient-primary" />
+      )}
+      <Link to={item.href} onClick={onNavigate} className="flex min-w-0 flex-1 items-center gap-2.5 py-2">
+        <Icon className="h-4 w-4 shrink-0 opacity-90" />
+        <span className="truncate">{item.title}</span>
+      </Link>
+      <button
+        onClick={() => onToggleFavorite(item.id)}
+        aria-label={favorite ? "Remove favourite" : "Add favourite"}
+        title={favorite ? "Remove favourite" : "Add favourite"}
+        className={cn(
+          "shrink-0 rounded p-0.5 text-muted-foreground opacity-0 transition-opacity hover:text-sidebar-foreground group-hover:opacity-100",
+          favorite && "opacity-100",
+        )}
+      >
+        <Star className={cn("h-3.5 w-3.5", favorite && "fill-yellow-400 text-yellow-400")} />
+      </button>
+    </div>
+  );
+}
+
+function UserFooter() {
+  function handleLogout() {
+    localStorage.removeItem("token");
+    window.location.href = "/login";
+  }
+  return (
+    <div className="m-3 rounded-xl border border-sidebar-border bg-sidebar-accent/40 p-3">
+      <div className="flex items-center gap-3">
+        <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-accent text-sm font-semibold text-accent-foreground">
+          SD
+        </div>
+        <div className="min-w-0 flex-1">
+          <div className="truncate text-sm font-medium text-sidebar-foreground">Shriyansh Dev</div>
+          <div className="truncate text-xs text-muted-foreground">Head of Risk</div>
+        </div>
+        <button
+          onClick={handleLogout}
+          className="rounded-md p-1.5 text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground"
+          aria-label="Log out"
+        >
+          <LogOut className="h-4 w-4" />
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Collapsed rail building blocks.
+// ---------------------------------------------------------------------------
+
+function RailHeader() {
+  const { toggleCollapsed } = useNavigation();
+  return (
+    <div className="flex flex-col items-center gap-2 px-2 py-4">
+      <Link
+        to="/"
+        className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-primary shadow-glow"
+        title="AI Credit Intelligence"
+      >
+        <Sparkles className="h-[1.125rem] w-[1.125rem] text-primary-foreground" strokeWidth={2.5} />
+      </Link>
+      <button
+        onClick={toggleCollapsed}
+        className="rounded-md p-1.5 text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground"
+        aria-label="Expand sidebar"
+        title="Expand sidebar (Ctrl+B)"
+      >
+        <PanelLeftOpen className="h-4 w-4" />
+      </button>
+    </div>
+  );
+}
+
+function RailDivider() {
+  return <div className="my-1 h-px w-8 bg-sidebar-border" />;
+}
+
+function RailButton({ icon: Icon, label, onClick }: { icon: LucideIcon; label: string; onClick: () => void }) {
+  return (
+    <button
+      onClick={onClick}
+      title={label}
+      aria-label={label}
+      className="flex h-10 w-10 items-center justify-center rounded-lg text-sidebar-foreground/75 transition-colors hover:bg-sidebar-accent/60 hover:text-sidebar-foreground"
+    >
+      <Icon className="h-[1.15rem] w-[1.15rem]" />
+    </button>
+  );
+}
+
+function RailLink({
+  item,
+  icon,
+  label,
+  active,
+  onNavigate,
+}: {
+  item?: NavItem;
+  icon?: LucideIcon;
+  label?: string;
+  active: boolean;
+  onNavigate: () => void;
+}) {
+  if (!item) return null;
+  const Icon = icon ?? item.icon;
+  return (
+    <Link
+      to={item.href}
+      onClick={onNavigate}
+      title={label ?? item.title}
+      aria-label={label ?? item.title}
+      className={cn(
+        "relative flex h-10 w-10 items-center justify-center rounded-lg transition-colors",
+        active
+          ? "bg-sidebar-accent text-sidebar-accent-foreground"
+          : "text-sidebar-foreground/75 hover:bg-sidebar-accent/60 hover:text-sidebar-foreground",
+      )}
+    >
+      {active && (
+        <span className="absolute left-0 top-1/2 h-6 w-0.5 -translate-y-1/2 rounded-r-full bg-gradient-primary" />
+      )}
+      <Icon className="h-[1.15rem] w-[1.15rem]" />
+    </Link>
+  );
+}
+
+function RailFooter() {
+  function handleLogout() {
+    localStorage.removeItem("token");
+    window.location.href = "/login";
+  }
+  return (
+    <div className="flex flex-col items-center gap-2 py-3">
+      <div
+        className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-accent text-sm font-semibold text-accent-foreground"
+        title="Shriyansh Dev · Head of Risk"
+      >
+        SD
+      </div>
+      <button
+        onClick={handleLogout}
+        className="rounded-md p-1.5 text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground"
+        aria-label="Log out"
+        title="Log out"
+      >
+        <LogOut className="h-4 w-4" />
+      </button>
+    </div>
   );
 }

@@ -4,6 +4,7 @@ import type { LucideIcon } from "lucide-react";
 import { Sidebar } from "@/components/dashboard/Sidebar";
 import { Topbar } from "@/components/dashboard/Topbar";
 import { PageHeader } from "@/components/common/PageHeader";
+import { Breadcrumbs } from "@/components/navigation/Breadcrumbs";
 
 export interface AppShellProps {
   title: string;
@@ -38,6 +39,7 @@ export function AppShell({ title, description, icon, actions, children }: AppShe
           id="main-content"
           className="mx-auto w-full max-w-7xl flex-1 space-y-6 p-4 duration-300 animate-in fade-in md:p-6 lg:p-8"
         >
+          <Breadcrumbs />
           <PageHeader title={title} description={description} icon={icon} actions={actions} />
           {children}
         </main>

@@ -10,19 +10,24 @@
 const KEY = "aicredit.demo";
 export const DEMO_EVENT = "aicredit:demo-changed";
 
+/**
+ * Demo Mode is ON by default so the platform presents as a fully-populated
+ * enterprise product for demos, screenshots and evaluation. Users can turn it
+ * off (Topbar toggle) to see live backend data; the choice is persisted as "0".
+ */
 export function isDemoMode(): boolean {
   if (typeof window === "undefined") return false;
   try {
-    return localStorage.getItem(KEY) === "1";
+    return localStorage.getItem(KEY) !== "0";
   } catch {
-    return false;
+    return true;
   }
 }
 
 export function setDemoMode(on: boolean): void {
   try {
-    if (on) localStorage.setItem(KEY, "1");
-    else localStorage.removeItem(KEY);
+    if (on) localStorage.removeItem(KEY);
+    else localStorage.setItem(KEY, "0");
   } catch {
     /* ignore */
   }

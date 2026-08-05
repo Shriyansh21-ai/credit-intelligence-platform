@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
-import { Menu, Search, Bell, LogOut, FlaskConical } from "lucide-react";
+import { Menu, Search, LogOut, FlaskConical } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { isDemoMode, toggleDemoMode } from "@/lib/demo";
+import { useNavigation } from "@/navigation";
+import { NotificationsMenu } from "@/components/dashboard/NotificationsMenu";
 
 interface TopbarProps {
   title?: string;
@@ -10,6 +12,7 @@ interface TopbarProps {
 
 export function Topbar({ title = "", onMenu }: TopbarProps) {
   const [demo, setDemo] = useState(false);
+  const { openPalette } = useNavigation();
   useEffect(() => setDemo(isDemoMode()), []);
 
   function handleLogout() {
@@ -40,17 +43,21 @@ export function Topbar({ title = "", onMenu }: TopbarProps) {
         </div>
 
         <div className="hidden items-center gap-3 md:flex">
-          <div className="relative">
-            <input
-              type="search"
-              placeholder="Search"
-              aria-label="Search"
-              className={cn(
-                "w-64 rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-              )}
-            />
-            <Search className="pointer-events-none absolute right-2 top-2.5 h-4 w-4 text-muted-foreground" />
-          </div>
+          <button
+            type="button"
+            onClick={openPalette}
+            aria-label="Search everything"
+            title="Search everything (Ctrl+K)"
+            className={cn(
+              "group flex w-64 items-center gap-2 rounded-md border border-input bg-background px-3 py-2 text-sm text-muted-foreground transition-colors hover:border-ring hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+            )}
+          >
+            <Search className="h-4 w-4" />
+            <span className="flex-1 text-left">Search everything…</span>
+            <kbd className="rounded border border-border bg-secondary/60 px-1.5 py-0.5 text-[10px] font-medium">
+              ⌘K
+            </kbd>
+          </button>
 
           <button
             onClick={handleToggleDemo}
@@ -67,12 +74,7 @@ export function Topbar({ title = "", onMenu }: TopbarProps) {
             <span className="hidden lg:inline">Demo</span>
           </button>
 
-          <button
-            aria-label="Notifications"
-            className="rounded-md p-2 text-muted-foreground transition-colors hover:bg-accent/10 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-          >
-            <Bell className="h-5 w-5" />
-          </button>
+          <NotificationsMenu />
 
           <button 
             onClick={handleLogout}

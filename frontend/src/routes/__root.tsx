@@ -14,6 +14,7 @@ import { Compass, ServerCrash } from "lucide-react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+import { NavigationProvider } from "../navigation";
 import { CommandPalette } from "../features/enterprise-platform";
 import { OnboardingDialog } from "../features/onboarding";
 import { Button } from "../components/ui/button";
@@ -143,12 +144,17 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       {/* Respect the OS "reduce motion" preference across all framer-motion animations. */}
       <MotionConfig reducedMotion="user">
-        {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-        <Outlet />
-        {/* Track 4 M1 — global ⌘K command palette (additive, self-contained). */}
-        <CommandPalette />
-        {/* Stage 2 M7 — first-run onboarding overlay (additive, self-contained). */}
-        <OnboardingDialog />
+        {/* Global navigation system: favourites, recents, workspaces, keyboard
+            shortcuts and command-palette state — consumed by the sidebar, topbar,
+            breadcrumbs and palette. Must sit inside the router context. */}
+        <NavigationProvider>
+          {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
+          <Outlet />
+          {/* Global ⌘K / Ctrl+Shift+P command palette (registry-driven). */}
+          <CommandPalette />
+          {/* Stage 2 M7 — first-run onboarding overlay (additive, self-contained). */}
+          <OnboardingDialog />
+        </NavigationProvider>
       </MotionConfig>
     </QueryClientProvider>
   );

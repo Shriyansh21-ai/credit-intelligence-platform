@@ -369,6 +369,9 @@ export async function runFraudCheck(data: FraudCheckRequest): Promise<FraudCheck
   if (!response.ok) {
     throw new Error("Failed to run fraud check");
   }
-  
-  return response.json();
+
+  // Backend wraps the payload as { success, data: {...} }; flatten it so the
+  // page can read fraud_score / anomaly_score / fraud_detected directly.
+  const json = await response.json();
+  return { success: json.success, ...json.data } as FraudCheckResponse;
 }

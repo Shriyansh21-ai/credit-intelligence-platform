@@ -22,10 +22,13 @@ import type {
   PortfolioDashboard,
 } from "@/features/operations";
 
-const DAY = 86_400_000;
-// Deterministic base time so demo data is stable across renders/SSR.
-const BASE = Date.UTC(2026, 6, 28, 9, 30);
-const daysAgo = (n: number) => new Date(BASE - n * DAY).toISOString();
+import { COMPANIES, daysAgo } from "./enterprise-data";
+import { FIN_FIXTURES } from "./fixtures.fin";
+import { AIP_FIXTURES } from "./fixtures.aip";
+import { AUTO_FIXTURES } from "./fixtures.auto";
+import { ENT_FIXTURES } from "./fixtures.ent";
+import { OS_FIXTURES } from "./fixtures.os";
+import { PLATFORM_FIXTURES } from "./fixtures.platform";
 
 /**
  * The demo lending book. A single roster of named borrowers drives every
@@ -65,18 +68,21 @@ const STATUS_LABEL: Record<Borrower["status"], string> = {
   rejected: "Rejected",
 };
 
-const BORROWERS: Borrower[] = [
-  { id: 4201, reference: "APP-2026-4201", name: "BlueWave Infrastructure Ltd", industry: "Infrastructure", exposure: 880_000_000, rating: "BBB+", grade: "Standard", status: "committee_review", risk: "Medium", score: 702, updatedDaysAgo: 0 },
-  { id: 4202, reference: "APP-2026-4202", name: "Green Energy Solutions Pvt Ltd", industry: "Renewable Energy", exposure: 630_000_000, rating: "A", grade: "Standard", status: "disbursed", risk: "Low", score: 781, updatedDaysAgo: 1 },
-  { id: 4203, reference: "APP-2026-4203", name: "Nova Steel Industries Ltd", industry: "Manufacturing", exposure: 420_000_000, rating: "BBB", grade: "Standard", status: "under_review", risk: "Medium", score: 688, updatedDaysAgo: 1 },
-  { id: 4204, reference: "APP-2026-4204", name: "Vertex Chemicals Pvt Ltd", industry: "Chemicals", exposure: 312_000_000, rating: "BBB-", grade: "Watch", status: "under_review", risk: "Medium", score: 671, updatedDaysAgo: 2 },
-  { id: 4205, reference: "APP-2026-4205", name: "Zenith Pharmaceuticals Ltd", industry: "Pharmaceuticals", exposure: 273_000_000, rating: "A-", grade: "Standard", status: "approved", risk: "Low", score: 754, updatedDaysAgo: 2 },
-  { id: 4206, reference: "APP-2026-4206", name: "Global Auto Components Pvt Ltd", industry: "Auto Components", exposure: 229_000_000, rating: "BB+", grade: "Standard", status: "pending_approval", risk: "Medium", score: 655, updatedDaysAgo: 3 },
-  { id: 4207, reference: "APP-2026-4207", name: "ABC Manufacturing Pvt Ltd", industry: "Manufacturing", exposure: 185_000_000, rating: "BBB+", grade: "Standard", status: "approved", risk: "Low", score: 733, updatedDaysAgo: 4 },
-  { id: 4208, reference: "APP-2026-4208", name: "Apex Electronics Ltd", industry: "Electronics", exposure: 158_000_000, rating: "BB+", grade: "Watch", status: "pending_approval", risk: "Medium", score: 634, updatedDaysAgo: 5 },
-  { id: 4209, reference: "APP-2026-4209", name: "Orion Textiles Pvt Ltd", industry: "Textiles", exposure: 126_000_000, rating: "B+", grade: "Substandard", status: "committee_review", risk: "High", score: 571, updatedDaysAgo: 6 },
-  { id: 4210, reference: "APP-2026-4210", name: "Prime Logistics Ltd", industry: "Logistics", exposure: 94_000_000, rating: "BB", grade: "Watch", status: "rejected", risk: "High", score: 544, updatedDaysAgo: 8 },
-];
+// Derived from the canonical demo book so the same real companies (Reliance,
+// Tata Steel, Infosys, …) appear consistently across every dashboard.
+const BORROWERS: Borrower[] = COMPANIES.map((c) => ({
+  id: c.id,
+  reference: c.ref,
+  name: c.name,
+  industry: c.sector,
+  exposure: c.exposure,
+  rating: c.rating,
+  grade: c.grade,
+  status: c.status,
+  risk: c.risk,
+  score: c.score,
+  updatedDaysAgo: c.updatedDaysAgo,
+}));
 
 const toApplicationRow = (b: Borrower) => ({
   id: b.id,
@@ -105,12 +111,12 @@ const recentPredictions = BORROWERS.map((b) => ({
 }));
 
 const recentFraudChecks = [
-  { id: "FR-9012", entity: "Prime Logistics Ltd", fraud_detected: true, fraud_score: 88, anomaly_score: 91, created_at: daysAgo(0) },
-  { id: "FR-9011", entity: "Orion Textiles Pvt Ltd", fraud_detected: true, fraud_score: 76, anomaly_score: 72, created_at: daysAgo(1) },
-  { id: "FR-9010", entity: "Apex Electronics Ltd", fraud_detected: false, fraud_score: 34, anomaly_score: 29, created_at: daysAgo(2) },
-  { id: "FR-9009", entity: "ABC Manufacturing Pvt Ltd", fraud_detected: false, fraud_score: 18, anomaly_score: 22, created_at: daysAgo(3) },
-  { id: "FR-9008", entity: "Vertex Chemicals Pvt Ltd", fraud_detected: true, fraud_score: 81, anomaly_score: 84, created_at: daysAgo(4) },
-  { id: "FR-9007", entity: "Zenith Pharmaceuticals Ltd", fraud_detected: false, fraud_score: 12, anomaly_score: 15, created_at: daysAgo(6) },
+  { id: "FR-9012", entity: "Ather Energy Ltd", fraud_detected: true, fraud_score: 88, anomaly_score: 91, created_at: daysAgo(0) },
+  { id: "FR-9011", entity: "Swiggy (Bundl Technologies)", fraud_detected: true, fraud_score: 76, anomaly_score: 72, created_at: daysAgo(1) },
+  { id: "FR-9010", entity: "Delhivery Ltd", fraud_detected: false, fraud_score: 34, anomaly_score: 29, created_at: daysAgo(2) },
+  { id: "FR-9009", entity: "Infosys Ltd", fraud_detected: false, fraud_score: 18, anomaly_score: 22, created_at: daysAgo(3) },
+  { id: "FR-9008", entity: "Adani Ports & SEZ Ltd", fraud_detected: true, fraud_score: 81, anomaly_score: 84, created_at: daysAgo(4) },
+  { id: "FR-9007", entity: "Asian Paints Ltd", fraud_detected: false, fraud_score: 12, anomaly_score: 15, created_at: daysAgo(6) },
 ];
 
 const dashboardOverview = {
@@ -342,11 +348,11 @@ const monitoringDashboard: MonitoringDashboard = {
     { severity: "low", count: 3 },
   ],
   recent_alerts: [
-    { application_id: 4210, category: "Payment Delay", severity: "high", status: "open", message: "Prime Logistics Ltd — EMI overdue 31 days; DSCR fell below 1.0x covenant floor.", created_at: daysAgo(0) },
-    { application_id: 4209, category: "Financial Deterioration", severity: "critical", status: "open", message: "Orion Textiles Pvt Ltd — Q3 EBITDA margin contracted 340 bps YoY; working-capital cycle stretched to 128 days.", created_at: daysAgo(0) },
-    { application_id: 4204, category: "Covenant Breach", severity: "high", status: "open", message: "Vertex Chemicals Pvt Ltd — Net debt / EBITDA breached 3.5x maximum-leverage covenant.", created_at: daysAgo(1) },
-    { application_id: 4208, category: "External Rating Action", severity: "medium", status: "open", message: "Apex Electronics Ltd — external agency revised outlook to Negative.", created_at: daysAgo(2) },
-    { application_id: 4203, category: "News / Adverse Media", severity: "medium", status: "acknowledged", message: "Nova Steel Industries Ltd — adverse media on an environmental compliance notice.", created_at: daysAgo(3) },
+    { application_id: 4220, category: "Payment Delay", severity: "high", status: "open", message: "Ather Energy Ltd — EMI overdue 31 days; DSCR fell below 1.0x covenant floor.", created_at: daysAgo(0) },
+    { application_id: 4216, category: "Financial Deterioration", severity: "critical", status: "open", message: "Swiggy (Bundl Technologies) — Q3 EBITDA margin turned negative; working-capital cycle stretched to 128 days.", created_at: daysAgo(0) },
+    { application_id: 4206, category: "Covenant Breach", severity: "high", status: "open", message: "Adani Ports & SEZ Ltd — Net debt / EBITDA breached 3.5x maximum-leverage covenant.", created_at: daysAgo(1) },
+    { application_id: 4213, category: "External Rating Action", severity: "medium", status: "open", message: "Delhivery Ltd — external agency revised outlook to Negative.", created_at: daysAgo(2) },
+    { application_id: 4215, category: "News / Adverse Media", severity: "medium", status: "acknowledged", message: "Zomato Ltd — adverse media on a regulatory review of platform fees.", created_at: daysAgo(3) },
   ],
 };
 
@@ -364,4 +370,12 @@ export const DEMO_FIXTURES: Record<string, () => unknown> = {
   "/api/dashboards/portfolio": () => structuredClone(portfolioDashboard),
   "/api/dashboards/compliance": () => structuredClone(complianceDashboard),
   "/api/dashboards/monitoring": () => structuredClone(monitoringDashboard),
+  // Additive per-module demo datasets (each authored against the real endpoint
+  // shapes and sharing the canonical company roster for cross-module consistency).
+  ...FIN_FIXTURES,
+  ...AIP_FIXTURES,
+  ...AUTO_FIXTURES,
+  ...ENT_FIXTURES,
+  ...OS_FIXTURES,
+  ...PLATFORM_FIXTURES,
 };
