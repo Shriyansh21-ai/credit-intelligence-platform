@@ -31,7 +31,7 @@ export function Hero() {
     return () => window.clearInterval(id);
   }, []);
 
-  const firstName = profile.displayName.split(" ")[0] || profile.username;
+  const firstName = profile.firstName;
   const hello = now ? greeting(now.getHours()) : "Welcome back";
   const dateLabel = now
     ? now.toLocaleDateString(undefined, {

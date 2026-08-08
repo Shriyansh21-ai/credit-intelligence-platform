@@ -512,7 +512,8 @@ function UserFooter() {
               {profile.displayName}
             </div>
             <div className="truncate text-xs text-muted-foreground">
-              {profile.email ?? profile.jobTitle}
+              {profile.jobTitle}
+              {profile.organization ? ` · ${profile.organization}` : ""}
             </div>
           </div>
         </Link>
@@ -619,7 +620,7 @@ function RailFooter() {
       <Link
         to="/settings"
         className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-accent text-sm font-semibold text-accent-foreground"
-        title={`${profile.displayName}${profile.email ? ` · ${profile.email}` : ""} — profile & settings`}
+        title={`${profile.displayName} · ${profile.jobTitle}${profile.organization ? ` · ${profile.organization}` : ""} — profile & settings`}
       >
         {profile.initials}
       </Link>

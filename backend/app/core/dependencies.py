@@ -95,3 +95,27 @@ def get_current_user(
         raise credentials_exception
 
     return user
+
+
+# ----------------------------------------
+# Get Current Tenant
+# ----------------------------------------
+
+
+def get_current_tenant_id(
+    user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+) -> int:
+    """Resolve the authenticated user's owning tenant id (isolation key).
+
+    Provisions an organization + default tenant + membership on first use via
+    :func:`resolve_user_tenant`, so this is the single source of the tenant a
+    request may read/write. Every tenant-scoped feature depends on this rather
+    than trusting a client-supplied ``X-Tenant-ID`` header.
+    """
+    from backend.app.services.saas.provisioning import resolve_user_tenant
+
+    tenant = resolve_user_tenant(db, user)
+    if tenant is None:
+        raise HTTPException(status_code=409, detail="Could not resolve tenant for user")
+    return tenant.id

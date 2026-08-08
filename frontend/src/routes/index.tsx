@@ -11,6 +11,7 @@ import { FraudCenter } from "@/components/dashboard/FraudCenter";
 import { AiInsights } from "@/components/dashboard/AiInsights";
 import { ActivityFeed } from "@/components/dashboard/ActivityFeed";
 import { QuickActions } from "@/components/dashboard/QuickActions";
+import { DemoPortfolioCard } from "@/components/dashboard/DemoPortfolioCard";
 import { getDashboard, type DashboardData } from "@/lib/api";
 import { kpiSparklines, KPI_COMPARE_LABEL } from "@/lib/dashboard-data";
 
@@ -193,6 +194,8 @@ function DashboardPage() {
           ) : (
             <>
               <Hero />
+
+              <DemoPortfolioCard onLoaded={load} />
 
               <section>
                 <div className="mb-3 flex items-baseline justify-between">

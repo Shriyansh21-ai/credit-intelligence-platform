@@ -3,10 +3,13 @@ import { useEffect, useState } from "react";
 import {
   AtSign,
   BadgeCheck,
+  Briefcase,
+  Building2,
   Check,
   Fingerprint,
   Maximize2,
   Minimize2,
+  Network,
   Shield,
   User,
 } from "lucide-react";
@@ -28,7 +31,7 @@ import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useMyAccess } from "@/features/operations";
 import { useNavigation } from "@/navigation";
-import { setProfilePrefs, useProfile } from "@/lib/profile";
+import { useProfile, useUpdateProfile } from "@/lib/profile";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/settings")({ component: SettingsPage });
@@ -67,22 +70,42 @@ function SettingsPage() {
 
 function ProfileTab() {
   const profile = useProfile();
+  const updateProfile = useUpdateProfile();
   const [displayName, setDisplayName] = useState(profile.displayName);
   const [jobTitle, setJobTitle] = useState(profile.jobTitle);
+  const [department, setDepartment] = useState(profile.department ?? "");
+  const [organization, setOrganization] = useState(profile.organization);
   const [saved, setSaved] = useState(false);
 
-  // Keep the form in sync if the underlying profile changes (e.g. another tab).
+  // Keep the form in sync once the profile loads / changes (e.g. another tab).
   useEffect(() => {
     setDisplayName(profile.displayName);
     setJobTitle(profile.jobTitle);
-  }, [profile.displayName, profile.jobTitle]);
+    setDepartment(profile.department ?? "");
+    setOrganization(profile.organization);
+  }, [profile.displayName, profile.jobTitle, profile.department, profile.organization]);
 
-  const dirty = displayName !== profile.displayName || jobTitle !== profile.jobTitle;
+  const dirty =
+    displayName !== profile.displayName ||
+    jobTitle !== profile.jobTitle ||
+    department !== (profile.department ?? "") ||
+    organization !== profile.organization;
 
   function handleSave() {
-    setProfilePrefs({ displayName: displayName.trim() || profile.displayName, jobTitle: jobTitle.trim() });
-    setSaved(true);
-    window.setTimeout(() => setSaved(false), 2000);
+    updateProfile.mutate(
+      {
+        full_name: displayName.trim() || profile.displayName,
+        job_title: jobTitle.trim(),
+        department: department.trim(),
+        organization: organization.trim(),
+      },
+      {
+        onSuccess: () => {
+          setSaved(true);
+          window.setTimeout(() => setSaved(false), 2000);
+        },
+      },
+    );
   }
 
   return (
@@ -103,8 +126,8 @@ function ProfileTab() {
               {profile.displayName}
             </div>
             <div className="truncate text-sm text-muted-foreground">
-              @{profile.username}
-              {profile.jobTitle ? ` · ${profile.jobTitle}` : ""}
+              {profile.jobTitle}
+              {profile.organization ? ` · ${profile.organization}` : ""}
             </div>
           </div>
         </div>
@@ -127,18 +150,41 @@ function ProfileTab() {
               id="jobTitle"
               value={jobTitle}
               onChange={(e) => setJobTitle(e.target.value)}
-              placeholder="e.g. Head of Risk"
+              placeholder="e.g. Senior Credit Analyst"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="department">Department</Label>
+            <Input
+              id="department"
+              value={department}
+              onChange={(e) => setDepartment(e.target.value)}
+              placeholder="e.g. Credit Risk"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="organization">Organization</Label>
+            <Input
+              id="organization"
+              value={organization}
+              onChange={(e) => setOrganization(e.target.value)}
+              placeholder="e.g. HDFC Bank"
             />
           </div>
         </div>
 
         <div className="flex items-center gap-3">
-          <Button onClick={handleSave} disabled={!dirty}>
-            Save changes
+          <Button onClick={handleSave} disabled={!dirty || updateProfile.isPending}>
+            {updateProfile.isPending ? "Saving…" : "Save changes"}
           </Button>
           {saved && (
             <span className="inline-flex items-center gap-1.5 text-sm font-medium text-emerald-500">
               <Check className="h-4 w-4" /> Saved
+            </span>
+          )}
+          {updateProfile.isError && (
+            <span className="text-sm font-medium text-destructive">
+              Couldn’t save. Please try again.
             </span>
           )}
         </div>
@@ -170,15 +216,18 @@ function AccountTab() {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-1">
+          <DetailRow icon={BadgeCheck} label="Full name" value={profile.displayName} />
           <DetailRow icon={AtSign} label="Username" value={profile.username} mono />
           <DetailRow icon={User} label="Email" value={email ?? "Not signed in"} mono />
+          <DetailRow icon={Briefcase} label="Job title" value={profile.jobTitle} />
+          <DetailRow icon={Network} label="Department" value={profile.department ?? "—"} />
+          <DetailRow icon={Building2} label="Organization" value={profile.organization} />
           <DetailRow
             icon={Fingerprint}
             label="User ID"
             value={data?.user_id != null ? String(data.user_id) : isLoading ? "Loading…" : "—"}
             mono
           />
-          <DetailRow icon={BadgeCheck} label="Display name" value={profile.displayName} />
         </CardContent>
       </Card>
 

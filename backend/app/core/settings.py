@@ -255,6 +255,14 @@ class AppSettings(BaseSettings):
         default="dev-master-key-change-me", alias="CONNECTOR_MASTER_KEY"
     )
 
+    # ---------------------------------------------------------- data provider
+    # Selects the source of company / financial / credit / portfolio data used
+    # by the seed system and the "Load Demo Portfolio" feature. ``demo`` yields
+    # synthetic, clearly-labelled sample data; ``production`` / ``public`` are
+    # reserved for real financial-data providers wired later. The core credit /
+    # risk engine reads persisted rows and is agnostic to the origin.
+    data_provider: str = Field(default="demo", alias="DATA_PROVIDER")
+
     # ------------------------------------------------------ workers/scheduler
     worker_queue: Optional[str] = Field(default=None, alias="WORKER_QUEUE")
     worker_poll_interval: float = Field(default=2.0, alias="WORKER_POLL_INTERVAL")
@@ -558,6 +566,7 @@ class AppSettings(BaseSettings):
             "storage_backend": self.storage_backend,
             "payment_gateway": self.payment_gateway,
             "mail_backend": self.mail_backend,
+            "data_provider": self.data_provider,
             "llm_provider": self.llm_provider,
             "tracing_enabled": self.tracing_enabled,
             "metrics_enabled": self.metrics_enabled,

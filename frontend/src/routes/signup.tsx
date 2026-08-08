@@ -6,8 +6,11 @@ export const Route = createFileRoute('/signup')({
 });
 
 function SignupPage() {
+  const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [jobTitle, setJobTitle] = useState("");
+  const [organization, setOrganization] = useState("");
 
   useEffect(() => {
     if (typeof window !== "undefined" && localStorage.getItem("token")) {
@@ -25,6 +28,9 @@ function SignupPage() {
         body: JSON.stringify({
           email,
           password,
+          full_name: fullName,
+          job_title: jobTitle,
+          organization,
         }),
       });
 
@@ -54,11 +60,35 @@ function SignupPage() {
         <h1 className="text-3xl font-bold">Create Account</h1>
 
         <input
+          type="text"
+          placeholder="Full name"
+          className="w-full border p-3 rounded"
+          value={fullName}
+          onChange={(e) => setFullName(e.target.value)}
+        />
+
+        <input
           type="email"
-          placeholder="Email"
+          placeholder="Work email"
           className="w-full border p-3 rounded"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
+        />
+
+        <input
+          type="text"
+          placeholder="Job title (e.g. Senior Credit Analyst)"
+          className="w-full border p-3 rounded"
+          value={jobTitle}
+          onChange={(e) => setJobTitle(e.target.value)}
+        />
+
+        <input
+          type="text"
+          placeholder="Organization / Bank"
+          className="w-full border p-3 rounded"
+          value={organization}
+          onChange={(e) => setOrganization(e.target.value)}
         />
 
         <input

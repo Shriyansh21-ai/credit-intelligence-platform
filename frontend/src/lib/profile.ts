@@ -1,31 +1,73 @@
 /**
- * User profile helpers — a single, client-side source of truth for "who is
- * signed in" so the sidebar, top bar and the Profile Settings page all agree.
+ * Authenticated-user profile — the single source of truth for "who is signed
+ * in" across the sidebar, top bar, hero greeting and the Settings pages.
  *
- * Account identity (email) is derived from the JWT stored at login; the token's
- * `sub` claim holds the user's email. A couple of presentation-only fields
- * (display name, job title) are editable on the settings page and persisted to
- * localStorage. Everything here is client-side and resilient — it never throws
- * and works even when the backend is unreachable (e.g. demo mode).
+ * The profile is fetched from the backend (`GET /api/auth/me`) using the JWT
+ * stored at login, so every user sees their OWN name, job title, department,
+ * role and organisation. Nothing here is hardcoded to a specific person — the
+ * only fallbacks are the generic "User" / "Risk Analyst" / "Unknown
+ * Organization", used briefly while the profile loads or when signed out.
  */
 
 import { useEffect, useState } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-const PROFILE_KEY = "profile:prefs:v1";
-export const PROFILE_EVENT = "profile:changed";
+import { apiGet, apiPatch } from "@/lib/http";
 
-/** Sensible defaults so the chrome looks populated before anything is set. */
-const DEFAULT_DISPLAY_NAME = "Shriyansh Dev";
-const DEFAULT_JOB_TITLE = "Head of Risk";
+export const PROFILE_QUERY_KEY = ["auth", "me"] as const;
 
-export interface ProfilePrefs {
-  /** User-chosen display name shown in the sidebar / top bar. */
-  displayName: string;
-  /** User-chosen job title / role label. */
-  jobTitle: string;
+/** Generic, person-agnostic fallbacks. */
+const FALLBACK_NAME = "User";
+const FALLBACK_TITLE = "Risk Analyst";
+const FALLBACK_ORG = "Unknown Organization";
+
+/** Shape returned by the backend `/api/auth/me` endpoint (snake_case). */
+interface ProfileResponse {
+  user_id: number;
+  email: string | null;
+  full_name: string;
+  first_name: string;
+  job_title: string;
+  department: string | null;
+  organization: string;
+  avatar_url: string | null;
+  initials: string;
+  role: string | null;
+  roles: string[];
 }
 
-/** Decode a JWT payload without verifying it (client display only). */
+/** The profile consumed by UI components. */
+export interface Profile {
+  userId: number | null;
+  email: string | null;
+  username: string;
+  /** Full display name (backend `full_name`). */
+  displayName: string;
+  firstName: string;
+  jobTitle: string;
+  department: string | null;
+  organization: string;
+  avatarUrl: string | null;
+  initials: string;
+  /** Primary role, humanised (e.g. "Credit Analyst"), or null. */
+  role: string | null;
+  roles: string[];
+  isLoading: boolean;
+}
+
+/** Editable fields sent to `PATCH /api/auth/me`. */
+export interface ProfileUpdate {
+  full_name?: string;
+  job_title?: string;
+  department?: string;
+  organization?: string;
+  avatar_url?: string;
+}
+
+// ---------------------------------------------------------------------------
+// JWT / email helpers (display only — no verification).
+// ---------------------------------------------------------------------------
+
 function decodeJwt(token: string): Record<string, unknown> | null {
   try {
     const payload = token.split(".")[1];
@@ -56,8 +98,7 @@ export function getAccountEmail(): string | null {
 /** Derive a username (the email local-part) from an email address. */
 export function usernameFromEmail(email: string | null): string {
   if (!email) return "guest";
-  const local = email.split("@")[0] ?? email;
-  return local;
+  return email.split("@")[0] ?? email;
 }
 
 /** Two-letter initials from a display name (falls back to the email). */
@@ -65,85 +106,93 @@ export function initialsFrom(name: string, email: string | null): string {
   const source = name.trim() || usernameFromEmail(email);
   const parts = source.split(/[\s._-]+/).filter(Boolean);
   const letters = parts.length >= 2 ? parts[0][0] + parts[1][0] : source.slice(0, 2);
-  return letters.toUpperCase();
+  return (letters || "?").toUpperCase();
 }
 
-export function getProfilePrefs(): ProfilePrefs {
-  if (typeof window === "undefined") {
-    return { displayName: DEFAULT_DISPLAY_NAME, jobTitle: DEFAULT_JOB_TITLE };
+/** Title-case an email local-part for a plausible placeholder name. */
+function titleCaseFromUsername(username: string): string {
+  const parts = username.split(/[\s._-]+/).filter(Boolean);
+  if (!parts.length) return FALLBACK_NAME;
+  return parts.map((p) => p.charAt(0).toUpperCase() + p.slice(1)).join(" ");
+}
+
+// ---------------------------------------------------------------------------
+// Mapping + hook.
+// ---------------------------------------------------------------------------
+
+function buildProfile(data: ProfileResponse | undefined, email: string | null, loading: boolean): Profile {
+  const username = usernameFromEmail(email);
+
+  if (data) {
+    return {
+      userId: data.user_id ?? null,
+      email: data.email ?? email,
+      username,
+      displayName: data.full_name || FALLBACK_NAME,
+      firstName: data.first_name || FALLBACK_NAME,
+      jobTitle: data.job_title || FALLBACK_TITLE,
+      department: data.department ?? null,
+      organization: data.organization || FALLBACK_ORG,
+      avatarUrl: data.avatar_url ?? null,
+      initials: data.initials || initialsFrom(data.full_name || "", data.email ?? email),
+      role: data.role ?? null,
+      roles: data.roles ?? [],
+      isLoading: false,
+    };
   }
-  try {
-    const raw = localStorage.getItem(PROFILE_KEY);
-    if (raw) {
-      const parsed = JSON.parse(raw) as Partial<ProfilePrefs>;
-      return {
-        displayName: parsed.displayName || DEFAULT_DISPLAY_NAME,
-        jobTitle: parsed.jobTitle || DEFAULT_JOB_TITLE,
-      };
-    }
-  } catch {
-    /* ignore corrupt storage */
-  }
-  return { displayName: DEFAULT_DISPLAY_NAME, jobTitle: DEFAULT_JOB_TITLE };
-}
 
-export function setProfilePrefs(next: Partial<ProfilePrefs>): ProfilePrefs {
-  const merged = { ...getProfilePrefs(), ...next };
-  try {
-    localStorage.setItem(PROFILE_KEY, JSON.stringify(merged));
-    // Notify same-tab listeners (the `storage` event only fires cross-tab).
-    window.dispatchEvent(new CustomEvent(PROFILE_EVENT));
-  } catch {
-    /* ignore quota / private-mode errors */
-  }
-  return merged;
-}
-
-export interface Profile extends ProfilePrefs {
-  email: string | null;
-  username: string;
-  initials: string;
-}
-
-function buildProfile(): Profile {
-  const prefs = getProfilePrefs();
-  const email = getAccountEmail();
+  // No backend data yet (loading or signed out): derive a plausible placeholder
+  // from the email so the chrome isn't blank, but never a specific person.
+  const placeholderName = email ? titleCaseFromUsername(username) : FALLBACK_NAME;
   return {
-    ...prefs,
+    userId: null,
     email,
-    username: usernameFromEmail(email),
-    initials: initialsFrom(prefs.displayName, email),
+    username,
+    displayName: placeholderName,
+    firstName: placeholderName.split(" ")[0] || FALLBACK_NAME,
+    jobTitle: FALLBACK_TITLE,
+    department: null,
+    organization: FALLBACK_ORG,
+    avatarUrl: null,
+    initials: initialsFrom(placeholderName, email),
+    role: null,
+    roles: [],
+    isLoading: loading,
   };
 }
 
+export const getMe = () => apiGet<ProfileResponse>("/api/auth/me");
+
 /**
- * Reactive profile hook. Re-renders when the profile is edited (same tab) or
- * changed in another tab.
+ * Reactive profile hook. Fetches the authenticated user's profile from the
+ * backend and re-renders when it arrives. Deterministic on the server / first
+ * client render (mounted=false) to avoid SSR hydration mismatches.
  */
 export function useProfile(): Profile {
-  // Start from deterministic defaults so the server render and the first client
-  // (hydration) render agree; real values are read from storage in the effect
-  // below. Reading localStorage in the initializer would risk a hydration
-  // mismatch (server has no storage, client does).
-  const [profile, setProfile] = useState<Profile>(() => ({
-    displayName: DEFAULT_DISPLAY_NAME,
-    jobTitle: DEFAULT_JOB_TITLE,
-    email: null,
-    username: usernameFromEmail(null),
-    initials: initialsFrom(DEFAULT_DISPLAY_NAME, null),
-  }));
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
 
-  useEffect(() => {
-    const refresh = () => setProfile(buildProfile());
-    // Read prefs on mount (SSR/first render used deterministic defaults).
-    refresh();
-    window.addEventListener(PROFILE_EVENT, refresh);
-    window.addEventListener("storage", refresh);
-    return () => {
-      window.removeEventListener(PROFILE_EVENT, refresh);
-      window.removeEventListener("storage", refresh);
-    };
-  }, []);
+  const email = mounted ? getAccountEmail() : null;
+  const enabled = mounted && !!email;
 
-  return profile;
+  const query = useQuery({
+    queryKey: PROFILE_QUERY_KEY,
+    queryFn: getMe,
+    enabled,
+    retry: false,
+    staleTime: 5 * 60 * 1000,
+  });
+
+  return buildProfile(query.data, email, enabled && query.isLoading);
+}
+
+/** Mutation for the Profile Settings page — persists to the DB and refreshes. */
+export function useUpdateProfile() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (patch: ProfileUpdate) => apiPatch<ProfileResponse>("/api/auth/me", patch),
+    onSuccess: (data) => {
+      queryClient.setQueryData(PROFILE_QUERY_KEY, data);
+    },
+  });
 }

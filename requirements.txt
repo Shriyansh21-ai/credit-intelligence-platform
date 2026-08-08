@@ -15,6 +15,9 @@ python-jose
 passlib[bcrypt]
 sqlalchemy
 alembic
+# PostgreSQL driver for staging/production (DATABASE_URL=postgresql+psycopg://...).
+# Not needed for the zero-config SQLite dev/test default, but harmless to install.
+psycopg[binary]
 python-multipart
 httpx
 PyMuPDF
