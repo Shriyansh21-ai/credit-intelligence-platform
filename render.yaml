@@ -1,0 +1,67 @@
+# =============================================================================
+# Render Blueprint — AI Credit Intelligence Platform (backend + database)
+# =============================================================================
+# Deploy with Render's "Blueprint" flow (New > Blueprint, point at this repo),
+# or configure the same values manually in the dashboard.
+#
+# This file provisions:
+#   * a managed PostgreSQL database
+#   * the FastAPI backend as a Web Service (native Python runtime, no Docker)
+#
+# The frontend is a TanStack Start (edge/SSR) app and is NOT covered here — see
+# docs/DEPLOYMENT_RENDER.md for the frontend hosting options and trade-offs.
+# =============================================================================
+
+databases:
+  - name: ai-credit-db
+    databaseName: credit
+    user: credit
+    plan: free            # bump to a paid plan for production workloads
+
+services:
+  - type: web
+    name: ai-credit-backend
+    runtime: python
+    plan: free            # bump to a paid plan for production workloads
+    # Build the Python dependencies.
+    buildCommand: pip install -r requirements.txt
+    # Apply Alembic migrations before the new version goes live. Render runs
+    # this once per deploy, after build and before start — the safest place for
+    # schema changes (never Base.metadata.create_all()).
+    preDeployCommand: alembic upgrade head
+    # Bind to Render's injected $PORT. Import path verified against the repo
+    # layout (backend/app/main.py exposes `app`).
+    startCommand: uvicorn backend.app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: APP_ENV
+        value: production
+      # Pull the connection string straight from the managed database. Render
+      # supplies a driver-less postgresql:// DSN; the app rewrites it to
+      # postgresql+psycopg:// automatically at startup.
+      - key: DATABASE_URL
+        fromDatabase:
+          name: ai-credit-db
+          property: connectionString
+      # Strong secrets — generated once by Render and kept stable across deploys.
+      - key: SECRET_KEY
+        generateValue: true
+      - key: JWT_SECRET_KEY
+        generateValue: true
+      - key: CONNECTOR_MASTER_KEY
+        generateValue: true
+      # Migrations are owned by preDeployCommand, so the app must NOT try to run
+      # them itself on boot.
+      - key: RUN_MIGRATIONS
+        value: "0"
+      - key: DATA_PROVIDER
+        value: demo
+      - key: LOG_FORMAT
+        value: json
+      - key: DEBUG
+        value: "false"
+      # Allowed browser origins — set to your deployed frontend origin(s).
+      # Comma-separated; include the exact scheme+host (no trailing slash).
+      - key: CORS_ORIGINS
+        sync: false        # set in the dashboard, e.g. https://your-frontend.example.com

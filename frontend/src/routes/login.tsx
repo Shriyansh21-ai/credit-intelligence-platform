@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { API_BASE } from "@/lib/http";
 
 export const Route = createFileRoute('/login')({
   component: LoginPage,
@@ -18,7 +19,7 @@ function LoginPage() {
 
   async function handleLogin() {
     try {
-      const response = await fetch("http://127.0.0.1:8000/login", {
+      const response = await fetch(`${API_BASE}/login`, {
         method: "POST",
 
         headers: {

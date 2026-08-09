@@ -13,6 +13,7 @@ import { ActivityFeed } from "@/components/dashboard/ActivityFeed";
 import { QuickActions } from "@/components/dashboard/QuickActions";
 import { DemoPortfolioCard } from "@/components/dashboard/DemoPortfolioCard";
 import { getDashboard, type DashboardData } from "@/lib/api";
+import { API_BASE } from "@/lib/http";
 import { kpiSparklines, KPI_COMPARE_LABEL } from "@/lib/dashboard-data";
 
 export const Route = createFileRoute('/')({
@@ -70,7 +71,11 @@ function DashboardPage() {
     if (typeof window === "undefined") return;
     let ws: WebSocket | null = null;
     try {
-      ws = new WebSocket("ws://127.0.0.1:8000/ws/predictions");
+      // Derive the realtime endpoint from the configured API origin so it
+      // follows VITE_API_URL in production (http->ws, https->wss) instead of
+      // pointing at localhost.
+      const wsBase = API_BASE.replace(/^http/, "ws");
+      ws = new WebSocket(`${wsBase}/ws/predictions`);
       ws.onmessage = (ev) => {
         try {
           const msg = JSON.parse(ev.data);

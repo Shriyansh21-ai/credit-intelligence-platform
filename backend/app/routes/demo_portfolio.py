@@ -12,6 +12,7 @@ another's data.
 
 from __future__ import annotations
 
+import logging
 from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query
@@ -22,6 +23,8 @@ from backend.app.core.dependencies import get_current_tenant_id, get_current_use
 from backend.app.db.database import get_db
 from backend.app.models.user import User
 from backend.app.services import demo_portfolio
+
+logger = logging.getLogger("app.demo_portfolio")
 
 router = APIRouter(prefix="/api/demo-portfolio", tags=["Demo Portfolio"])
 
@@ -45,9 +48,12 @@ def load_portfolio(
     count = request.count if request else demo_portfolio.DEFAULT_COMPANY_COUNT
     try:
         return demo_portfolio.load_demo_portfolio(db, tenant_id, count=count)
-    except Exception as exc:  # surface a clean error; never a fake success
+    except Exception:  # surface a clean error; never a fake success
         db.rollback()
-        raise HTTPException(status_code=500, detail=f"Failed to load demo portfolio: {exc}")
+        # Log the full detail server-side; return a generic message so no
+        # exception text (which may reference internals) reaches the client.
+        logger.exception("demo portfolio load failed for tenant %s", tenant_id)
+        raise HTTPException(status_code=500, detail="Failed to load demo portfolio.")
 
 
 @router.get("/status")
@@ -89,6 +95,7 @@ def reset_portfolio(
     """Remove the caller's demo portfolio (companies + dependent records)."""
     try:
         return demo_portfolio.reset_demo_portfolio(db, tenant_id)
-    except Exception as exc:
+    except Exception:
         db.rollback()
-        raise HTTPException(status_code=500, detail=f"Failed to reset demo portfolio: {exc}")
+        logger.exception("demo portfolio reset failed for tenant %s", tenant_id)
+        raise HTTPException(status_code=500, detail="Failed to reset demo portfolio.")

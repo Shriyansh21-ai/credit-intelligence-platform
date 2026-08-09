@@ -306,6 +306,33 @@ class AppSettings(BaseSettings):
     def _upper_log_level(cls, value: Any) -> Any:
         return value.upper() if isinstance(value, str) else value
 
+    @field_validator("database_url", mode="before")
+    @classmethod
+    def _normalize_database_url(cls, value: Any) -> Any:
+        """Pin PostgreSQL DSNs to the installed psycopg (v3) driver.
+
+        Managed Postgres providers (Render, Heroku, Railway, …) hand out a
+        ``DATABASE_URL`` with no explicit driver — ``postgres://…`` or
+        ``postgresql://…``. SQLAlchemy then defaults to ``psycopg2``, which is
+        *not* a dependency here (we ship ``psycopg[binary]``, i.e. psycopg 3),
+        so the engine would fail at boot with ``ModuleNotFoundError: psycopg2``.
+        Rewriting the scheme to ``postgresql+psycopg://`` makes the provider's
+        default DSN work out of the box while leaving any explicit driver
+        (``+psycopg``/``+psycopg2``/``+asyncpg``) and non-Postgres URLs (SQLite)
+        untouched.
+        """
+        if not isinstance(value, str):
+            return value
+        raw = value.strip()
+        if raw.startswith("postgresql+") or raw.startswith("postgres+"):
+            # An explicit driver was chosen — respect it.
+            return raw
+        if raw.startswith("postgresql://"):
+            return "postgresql+psycopg://" + raw[len("postgresql://"):]
+        if raw.startswith("postgres://"):
+            return "postgresql+psycopg://" + raw[len("postgres://"):]
+        return raw
+
     # ------------------------------------------------------------ properties
     @property
     def is_production(self) -> bool:

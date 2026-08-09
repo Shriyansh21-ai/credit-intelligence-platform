@@ -340,3 +340,34 @@ def root():
     return {
         "message": "AI Credit Backend Running"
     }
+
+
+# ========================================
+# HEALTH
+# ========================================
+# Lightweight, unauthenticated health check for the platform / load balancer
+# (Render pings this to gate a deploy as live). It verifies database
+# connectivity with a trivial `SELECT 1`. The response never exposes secrets,
+# connection strings, or internal paths — only a coarse status and the DB
+# dialect name. Richer probes live at /healthz, /livez and /readyz.
+
+@app.get("/health", tags=["Observability"])
+def health():
+    from sqlalchemy import text
+
+    from .db.database import SessionLocal
+
+    db_ok = True
+    db = SessionLocal()
+    try:
+        db.execute(text("SELECT 1"))
+    except Exception:
+        db_ok = False
+    finally:
+        db.close()
+
+    return {
+        "status": "healthy" if db_ok else "unhealthy",
+        "database": "connected" if db_ok else "unavailable",
+        "dialect": "sqlite" if _settings.is_sqlite else "postgresql",
+    }
