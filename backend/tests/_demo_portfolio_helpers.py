@@ -48,10 +48,12 @@ def make_app(Session):
     """A TestClient with /signup, /login and /api/demo-portfolio, DB overridden."""
     from backend.app.routes import auth as auth_routes
     from backend.app.routes import demo_portfolio as dp_routes
+    from backend.app.routes import portfolio_imports as import_routes
 
     app = FastAPI()
     app.include_router(auth_routes.router)
     app.include_router(dp_routes.router)
+    app.include_router(import_routes.router)
 
     def override_db():
         db = Session()

@@ -19,6 +19,7 @@ alembic
 # Not needed for the zero-config SQLite dev/test default, but harmless to install.
 psycopg[binary]
 python-multipart
+openpyxl
 httpx
 PyMuPDF
 Pillow

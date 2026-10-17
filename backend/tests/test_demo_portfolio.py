@@ -122,13 +122,15 @@ def test_tenant_isolation_between_organizations():
     assert client.get("/api/demo-portfolio/summary", headers=b).json()["total_companies"] == 40
 
 
-def test_same_domain_users_share_tenant():
-    # Co-workers on the same email domain share one organization/tenant.
+def test_same_domain_users_do_not_share_tenant_without_membership():
+    # An unverified email domain does not grant access to an existing tenant.
     engine, Session = fresh_session()
     client = make_app(Session)
     a = auth_headers(signup(client, "first@shared-bank.com"))
     b = auth_headers(signup(client, "second@shared-bank.com"))
 
     client.post("/api/demo-portfolio/load", json={"count": 20}, headers=a)
-    # The second user sees the same book (same tenant).
-    assert client.get("/api/demo-portfolio/summary", headers=b).json()["total_companies"] == 20
+    assert client.get("/api/demo-portfolio/summary", headers=b).json()["total_companies"] == 0
+    client.post("/api/demo-portfolio/load", json={"count": 10}, headers=b)
+    assert client.get("/api/demo-portfolio/summary", headers=a).json()["total_companies"] == 20
+    assert client.get("/api/demo-portfolio/summary", headers=b).json()["total_companies"] == 10

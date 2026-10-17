@@ -56,6 +56,7 @@ class Company(Base):
     industry = Column(String, nullable=False, index=True)
     sector = Column(String, nullable=True)
     country = Column(String, nullable=True)
+    currency = Column(String(3), nullable=True)
     region = Column(String, nullable=True)
     incorporation_year = Column(Integer, nullable=True)
     employee_count = Column(Integer, nullable=True)

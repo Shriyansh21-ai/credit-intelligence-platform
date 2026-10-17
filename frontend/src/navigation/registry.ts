@@ -24,6 +24,7 @@ import {
   Cpu,
   Download,
   FileStack,
+  FileSpreadsheet,
   FileText,
   FlaskConical,
   Gauge,
@@ -207,6 +208,7 @@ const RAW_MODULES: RawModule[] = [
     items: [
       { id: "integrations-connectors", title: "Connectors", href: "/integrations-connectors", icon: Plug, description: "External data connectors", keywords: ["connectors", "integration", "gst", "mca", "bureau"] },
       { id: "integrations-import", title: "Data Imports", href: "/integrations-import", icon: Download, description: "Bulk data imports", keywords: ["import", "upload", "etl"] },
+      { id: "portfolio-imports", title: "Portfolio File Import", href: "/portfolio-imports", icon: FileSpreadsheet, description: "Import and validate customer portfolio files", keywords: ["portfolio", "CSV", "XLSX", "borrowers", "onboarding"] },
       { id: "account-aggregator", title: "Account Aggregator", href: "/account-aggregator", icon: Landmark, description: "Account aggregator flows", keywords: ["aa", "account aggregator", "bank data"] },
       { id: "collateral", title: "Collateral", href: "/collateral", icon: Boxes, description: "Collateral management", keywords: ["collateral", "security", "assets"] },
       { id: "customer360", title: "Customer 360", href: "/customer360", icon: Users, description: "Unified customer view", keywords: ["customer", "360", "profile"] },

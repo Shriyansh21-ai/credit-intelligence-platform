@@ -378,6 +378,13 @@ cd frontend && bun install && bun run dev
 > First run? Register a user via `POST /api/auth/signup`, log in to get a JWT,
 > then explore the interactive API docs at `/docs`.
 
+### Customer portfolio onboarding
+
+Authenticated users can import and validate a customer-owned CSV/XLSX portfolio
+from **[the portfolio import guide](docs/product/portfolio-imports.md)**. A
+synthetic starter file is available at
+[`docs/product/portfolio-import-template.csv`](docs/product/portfolio-import-template.csv).
+
 ---
 
 ## Screenshots

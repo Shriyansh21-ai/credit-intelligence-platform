@@ -26,6 +26,7 @@ import { Route as PromptStudioRouteImport } from './routes/prompt-studio'
 import { Route as PredictRouteImport } from './routes/predict'
 import { Route as PortfolioOptimizationRouteImport } from './routes/portfolio-optimization'
 import { Route as PortfolioIntelligenceRouteImport } from './routes/portfolio-intelligence'
+import { Route as PortfolioImportsRouteImport } from './routes/portfolio-imports'
 import { Route as PortfolioDashboardRouteImport } from './routes/portfolio-dashboard'
 import { Route as PolicyEngineRouteImport } from './routes/policy-engine'
 import { Route as OperationsRouteImport } from './routes/operations'
@@ -197,6 +198,11 @@ const PortfolioOptimizationRoute = PortfolioOptimizationRouteImport.update({
 const PortfolioIntelligenceRoute = PortfolioIntelligenceRouteImport.update({
   id: '/portfolio-intelligence',
   path: '/portfolio-intelligence',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PortfolioImportsRoute = PortfolioImportsRouteImport.update({
+  id: '/portfolio-imports',
+  path: '/portfolio-imports',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PortfolioDashboardRoute = PortfolioDashboardRouteImport.update({
@@ -717,6 +723,7 @@ export interface FileRoutesByFullPath {
   '/operations': typeof OperationsRoute
   '/policy-engine': typeof PolicyEngineRoute
   '/portfolio-dashboard': typeof PortfolioDashboardRoute
+  '/portfolio-imports': typeof PortfolioImportsRoute
   '/portfolio-intelligence': typeof PortfolioIntelligenceRoute
   '/portfolio-optimization': typeof PortfolioOptimizationRoute
   '/predict': typeof PredictRoute
@@ -822,6 +829,7 @@ export interface FileRoutesByTo {
   '/operations': typeof OperationsRoute
   '/policy-engine': typeof PolicyEngineRoute
   '/portfolio-dashboard': typeof PortfolioDashboardRoute
+  '/portfolio-imports': typeof PortfolioImportsRoute
   '/portfolio-intelligence': typeof PortfolioIntelligenceRoute
   '/portfolio-optimization': typeof PortfolioOptimizationRoute
   '/predict': typeof PredictRoute
@@ -928,6 +936,7 @@ export interface FileRoutesById {
   '/operations': typeof OperationsRoute
   '/policy-engine': typeof PolicyEngineRoute
   '/portfolio-dashboard': typeof PortfolioDashboardRoute
+  '/portfolio-imports': typeof PortfolioImportsRoute
   '/portfolio-intelligence': typeof PortfolioIntelligenceRoute
   '/portfolio-optimization': typeof PortfolioOptimizationRoute
   '/predict': typeof PredictRoute
@@ -1035,6 +1044,7 @@ export interface FileRouteTypes {
     | '/operations'
     | '/policy-engine'
     | '/portfolio-dashboard'
+    | '/portfolio-imports'
     | '/portfolio-intelligence'
     | '/portfolio-optimization'
     | '/predict'
@@ -1140,6 +1150,7 @@ export interface FileRouteTypes {
     | '/operations'
     | '/policy-engine'
     | '/portfolio-dashboard'
+    | '/portfolio-imports'
     | '/portfolio-intelligence'
     | '/portfolio-optimization'
     | '/predict'
@@ -1245,6 +1256,7 @@ export interface FileRouteTypes {
     | '/operations'
     | '/policy-engine'
     | '/portfolio-dashboard'
+    | '/portfolio-imports'
     | '/portfolio-intelligence'
     | '/portfolio-optimization'
     | '/predict'
@@ -1351,6 +1363,7 @@ export interface RootRouteChildren {
   OperationsRoute: typeof OperationsRoute
   PolicyEngineRoute: typeof PolicyEngineRoute
   PortfolioDashboardRoute: typeof PortfolioDashboardRoute
+  PortfolioImportsRoute: typeof PortfolioImportsRoute
   PortfolioIntelligenceRoute: typeof PortfolioIntelligenceRoute
   PortfolioOptimizationRoute: typeof PortfolioOptimizationRoute
   PredictRoute: typeof PredictRoute
@@ -1489,6 +1502,13 @@ declare module '@tanstack/react-router' {
       path: '/portfolio-intelligence'
       fullPath: '/portfolio-intelligence'
       preLoaderRoute: typeof PortfolioIntelligenceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/portfolio-imports': {
+      id: '/portfolio-imports'
+      path: '/portfolio-imports'
+      fullPath: '/portfolio-imports'
+      preLoaderRoute: typeof PortfolioImportsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/portfolio-dashboard': {
@@ -2183,6 +2203,7 @@ const rootRouteChildren: RootRouteChildren = {
   OperationsRoute: OperationsRoute,
   PolicyEngineRoute: PolicyEngineRoute,
   PortfolioDashboardRoute: PortfolioDashboardRoute,
+  PortfolioImportsRoute: PortfolioImportsRoute,
   PortfolioIntelligenceRoute: PortfolioIntelligenceRoute,
   PortfolioOptimizationRoute: PortfolioOptimizationRoute,
   PredictRoute: PredictRoute,

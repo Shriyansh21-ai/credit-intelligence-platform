@@ -44,6 +44,7 @@ from backend.app.models import collaboration as collaboration_model  # noqa: E40
 from backend.app.models import system_config as system_config_model  # noqa: E402,F401
 from backend.app.models import tenancy as tenancy_model  # noqa: E402,F401
 from backend.app.models import company as company_model  # noqa: E402,F401
+from backend.app.models import portfolio_import as portfolio_import_model  # noqa: E402,F401
 
 config = context.config
 config.set_main_option("sqlalchemy.url", DATABASE_URL)

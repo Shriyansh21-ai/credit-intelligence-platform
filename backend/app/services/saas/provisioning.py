@@ -5,9 +5,9 @@ disconnected: nothing associated an authenticated ``User`` with a ``Tenant``.
 
 :func:`resolve_user_tenant` is the single get-or-create entry point. It returns
 the tenant that owns a user's data, provisioning an organization + default
-tenant + owner membership on first use. The organization is keyed by the user's
-email domain, so co-workers on the same domain share one tenant (real
-multi-tenant behaviour) while users on different domains are fully isolated.
+tenant + owner membership on first use. New users receive an isolated
+organization; an email domain is not proof of authorization to join another
+customer's tenant. Additional users join only through an explicit membership.
 
 Idempotent and best-effort friendly: safe to call on every login/signup and
 from the ``get_current_tenant`` dependency, so even pre-existing accounts are
@@ -16,7 +16,6 @@ self-healed into the tenant model without a data migration.
 
 from __future__ import annotations
 
-import re
 from typing import Optional
 
 from sqlalchemy.orm import Session
@@ -25,21 +24,9 @@ from backend.app.models.tenancy import Organization, Tenant, TenantMembership
 from backend.app.models.user import User
 
 
-def _slugify(value: str) -> str:
-    slug = re.sub(r"[^a-z0-9]+", "-", (value or "").lower()).strip("-")
-    return slug or "org"
-
-
 def _org_identity(user: User) -> tuple[str, str]:
-    """Return (org_slug, org_name) derived from the user's email domain."""
-    email = (user.email or "").strip().lower()
-    domain = email.split("@", 1)[1] if "@" in email else ""
-    if domain:
-        slug = f"org-{_slugify(domain)}"
-        name = (user.organization_name or domain.split(".")[0].title() or "Organization")
-        return slug, name
-    slug = f"user-{user.id}"
-    return slug, (user.organization_name or "Organization")
+    """Return an isolated identity; organization labels are not authorization."""
+    return f"user-{user.id}", (user.organization_name or "Organization")
 
 
 def resolve_user_tenant(db: Session, user: User) -> Optional[Tenant]:
@@ -62,7 +49,8 @@ def resolve_user_tenant(db: Session, user: User) -> Optional[Tenant]:
             if tenant is not None:
                 return tenant
 
-        # 2) Provision org (by email domain) + default tenant.
+        # 2) Provision a per-user org + default tenant. Shared access requires
+        # an explicit membership rather than control of an email domain.
         org_slug, org_name = _org_identity(user)
         org = db.query(Organization).filter(Organization.slug == org_slug).first()
         if org is None:

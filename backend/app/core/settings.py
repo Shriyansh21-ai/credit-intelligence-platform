@@ -278,6 +278,8 @@ class AppSettings(BaseSettings):
 
     # --------------------------------------------------------- uploads / ML
     max_upload_mb: int = Field(default=20, alias="MAX_UPLOAD_MB")
+    portfolio_import_max_rows: int = Field(default=5000, gt=0, alias="PORTFOLIO_IMPORT_MAX_ROWS")
+    portfolio_import_max_columns: int = Field(default=100, gt=0, alias="PORTFOLIO_IMPORT_MAX_COLUMNS")
     ml_model_path: str = Field(default="app/ml/model.pkl", alias="MODEL_PATH")
     ml_default_model: str = Field(default="scorecard", alias="ML_DEFAULT_MODEL")
     ml_explainer: str = Field(default="auto", alias="ML_EXPLAINER")
