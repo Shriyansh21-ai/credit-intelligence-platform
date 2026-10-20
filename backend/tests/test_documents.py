@@ -1,7 +1,11 @@
 import tempfile
 import unittest
 
+from backend.app.models.document import Document
+from backend.app.routes.documents import _detect_file_mime
+from backend.app.schemas.document import DocumentType
 from backend.app.services.documents.field_extraction import FinancialStatementExtractor
+from backend.app.services.documents.ocr.registry import get_ocr_engine
 from backend.app.services.documents.storage import LocalStorageBackend
 from backend.app.services.documents.text_extraction import DocumentTextExtractor
 from backend.app.services.documents.validation import DocumentValidationService
@@ -48,6 +52,34 @@ class StorageTests(unittest.TestCase):
             backend = LocalStorageBackend(tmp)
             with self.assertRaises(ValueError):
                 backend.open("local://../../etc/passwd")
+
+    def test_detects_supported_content_types(self):
+        self.assertEqual(_detect_file_mime(b"%PDF-1.4\n%\xe2\xe3\xcf\xd3\n"), "application/pdf")
+        self.assertEqual(_detect_file_mime(b"\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR"), "image/png")
+        self.assertEqual(_detect_file_mime(b"\xff\xd8\xff\xe0\x00\x10JFIF"), "image/jpeg")
+
+
+class SchemaTests(unittest.TestCase):
+    def test_supported_document_type_values(self):
+        self.assertEqual(DocumentType.balance_sheet.value, "balance_sheet")
+        self.assertEqual(DocumentType.profit_loss.value, "profit_loss")
+        self.assertEqual(DocumentType.profit_and_loss.value, "profit_and_loss")
+        self.assertEqual(DocumentType.cash_flow.value, "cash_flow")
+        self.assertEqual(DocumentType.bank_statement.value, "bank_statement")
+        self.assertEqual(DocumentType.financial_summary.value, "financial_summary")
+        self.assertEqual(DocumentType.other.value, "other")
+
+    def test_none_ocr_engine_is_supported(self):
+        engine = get_ocr_engine("none")
+        self.assertEqual(engine.name, "none")
+        self.assertEqual(engine.recognize(b"dummy", "image/png").engine, "none")
+        self.assertEqual(DocumentTextExtractor("none").extract(b"hello", "text/plain").source, "text")
+
+    def test_document_model_tracks_company_and_reporting_period(self):
+        columns = {column.key for column in Document.__table__.columns}
+        self.assertIn("tenant_id", columns)
+        self.assertIn("company_id", columns)
+        self.assertIn("fiscal_year", columns)
 
 
 @unittest.skipIf(fitz is None, "PyMuPDF not available")

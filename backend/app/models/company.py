@@ -111,6 +111,13 @@ class CompanyFinancials(Base):
     )
 
     fiscal_year = Column(Integer, nullable=False)
+    currency = Column(String(3), nullable=True)
+    unit = Column(String, nullable=False, default="units")
+    source_document_id = Column(Integer, ForeignKey("documents.id"), nullable=True, index=True)
+    source_document_extraction_id = Column(
+        Integer, ForeignKey("document_extractions.id"), nullable=True
+    )
+    reviewed_by = Column(Integer, ForeignKey("users.id"), nullable=True)
 
     # --- Income statement ---
     revenue = Column(Float, nullable=True)

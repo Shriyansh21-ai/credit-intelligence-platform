@@ -6,10 +6,24 @@ one-line configuration change. Add new providers here as they are implemented.
 
 from __future__ import annotations
 
-from .base import OcrEngine
+from .base import OcrEngine, OcrResult
 from .tesseract_engine import TesseractOcrEngine
 
+
+class NoOpOcrEngine:
+    """Null implementation used when OCR is deliberately disabled."""
+
+    name = "none"
+
+    def supports(self, mime: str) -> bool:
+        return False
+
+    def recognize(self, data: bytes, mime: str) -> OcrResult:
+        return OcrResult(pages=[], engine=self.name, source="ocr")
+
+
 _ENGINES: dict[str, OcrEngine] = {
+    "none": NoOpOcrEngine(),
     "tesseract": TesseractOcrEngine(),
     # "google-vision": GoogleVisionOcrEngine(), # future
     # "azure": AzureOcrEngine(), # future

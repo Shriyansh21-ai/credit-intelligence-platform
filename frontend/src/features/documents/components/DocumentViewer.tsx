@@ -8,12 +8,24 @@ import { ReviewPanel } from "./ReviewPanel";
 interface DocumentViewerProps {
   document: DocumentDetail;
   saving: boolean;
-  onSave: (fields: Record<string, string | number | null>) => void;
+  onSave: (
+    fields: Record<string, string | number | null>,
+    metadata: { companyId?: number; fiscalYear?: number; currency?: string; unit: string },
+  ) => void;
+  onApprove: (acknowledgedWarnings: string[], replaceExisting: boolean) => void;
+  onReject: (reason: string) => void;
   onExtract: () => void;
 }
 
 /** Split layout: original document (left) + editable extraction (right). */
-export function DocumentViewer({ document, saving, onSave, onExtract }: DocumentViewerProps) {
+export function DocumentViewer({
+  document,
+  saving,
+  onSave,
+  onApprove,
+  onReject,
+  onExtract,
+}: DocumentViewerProps) {
   const [selectedKey, setSelectedKey] = useState<string | null>(null);
   const extraction = document.current_extraction;
   const selectedField = extraction?.fields.find((f) => f.key === selectedKey) ?? null;
@@ -31,16 +43,21 @@ export function DocumentViewer({ document, saving, onSave, onExtract }: Document
       <div className="min-h-[24rem]">
         {extraction ? (
           <ReviewPanel
+            document={document}
             extraction={extraction}
             saving={saving}
             selectedKey={selectedKey}
             onSelectField={setSelectedKey}
             onSave={onSave}
+            onApprove={onApprove}
+            onReject={onReject}
           />
         ) : (
           <div className="flex h-full flex-col items-center justify-center gap-3 p-8 text-center">
             <ScanLine className="h-7 w-7 text-muted-foreground" />
-            <p className="text-sm text-muted-foreground">This document hasn't been processed yet.</p>
+            <p className="text-sm text-muted-foreground">
+              This document hasn't been processed yet.
+            </p>
             <button
               type="button"
               onClick={onExtract}
@@ -110,7 +127,8 @@ function DocumentCanvas({
         <iframe src={url} title="Document preview" className="h-[40rem] w-full bg-secondary/20" />
         {highlight && (
           <p className="border-t border-border px-3 py-1.5 text-[11px] text-muted-foreground">
-            Selected field is on page {highlight.page + 1}. Region highlighting is available for image documents.
+            Selected field is on page {highlight.page + 1}. Region highlighting is available for
+            image documents.
           </p>
         )}
       </div>

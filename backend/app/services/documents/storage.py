@@ -81,7 +81,7 @@ class LocalStorageBackend:
     def _path_for_key(self, key: str) -> Path:
         candidate = (self.root / key).resolve()
         # Guard against path traversal via crafted keys.
-        if not str(candidate).startswith(str(self.root)):
+        if candidate != self.root and self.root not in candidate.parents:
             raise ValueError("Resolved path escapes storage root")
         return candidate
 

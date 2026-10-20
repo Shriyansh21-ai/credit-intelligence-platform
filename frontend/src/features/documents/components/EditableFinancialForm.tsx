@@ -29,7 +29,8 @@ export function EditableFinancialForm({
   if (fields.length === 0) {
     return (
       <p className="rounded-lg border border-dashed border-border bg-secondary/20 px-4 py-6 text-center text-sm text-muted-foreground">
-        No fields were extracted. Run extraction, or the document may not contain recognisable financial data.
+        No fields were extracted. Run extraction, or the document may not contain recognisable
+        financial data.
       </p>
     );
   }
@@ -49,11 +50,17 @@ export function EditableFinancialForm({
             )}
           >
             <div className="mb-1.5 flex items-center justify-between gap-2">
-              <label htmlFor={`field-${field.key}`} className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
+              <label
+                htmlFor={`field-${field.key}`}
+                className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground"
+              >
                 {field.label}
                 {isEdited && <Pencil className="h-3 w-3 text-primary" aria-label="Edited" />}
               </label>
-              <ConfidenceBadge level={field.confidence_level} score={field.confidence} />
+              <ConfidenceBadge
+                level={field.confidence_level}
+                score={field.confidence ?? undefined}
+              />
             </div>
             <input
               id={`field-${field.key}`}
@@ -65,6 +72,17 @@ export function EditableFinancialForm({
               onChange={(e) => onChange(field.key, e.target.value)}
               className="w-full rounded-md border border-border bg-card px-2.5 py-1.5 text-sm text-foreground outline-none focus:border-ring focus:ring-2 focus:ring-ring/25"
             />
+            {field.edited && field.extracted_value != null && (
+              <p className="mt-1 text-[11px] text-muted-foreground">
+                Originally extracted: {String(field.extracted_value)}
+                {field.raw_text ? ` · Source text: ${field.raw_text}` : ""}
+              </p>
+            )}
+            {!field.edited && field.raw_text && (
+              <p className="mt-1 text-[11px] text-muted-foreground">
+                Source text: {field.raw_text}
+              </p>
+            )}
           </div>
         );
       })}

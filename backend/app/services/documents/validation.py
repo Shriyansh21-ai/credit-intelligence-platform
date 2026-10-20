@@ -8,6 +8,7 @@ covers field-level rules.
 
 from __future__ import annotations
 
+import math
 from dataclasses import dataclass
 from typing import Any, Dict, List, Optional
 
@@ -57,8 +58,13 @@ class DocumentValidationService:
 
         # Non-negative currency fields.
         for key in NON_NEGATIVE_CURRENCY:
-            number = _as_number(fields.get(key))
-            if number is not None and number < 0:
+            raw = fields.get(key)
+            number = _as_number(raw)
+            if raw not in (None, "") and number is None:
+                issues.append(ValidationIssue(key, SEVERITY_ERROR, f"{key.replace('_', ' ').title()} must be numeric."))
+            elif number is not None and not math.isfinite(number):
+                issues.append(ValidationIssue(key, SEVERITY_ERROR, f"{key.replace('_', ' ').title()} must be finite."))
+            elif number is not None and number < 0:
                 label = key.replace("_", " ").title()
                 issues.append(ValidationIssue(key, SEVERITY_ERROR, f"{label} cannot be negative."))
 

@@ -1,13 +1,19 @@
-import { useRef, useState, type ChangeEvent, type DragEvent } from "react";
+import { useEffect, useRef, useState, type ChangeEvent, type DragEvent } from "react";
 import { AlertCircle, UploadCloud } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ACCEPTED_EXTENSIONS, DOCUMENT_TYPE_OPTIONS } from "../constants";
 import { validateFiles, type RejectedFile } from "../validation";
 import type { DocumentType } from "../types";
+import type { DocumentCompany } from "../types";
+import { getDocumentCompanies } from "../api";
 import { ProgressCard } from "./ProgressCard";
 
 interface UploadZoneProps {
-  onUpload: (files: File[], documentType: DocumentType) => Promise<unknown>;
+  onUpload: (
+    files: File[],
+    documentType: DocumentType,
+    options: { companyId?: number; fiscalYear?: number; currency?: string; unit: string },
+  ) => Promise<unknown>;
   uploading: boolean;
 }
 
@@ -17,6 +23,27 @@ export function UploadZone({ onUpload, uploading }: UploadZoneProps) {
   const [selected, setSelected] = useState<File[]>([]);
   const [rejected, setRejected] = useState<RejectedFile[]>([]);
   const [documentType, setDocumentType] = useState<DocumentType>("balance_sheet");
+  const [companies, setCompanies] = useState<DocumentCompany[]>([]);
+  const [companyId, setCompanyId] = useState("");
+  const [fiscalYear, setFiscalYear] = useState("");
+  const [currency, setCurrency] = useState("");
+  const [unit, setUnit] = useState("units");
+  const [companyError, setCompanyError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    void getDocumentCompanies()
+      .then((response) => {
+        if (!cancelled) setCompanies(response.items);
+      })
+      .catch((error: unknown) => {
+        if (!cancelled)
+          setCompanyError(error instanceof Error ? error.message : "Could not load companies");
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   function addFiles(fileList: FileList | null) {
     if (!fileList) return;
@@ -45,7 +72,12 @@ export function UploadZone({ onUpload, uploading }: UploadZoneProps) {
 
   async function handleUpload() {
     if (!selected.length) return;
-    await onUpload(selected, documentType);
+    await onUpload(selected, documentType, {
+      companyId: companyId ? Number(companyId) : undefined,
+      fiscalYear: fiscalYear ? Number(fiscalYear) : undefined,
+      currency: currency || undefined,
+      unit,
+    });
     setSelected([]);
     setRejected([]);
   }
@@ -55,7 +87,9 @@ export function UploadZone({ onUpload, uploading }: UploadZoneProps) {
       <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <h2 className="text-sm font-semibold tracking-tight text-foreground">Upload Documents</h2>
-          <p className="text-xs text-muted-foreground">Balance sheets, P&L, cash-flow, bank statements, GST/ITR — PDF, PNG or JPG.</p>
+          <p className="text-xs text-muted-foreground">
+            Balance sheets, P&L, cash-flow, bank statements, GST/ITR — PDF, PNG or JPG.
+          </p>
         </div>
         <label className="flex flex-col gap-1 text-xs font-medium text-muted-foreground">
           Document type
@@ -73,6 +107,61 @@ export function UploadZone({ onUpload, uploading }: UploadZoneProps) {
         </label>
       </div>
 
+      <div className="mb-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <label className="flex flex-col gap-1 text-xs font-medium text-muted-foreground">
+          Company
+          <select
+            value={companyId}
+            onChange={(event) => setCompanyId(event.target.value)}
+            className="rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground"
+          >
+            <option value="">Select later</option>
+            {companies.map((company) => (
+              <option key={company.id} value={company.id}>
+                {company.name}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label className="flex flex-col gap-1 text-xs font-medium text-muted-foreground">
+          Fiscal year
+          <input
+            type="number"
+            min={1900}
+            max={2200}
+            value={fiscalYear}
+            onChange={(event) => setFiscalYear(event.target.value)}
+            placeholder="e.g. 2025"
+            className="rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground"
+          />
+        </label>
+        <label className="flex flex-col gap-1 text-xs font-medium text-muted-foreground">
+          Currency
+          <input
+            value={currency}
+            onChange={(event) => setCurrency(event.target.value.toUpperCase().slice(0, 3))}
+            placeholder="e.g. INR"
+            maxLength={3}
+            className="rounded-lg border border-border bg-background px-3 py-2 text-sm uppercase text-foreground"
+          />
+        </label>
+        <label className="flex flex-col gap-1 text-xs font-medium text-muted-foreground">
+          Statement unit
+          <select
+            value={unit}
+            onChange={(event) => setUnit(event.target.value)}
+            className="rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground"
+          >
+            {["units", "thousands", "millions", "lakhs", "crores"].map((value) => (
+              <option key={value} value={value}>
+                {value}
+              </option>
+            ))}
+          </select>
+        </label>
+      </div>
+      {companyError && <p className="mb-3 text-xs text-destructive">{companyError}</p>}
+
       <div
         onDragOver={(e) => {
           e.preventDefault();
@@ -86,7 +175,9 @@ export function UploadZone({ onUpload, uploading }: UploadZoneProps) {
         onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && inputRef.current?.click()}
         className={cn(
           "flex cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed px-6 py-10 text-center transition-colors",
-          dragActive ? "border-primary bg-primary/5" : "border-border bg-secondary/30 hover:border-ring/50",
+          dragActive
+            ? "border-primary bg-primary/5"
+            : "border-border bg-secondary/30 hover:border-ring/50",
         )}
       >
         <div className="flex h-11 w-11 items-center justify-center rounded-full border border-border bg-background text-primary">
@@ -94,7 +185,14 @@ export function UploadZone({ onUpload, uploading }: UploadZoneProps) {
         </div>
         <p className="text-sm font-medium text-foreground">Drag &amp; drop files here</p>
         <p className="text-xs text-muted-foreground">or click to browse</p>
-        <input ref={inputRef} type="file" accept={ACCEPTED_EXTENSIONS} multiple hidden onChange={onInputChange} />
+        <input
+          ref={inputRef}
+          type="file"
+          accept={ACCEPTED_EXTENSIONS}
+          multiple
+          hidden
+          onChange={onInputChange}
+        />
       </div>
 
       {rejected.length > 0 && (

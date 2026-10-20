@@ -1,9 +1,11 @@
 import { useCallback, useEffect, useState } from "react";
 import {
+  approveDocument,
   deleteDocument,
   extractDocument,
   getDocument,
   getHistory,
+  rejectDocument,
   reviewDocument,
   uploadDocuments,
 } from "../api";
@@ -47,15 +49,26 @@ export function useDocuments() {
   }, []);
 
   const upload = useCallback(
-    async (files: File[], documentType: DocumentType) => {
+    async (
+      files: File[],
+      documentType: DocumentType,
+      options?: {
+        companyId?: number | null;
+        fiscalYear?: number | null;
+        currency?: string;
+        unit?: string;
+      },
+    ) => {
       setUploading(true);
       setError(null);
       setNotice(null);
       try {
-        const result = await uploadDocuments(files, documentType);
+        const result = await uploadDocuments(files, documentType, options);
         await refreshHistory();
         if (result.duplicates.length) {
-          setNotice(`Skipped ${result.duplicates.length} duplicate file(s): ${result.duplicates.join(", ")}`);
+          setNotice(
+            `Skipped ${result.duplicates.length} duplicate file(s): ${result.duplicates.join(", ")}`,
+          );
         }
         // Auto-select and extract the first newly uploaded document.
         const first = result.documents[0];
@@ -92,16 +105,61 @@ export function useDocuments() {
   );
 
   const review = useCallback(
-    async (id: number, fields: Record<string, string | number | null>, documentType?: DocumentType) => {
+    async (
+      id: number,
+      fields: Record<string, string | number | null>,
+      options?: {
+        documentType?: DocumentType;
+        companyId?: number | null;
+        fiscalYear?: number | null;
+        currency?: string | null;
+        unit?: string | null;
+      },
+    ) => {
       setBusyId(id);
       setError(null);
       try {
-        const response = await reviewDocument(id, fields, { documentType });
+        const response = await reviewDocument(id, fields, options);
         setActive(response.document);
         await refreshHistory();
         setNotice("Changes saved.");
       } catch (err) {
         setError(err instanceof Error ? err.message : "Failed to save review");
+      } finally {
+        setBusyId(null);
+      }
+    },
+    [refreshHistory],
+  );
+
+  const approve = useCallback(
+    async (id: number, acknowledgedWarnings: string[], replaceExisting: boolean) => {
+      setBusyId(id);
+      setError(null);
+      try {
+        const response = await approveDocument(id, acknowledgedWarnings, replaceExisting);
+        setActive(response.document);
+        await refreshHistory();
+        setNotice("Approved financial values were persisted.");
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Failed to approve document");
+      } finally {
+        setBusyId(null);
+      }
+    },
+    [refreshHistory],
+  );
+
+  const reject = useCallback(
+    async (id: number, reason: string) => {
+      setBusyId(id);
+      setError(null);
+      try {
+        setActive(await rejectDocument(id, reason));
+        await refreshHistory();
+        setNotice("Document rejected. The review reason was recorded.");
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Failed to reject document");
       } finally {
         setBusyId(null);
       }
@@ -138,6 +196,8 @@ export function useDocuments() {
     upload,
     extract,
     review,
+    approve,
+    reject,
     remove,
     dismissNotice: () => setNotice(null),
   };

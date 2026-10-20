@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from datetime import datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Literal, Optional
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -12,8 +12,10 @@ from pydantic import BaseModel, ConfigDict, Field
 class DocumentType(str, Enum):
     balance_sheet = "balance_sheet"
     profit_loss = "profit_loss"
+    profit_and_loss = "profit_and_loss"
     cash_flow = "cash_flow"
     bank_statement = "bank_statement"
+    financial_summary = "financial_summary"
     gst_return = "gst_return"
     income_tax_return = "income_tax_return"
     business_registration = "business_registration"
@@ -22,10 +24,18 @@ class DocumentType(str, Enum):
 
 class DocumentStatus(str, Enum):
     uploaded = "uploaded"
-    extracting = "extracting"
+    queued = "queued"
+    processing = "processing"
+    extracting = "processing"  # legacy alias
     extracted = "extracted"
-    reviewed = "reviewed"
+    needs_review = "needs_review"
+    reviewed = "reviewed"  # legacy alias
+    approved = "approved"
+    partially_approved = "partially_approved"
+    rejected = "rejected"
     failed = "failed"
+    deletion_pending = "deletion_pending"
+    deleted = "deleted"
 
 
 class ConfidenceLevel(str, Enum):
@@ -57,8 +67,10 @@ class ExtractedFieldSchema(BaseModel):
     label: str
     type: str
     value: Optional[Any] = None
+    extracted_value: Optional[Any] = None
+    normalized_value: Optional[Any] = None
     raw_text: Optional[str] = None
-    confidence: float = 0.0
+    confidence: Optional[float] = None
     confidence_level: ConfidenceLevel = ConfidenceLevel.low
     bbox: Optional[BoundingBoxSchema] = None
     edited: bool = False
@@ -74,6 +86,11 @@ class DocumentSummary(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     id: int
+    tenant_id: int
+    company_id: Optional[int] = None
+    fiscal_year: Optional[int] = None
+    currency: Optional[str] = None
+    unit: str = "units"
     document_type: str
     original_filename: str
     mime_type: str
@@ -82,6 +99,13 @@ class DocumentSummary(BaseModel):
     ocr_source: Optional[str] = None
     page_count: Optional[int] = None
     content_hash: str
+    reviewed_by: Optional[int] = None
+    reviewed_at: Optional[datetime] = None
+    approved_by: Optional[int] = None
+    approved_at: Optional[datetime] = None
+    rejected_by: Optional[int] = None
+    rejected_at: Optional[datetime] = None
+    rejection_reason: Optional[str] = None
     created_at: datetime
     updated_at: Optional[datetime] = None
 
@@ -90,6 +114,8 @@ class DocumentExtractionSchema(BaseModel):
     version: int
     is_current: bool
     source: Optional[str] = None
+    provider: Optional[str] = None
+    provider_version: Optional[str] = None
     overall_confidence: Optional[float] = None
     fields: List[ExtractedFieldSchema] = Field(default_factory=list)
     validation: List[ValidationIssueSchema] = Field(default_factory=list)
@@ -110,10 +136,28 @@ class ExtractResponse(BaseModel):
 
 
 class ReviewRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
     # Map of field key -> corrected value.
-    fields: Dict[str, Any]
+    fields: Dict[str, Any] = Field(default_factory=dict)
     document_type: Optional[DocumentType] = None
-    mark_reviewed: bool = True
+    company_id: Optional[int] = None
+    fiscal_year: Optional[int] = Field(default=None, ge=1900, le=2200)
+    currency: Optional[str] = Field(default=None, pattern=r"^[A-Za-z]{3}$")
+    unit: Optional[Literal["units", "thousands", "millions", "lakhs", "crores"]] = None
+
+
+class ApproveRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    acknowledged_warnings: List[str] = Field(default_factory=list)
+    replace_existing_financials: bool = False
+
+
+class RejectRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    reason: str = Field(min_length=1, max_length=1000)
 
 
 class HistoryResponse(BaseModel):
