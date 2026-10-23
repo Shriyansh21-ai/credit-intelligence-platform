@@ -1,8 +1,11 @@
 import tempfile
 import unittest
+from pathlib import Path
+from unittest.mock import Mock, patch
 
 from backend.app.models.document import Document
 from backend.app.routes.documents import _detect_file_mime
+from backend.app.services.documents.document_service import DocumentService
 from backend.app.schemas.document import DocumentType
 from backend.app.services.documents.field_extraction import FinancialStatementExtractor
 from backend.app.services.documents.ocr.registry import get_ocr_engine
@@ -52,6 +55,141 @@ class StorageTests(unittest.TestCase):
             backend = LocalStorageBackend(tmp)
             with self.assertRaises(ValueError):
                 backend.open("local://../../etc/passwd")
+
+    def test_atomic_save_leaves_no_tmp_orphans(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            backend = LocalStorageBackend(tmp)
+            stored = backend.save("ns", "report.pdf", b"hello")
+            self.assertTrue(backend.exists(stored.uri))
+            self.assertFalse(any(p.name.startswith(".report.pdf") for p in Path(tmp).rglob("*")))
+
+    def test_save_failure_cleans_temp_and_keeps_existing_file(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            backend = LocalStorageBackend(tmp)
+            existing = backend.save("ns", "report.pdf", b"original")
+            original_path = backend._path_for_uri(existing.uri)
+
+            with patch("backend.app.services.documents.storage.os.fsync", side_effect=OSError("fsync failed")):
+                with self.assertRaises(OSError):
+                    backend.save("ns", "report.pdf", b"new-data")
+
+            self.assertTrue(backend.exists(existing.uri))
+            self.assertEqual(backend.open(existing.uri), b"original")
+            self.assertFalse(any(p.name.startswith(".report.pdf") for p in Path(tmp).rglob("*")))
+            self.assertTrue(original_path.exists())
+
+    def test_upload_commit_failure_cleans_staged_file(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            from backend.tests._demo_portfolio_helpers import fresh_session
+
+            engine, session_factory = fresh_session()
+            try:
+                db = session_factory()
+                backend = LocalStorageBackend(tmp)
+                service = DocumentService(db, storage=backend)
+                db.commit = Mock(side_effect=RuntimeError("commit failed"))
+                with self.assertRaises(RuntimeError):
+                    service.upload(
+                        tenant_id=1,
+                        user_id=1,
+                        filename="statement.pdf",
+                        mime_type="application/pdf",
+                        data=b"pdf-data",
+                        document_type="balance_sheet",
+                    )
+                self.assertEqual(db.query(Document).count(), 0)
+                self.assertFalse(any(path.is_file() for path in Path(tmp).rglob("*")))
+            finally:
+                db.close()
+                engine.dispose()
+
+    def test_delete_failure_leaves_pending_state_and_reconcile_reports_missing_file(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            from backend.tests._demo_portfolio_helpers import fresh_session
+
+            engine, session_factory = fresh_session()
+            try:
+                backend = LocalStorageBackend(tmp)
+                stored = backend.save("tenant-1", "delete-me.pdf", b"data")
+                db = session_factory()
+                try:
+                    doc = Document(
+                        tenant_id=1,
+                        user_id=1,
+                        original_filename="delete-me.pdf",
+                        mime_type="application/pdf",
+                        size_bytes=4,
+                        storage_uri=stored.uri,
+                        content_hash=stored.content_hash,
+                        status="uploaded",
+                    )
+                    db.add(doc)
+                    db.commit()
+
+                    failing_backend = Mock()
+                    failing_backend.exists.side_effect = lambda uri: uri == stored.uri and False
+                    failing_backend.iter_uris.return_value = []
+                    failing_backend.delete.side_effect = OSError("disk failed")
+                    service = DocumentService(db, storage=failing_backend)
+                    with self.assertRaises(OSError):
+                        service.delete(doc, actor_id=1)
+                    db.refresh(doc)
+                    self.assertEqual(doc.status, "deletion_pending")
+                    self.assertIn(stored.uri, service.reconcile_storage()["missing_referenced_files"])
+                finally:
+                    db.close()
+            finally:
+                engine.dispose()
+
+    def test_reconcile_storage_flags_orphans_and_missing_files(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            from backend.tests._demo_portfolio_helpers import fresh_session
+
+            engine, session_factory = fresh_session()
+            try:
+                backend = LocalStorageBackend(tmp)
+                live = backend.save("tenant-1", "live.pdf", b"live")
+                orphan = backend.save("tenant-1", "orphan.pdf", b"orphan")
+                missing_uri = "local://tenant-1/missing.pdf"
+
+                db = session_factory()
+                try:
+                    db.add(
+                        Document(
+                            tenant_id=1,
+                            user_id=1,
+                            original_filename="live.pdf",
+                            mime_type="application/pdf",
+                            size_bytes=len(b"live"),
+                            storage_uri=live.uri,
+                            content_hash=live.content_hash,
+                            status="uploaded",
+                        )
+                    )
+                    db.add(
+                        Document(
+                            tenant_id=1,
+                            user_id=1,
+                            original_filename="missing.pdf",
+                            mime_type="application/pdf",
+                            size_bytes=12,
+                            storage_uri=missing_uri,
+                            content_hash="missing",
+                            status="uploaded",
+                        )
+                    )
+                    db.commit()
+                    report = DocumentService(db, storage=backend).reconcile_storage()
+                    self.assertIn(orphan.uri, report["orphaned_files"])
+                    self.assertIn(missing_uri, report["missing_referenced_files"])
+                    self.assertNotIn(live.uri, report["orphaned_files"])
+                    self.assertEqual(report, DocumentService(db, storage=backend).reconcile_storage())
+                    with self.assertRaises(RuntimeError):
+                        DocumentService(db, storage=backend).reconcile_storage(execute=True)
+                finally:
+                    db.close()
+            finally:
+                engine.dispose()
 
     def test_detects_supported_content_types(self):
         self.assertEqual(_detect_file_mime(b"%PDF-1.4\n%\xe2\xe3\xcf\xd3\n"), "application/pdf")

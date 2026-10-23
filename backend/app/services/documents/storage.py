@@ -9,6 +9,7 @@ by implementing the same protocol and swapping it in the factory.
 from __future__ import annotations
 
 import hashlib
+import os
 import re
 import uuid
 from dataclasses import dataclass
@@ -55,7 +56,23 @@ class LocalStorageBackend:
         key = f"{namespace.strip('/')}/{uuid.uuid4().hex}__{_sanitize(filename)}"
         target = self._path_for_key(key)
         target.parent.mkdir(parents=True, exist_ok=True)
-        target.write_bytes(data)
+        temp_path = target.with_name(f".{target.name}.tmp-{uuid.uuid4().hex}")
+        try:
+            with open(temp_path, "wb") as handle:
+                handle.write(data)
+                handle.flush()
+                os.fsync(handle.fileno())
+            try:
+                temp_path.replace(target)
+            except Exception:
+                temp_path.unlink(missing_ok=True)
+                raise
+        except Exception:
+            try:
+                temp_path.unlink(missing_ok=True)
+            except OSError:
+                pass
+            raise
         return StoredFile(
             uri=f"{_LOCAL_SCHEME}{key}",
             size=len(data),
@@ -75,6 +92,17 @@ class LocalStorageBackend:
             return self._path_for_uri(uri).exists()
         except ValueError:
             return False
+
+    def iter_uris(self) -> list[str]:
+        uris: list[str] = []
+        for path in self.root.rglob("*"):
+            if path.is_file():
+                try:
+                    rel = path.relative_to(self.root)
+                except ValueError:
+                    continue
+                uris.append(f"{_LOCAL_SCHEME}{rel.as_posix()}")
+        return uris
 
     # -- internal helpers -------------------------------------------------
 

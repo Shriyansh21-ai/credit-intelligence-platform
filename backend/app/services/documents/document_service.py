@@ -7,6 +7,7 @@ provided session.
 
 from __future__ import annotations
 
+import logging
 import math
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
@@ -41,6 +42,9 @@ _FINANCIAL_FIELD_MAP = {
 }
 
 
+logger = logging.getLogger("app.documents.service")
+
+
 class DocumentConflictError(Exception):
     """A document action conflicts with its current workflow state."""
 
@@ -50,9 +54,9 @@ class DocumentValidationError(Exception):
 
 
 class DocumentService:
-    def __init__(self, db: Session) -> None:
+    def __init__(self, db: Session, storage: Any | None = None) -> None:
         self.db = db
-        self.storage = get_storage()
+        self.storage = storage if storage is not None else get_storage()
         self.text_extractor = DocumentTextExtractor()
         self.field_extractor = FinancialStatementExtractor()
         self.validator = DocumentValidationService()
@@ -432,23 +436,58 @@ class DocumentService:
             raise DocumentConflictError(
                 "A document referenced by approved financials cannot be deleted."
             )
-        self.storage.delete(document.storage_uri)
+
+        referenced_elsewhere = (
+            self.db.query(Document.id)
+            .filter(
+                Document.storage_uri == document.storage_uri,
+                Document.id != document.id,
+            )
+            .first()
+        )
+        if referenced_elsewhere is not None:
+            raise DocumentConflictError(
+                "This file is still referenced by another document and cannot be removed."
+            )
+
+        previous_status = document.status
+        document.status = "deletion_pending"
+        self.db.add(DocumentReviewEvent(
+            document_id=document.id,
+            document_reference_id=document.id,
+            tenant_id=document.tenant_id,
+            actor_id=actor_id,
+            event_type="deletion_pending",
+            from_status=previous_status,
+            to_status="deletion_pending",
+            changes={},
+        ))
+        try:
+            self.db.commit()
+        except Exception:
+            self.db.rollback()
+            document.status = previous_status
+            raise
+
+        try:
+            self.storage.delete(document.storage_uri)
+        except Exception:
+            logger.exception("document file cleanup failed for document %s before final delete", document.id)
+            raise
+
         self.db.query(DocumentExtraction).filter(
             DocumentExtraction.document_id == document.id
         ).delete(synchronize_session=False)
         self.db.query(DocumentReviewEvent).filter(
-            DocumentReviewEvent.document_id == document.id
-        ).update(
-            {DocumentReviewEvent.document_id: None},
-            synchronize_session=False,
-        )
+            DocumentReviewEvent.document_reference_id == document.id
+        ).delete(synchronize_session=False)
         self.db.add(DocumentReviewEvent(
             document_id=None,
             document_reference_id=document.id,
             tenant_id=document.tenant_id,
             actor_id=actor_id,
             event_type="deletion",
-            from_status=document.status,
+            from_status="deletion_pending",
             to_status="deleted",
             changes={},
         ))
@@ -461,6 +500,26 @@ class DocumentService:
 
     def file_bytes(self, document: Document) -> bytes:
         return self.storage.open(document.storage_uri)
+
+    def reconcile_storage(self, *, execute: bool = False) -> dict:
+        """Return database/storage mismatch information without deleting anything."""
+        if execute:
+            raise RuntimeError("Destructive reconciliation is disabled. Use report-only reconciliation.")
+        referenced = {
+            uri for uri, in self.db.query(Document.storage_uri).filter(Document.storage_uri.isnot(None)).all()
+        }
+        if hasattr(self.storage, "iter_uris"):
+            existing = set(self.storage.iter_uris())
+        else:
+            existing = set()
+        temp_files = {
+            uri for uri in existing if uri.rsplit("/", 1)[-1].startswith(".")
+        }
+        return {
+            "orphaned_files": sorted(existing - referenced),
+            "missing_referenced_files": sorted(uri for uri in referenced if not self.storage.exists(uri)),
+            "incomplete_operations": sorted(temp_files),
+        }
 
     # -- internal ---------------------------------------------------------
 
