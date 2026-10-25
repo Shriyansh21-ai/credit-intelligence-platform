@@ -24,9 +24,11 @@ from sqlalchemy import (
     Boolean,
     Column,
     DateTime,
+    CheckConstraint,
     Float,
     ForeignKey,
     Integer,
+    JSON,
     String,
     UniqueConstraint,
 )
@@ -205,6 +207,7 @@ class PortfolioExposure(Base):
 
     exposure = Column(Float, nullable=True)
     outstanding_amount = Column(Float, nullable=True)
+    currency = Column(String(3), nullable=True)
     utilization = Column(Float, nullable=True)
     repayment_performance = Column(Float, nullable=True)
     delinquency_days = Column(Integer, nullable=True)
@@ -214,3 +217,90 @@ class PortfolioExposure(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
 
     company = relationship("Company", back_populates="exposure")
+
+
+class PortfolioExposureLimit(Base):
+    """Tenant-scoped company, sector, or whole-portfolio exposure threshold."""
+
+    __tablename__ = "portfolio_exposure_limits"
+    __table_args__ = (
+        CheckConstraint(
+            "scope IN ('portfolio', 'company', 'sector')",
+            name="ck_exposure_limit_scope",
+        ),
+        CheckConstraint("threshold > 0", name="ck_exposure_limit_positive_threshold"),
+        CheckConstraint(
+            "approaching_ratio IS NULL OR (approaching_ratio > 0 AND approaching_ratio < 1)",
+            name="ck_exposure_limit_approaching_ratio",
+        ),
+        UniqueConstraint(
+            "tenant_id", "scope", "scope_key", "currency",
+            name="uq_exposure_limit_scope_currency",
+        ),
+    )
+
+    id = Column(Integer, primary_key=True, index=True)
+    tenant_id = Column(Integer, ForeignKey("tenants.id"), nullable=False, index=True)
+    scope = Column(String(16), nullable=False)
+    # "*" for portfolio, company id for company, normalized sector for sector.
+    scope_key = Column(String(200), nullable=False)
+    currency = Column(String(3), nullable=False)
+    threshold = Column(Float, nullable=False)
+    approaching_ratio = Column(Float, nullable=True)
+    is_active = Column(Boolean, nullable=False, default=True, index=True)
+    created_by = Column(Integer, ForeignKey("users.id"), nullable=False)
+    created_at = Column(DateTime, nullable=False, default=datetime.utcnow)
+    updated_at = Column(DateTime, nullable=False, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+
+class PortfolioExposureBreach(Base):
+    """Current breach state for one limit; event rows preserve transitions."""
+
+    __tablename__ = "portfolio_exposure_breaches"
+    __table_args__ = (
+        UniqueConstraint("limit_id", name="uq_exposure_breach_limit"),
+    )
+
+    id = Column(Integer, primary_key=True, index=True)
+    limit_id = Column(
+        Integer,
+        ForeignKey("portfolio_exposure_limits.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+    observed_exposure = Column(Float, nullable=False)
+    supporting_exposure_ids = Column(JSON, nullable=False, default=list)
+    supporting_company_ids = Column(JSON, nullable=False, default=list)
+    status = Column(String(16), nullable=False, default="open", index=True)
+    first_detected_at = Column(DateTime, nullable=False, default=datetime.utcnow)
+    last_observed_at = Column(DateTime, nullable=False, default=datetime.utcnow)
+    acknowledged_by = Column(Integer, ForeignKey("users.id"), nullable=True)
+    acknowledged_at = Column(DateTime, nullable=True)
+    acknowledgement_reason = Column(String(1000), nullable=True)
+    resolved_at = Column(DateTime, nullable=True)
+
+
+class PortfolioExposureLimitEvent(Base):
+    """Auditable, append-only limit and breach lifecycle event."""
+
+    __tablename__ = "portfolio_exposure_limit_events"
+
+    id = Column(Integer, primary_key=True, index=True)
+    limit_id = Column(
+        Integer,
+        ForeignKey("portfolio_exposure_limits.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+    breach_id = Column(
+        Integer,
+        ForeignKey("portfolio_exposure_breaches.id", ondelete="SET NULL"),
+        nullable=True,
+        index=True,
+    )
+    actor_id = Column(Integer, ForeignKey("users.id"), nullable=True)
+    action = Column(String(32), nullable=False)
+    reason = Column(String(1000), nullable=True)
+    previous_value = Column(String(2000), nullable=True)
+    new_value = Column(String(2000), nullable=True)
+    created_at = Column(DateTime, nullable=False, default=datetime.utcnow, index=True)

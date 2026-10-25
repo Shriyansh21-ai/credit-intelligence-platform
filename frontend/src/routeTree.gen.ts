@@ -86,6 +86,7 @@ import { Route as EarlyWarningRouteImport } from './routes/early-warning'
 import { Route as DocumentsRouteImport } from './routes/documents'
 import { Route as DataFabricRouteImport } from './routes/data-fabric'
 import { Route as Customer360RouteImport } from './routes/customer360'
+import { Route as CreditReviewsRouteImport } from './routes/credit-reviews'
 import { Route as CopilotRouteImport } from './routes/copilot'
 import { Route as ComplianceDashboardRouteImport } from './routes/compliance-dashboard'
 import { Route as CommitteeWorkspaceRouteImport } from './routes/committee-workspace'
@@ -113,6 +114,7 @@ import { Route as AipAgentsRouteImport } from './routes/aip-agents'
 import { Route as AdminDashboardRouteImport } from './routes/admin-dashboard'
 import { Route as AccountAggregatorRouteImport } from './routes/account-aggregator'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as CreditReviewsCaseIdRouteImport } from './routes/credit-reviews.$caseId'
 
 const WorkflowStudioRoute = WorkflowStudioRouteImport.update({
   id: '/workflow-studio',
@@ -500,6 +502,11 @@ const Customer360Route = Customer360RouteImport.update({
   path: '/customer360',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CreditReviewsRoute = CreditReviewsRouteImport.update({
+  id: '/credit-reviews',
+  path: '/credit-reviews',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CopilotRoute = CopilotRouteImport.update({
   id: '/copilot',
   path: '/copilot',
@@ -635,6 +642,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CreditReviewsCaseIdRoute = CreditReviewsCaseIdRouteImport.update({
+  id: '/$caseId',
+  path: '/$caseId',
+  getParentRoute: () => CreditReviewsRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -664,6 +676,7 @@ export interface FileRoutesByFullPath {
   '/committee-workspace': typeof CommitteeWorkspaceRoute
   '/compliance-dashboard': typeof ComplianceDashboardRoute
   '/copilot': typeof CopilotRoute
+  '/credit-reviews': typeof CreditReviewsRouteWithChildren
   '/customer360': typeof Customer360Route
   '/data-fabric': typeof DataFabricRoute
   '/documents': typeof DocumentsRoute
@@ -741,6 +754,7 @@ export interface FileRoutesByFullPath {
   '/stress-testing': typeof StressTestingRoute
   '/stress-testing-9': typeof StressTesting9Route
   '/workflow-studio': typeof WorkflowStudioRoute
+  '/credit-reviews/$caseId': typeof CreditReviewsCaseIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -770,6 +784,7 @@ export interface FileRoutesByTo {
   '/committee-workspace': typeof CommitteeWorkspaceRoute
   '/compliance-dashboard': typeof ComplianceDashboardRoute
   '/copilot': typeof CopilotRoute
+  '/credit-reviews': typeof CreditReviewsRouteWithChildren
   '/customer360': typeof Customer360Route
   '/data-fabric': typeof DataFabricRoute
   '/documents': typeof DocumentsRoute
@@ -847,6 +862,7 @@ export interface FileRoutesByTo {
   '/stress-testing': typeof StressTestingRoute
   '/stress-testing-9': typeof StressTesting9Route
   '/workflow-studio': typeof WorkflowStudioRoute
+  '/credit-reviews/$caseId': typeof CreditReviewsCaseIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -877,6 +893,7 @@ export interface FileRoutesById {
   '/committee-workspace': typeof CommitteeWorkspaceRoute
   '/compliance-dashboard': typeof ComplianceDashboardRoute
   '/copilot': typeof CopilotRoute
+  '/credit-reviews': typeof CreditReviewsRouteWithChildren
   '/customer360': typeof Customer360Route
   '/data-fabric': typeof DataFabricRoute
   '/documents': typeof DocumentsRoute
@@ -954,6 +971,7 @@ export interface FileRoutesById {
   '/stress-testing': typeof StressTestingRoute
   '/stress-testing-9': typeof StressTesting9Route
   '/workflow-studio': typeof WorkflowStudioRoute
+  '/credit-reviews/$caseId': typeof CreditReviewsCaseIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -985,6 +1003,7 @@ export interface FileRouteTypes {
     | '/committee-workspace'
     | '/compliance-dashboard'
     | '/copilot'
+    | '/credit-reviews'
     | '/customer360'
     | '/data-fabric'
     | '/documents'
@@ -1062,6 +1081,7 @@ export interface FileRouteTypes {
     | '/stress-testing'
     | '/stress-testing-9'
     | '/workflow-studio'
+    | '/credit-reviews/$caseId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -1091,6 +1111,7 @@ export interface FileRouteTypes {
     | '/committee-workspace'
     | '/compliance-dashboard'
     | '/copilot'
+    | '/credit-reviews'
     | '/customer360'
     | '/data-fabric'
     | '/documents'
@@ -1168,6 +1189,7 @@ export interface FileRouteTypes {
     | '/stress-testing'
     | '/stress-testing-9'
     | '/workflow-studio'
+    | '/credit-reviews/$caseId'
   id:
     | '__root__'
     | '/'
@@ -1197,6 +1219,7 @@ export interface FileRouteTypes {
     | '/committee-workspace'
     | '/compliance-dashboard'
     | '/copilot'
+    | '/credit-reviews'
     | '/customer360'
     | '/data-fabric'
     | '/documents'
@@ -1274,6 +1297,7 @@ export interface FileRouteTypes {
     | '/stress-testing'
     | '/stress-testing-9'
     | '/workflow-studio'
+    | '/credit-reviews/$caseId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -1304,6 +1328,7 @@ export interface RootRouteChildren {
   CommitteeWorkspaceRoute: typeof CommitteeWorkspaceRoute
   ComplianceDashboardRoute: typeof ComplianceDashboardRoute
   CopilotRoute: typeof CopilotRoute
+  CreditReviewsRoute: typeof CreditReviewsRouteWithChildren
   Customer360Route: typeof Customer360Route
   DataFabricRoute: typeof DataFabricRoute
   DocumentsRoute: typeof DocumentsRoute
@@ -1924,6 +1949,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Customer360RouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/credit-reviews': {
+      id: '/credit-reviews'
+      path: '/credit-reviews'
+      fullPath: '/credit-reviews'
+      preLoaderRoute: typeof CreditReviewsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/copilot': {
       id: '/copilot'
       path: '/copilot'
@@ -2113,8 +2145,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/credit-reviews/$caseId': {
+      id: '/credit-reviews/$caseId'
+      path: '/$caseId'
+      fullPath: '/credit-reviews/$caseId'
+      preLoaderRoute: typeof CreditReviewsCaseIdRouteImport
+      parentRoute: typeof CreditReviewsRoute
+    }
   }
 }
+
+interface CreditReviewsRouteChildren {
+  CreditReviewsCaseIdRoute: typeof CreditReviewsCaseIdRoute
+}
+
+const CreditReviewsRouteChildren: CreditReviewsRouteChildren = {
+  CreditReviewsCaseIdRoute: CreditReviewsCaseIdRoute,
+}
+
+const CreditReviewsRouteWithChildren = CreditReviewsRoute._addFileChildren(
+  CreditReviewsRouteChildren,
+)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
@@ -2144,6 +2195,7 @@ const rootRouteChildren: RootRouteChildren = {
   CommitteeWorkspaceRoute: CommitteeWorkspaceRoute,
   ComplianceDashboardRoute: ComplianceDashboardRoute,
   CopilotRoute: CopilotRoute,
+  CreditReviewsRoute: CreditReviewsRouteWithChildren,
   Customer360Route: Customer360Route,
   DataFabricRoute: DataFabricRoute,
   DocumentsRoute: DocumentsRoute,

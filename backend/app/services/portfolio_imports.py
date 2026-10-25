@@ -497,6 +497,7 @@ def confirm_import(db: Session, record: PortfolioImport, tenant_id: int) -> dict
             db.add(PortfolioExposure(
                 tenant_id=tenant_id,
                 company_id=company.id,
+                currency=values.get("currency"),
                 exposure=float(Decimal(values["exposure"])) if values.get("exposure") is not None else None,
                 outstanding_amount=float(Decimal(values["outstanding_amount"])) if values.get("outstanding_amount") is not None else None,
                 delinquency_days=values.get("delinquency_days"),

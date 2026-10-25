@@ -63,8 +63,11 @@ from .models import financial_intelligence as financial_intelligence_models  # n
 from .models import enterprise_platform as enterprise_platform_models  # noqa: F401
 from .models import security_compliance as security_compliance_models  # noqa: F401 (Stage 4 security tables)
 from .models import company as company_models  # noqa: F401 (tenant-scoped company/portfolio domain)
+from .models import credit_review as credit_review_models  # noqa: F401
+from .routes import credit_reviews as credit_review_routes
 from .routes import demo_portfolio as demo_portfolio_routes
 from .routes import portfolio_imports as portfolio_import_routes
+from .routes import portfolio_risk as portfolio_risk_routes
 from .routes.ml_platform import ROUTERS as ML_PLATFORM_ROUTERS
 from .routes.integrations import ROUTERS as INTEGRATION_ROUTERS
 from .routes.saas import ROUTERS as SAAS_ROUTERS
@@ -194,6 +197,8 @@ app.include_router(dashboards_routes.router)
 app.include_router(jobs_routes.router)
 app.include_router(demo_portfolio_routes.router)
 app.include_router(portfolio_import_routes.router)
+app.include_router(portfolio_risk_routes.router)
+app.include_router(credit_review_routes.router)
 
 # Root-level Prometheus scrape endpoint. Additive; the scrape
 # target is already declared in deploy/monitoring/prometheus.

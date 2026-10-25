@@ -5,12 +5,14 @@
 | Document | Description |
 | --- | --- |
 | [BASEL_IFRS9](BASEL_IFRS9.md) | Basel and IFRS 9 regulatory capital and expected-credit-loss capabilities. |
+| [CREDIT_REVIEW_WORKFLOWS](CREDIT_REVIEW_WORKFLOWS.md) | Tenant-scoped analyst assessments, approval decisions, conditions, and audit history. |
 | [ESG_PLATFORM](ESG_PLATFORM.md) | ESG scoring, reporting, and sustainability intelligence. |
 | [EXECUTIVE_CENTER](EXECUTIVE_CENTER.md) | Executive dashboards and decision-support center. |
 | [FINANCIAL_DIGITAL_TWIN](FINANCIAL_DIGITAL_TWIN.md) | Financial digital-twin modeling and scenario replication. |
 | [FORECASTING_GUIDE](FORECASTING_GUIDE.md) | Forecasting models, methods, and usage. |
 | [MARKET_INTELLIGENCE](MARKET_INTELLIGENCE.md) | Market data, signals, and competitive intelligence. |
 | [PORTFOLIO_OPTIMIZATION](PORTFOLIO_OPTIMIZATION.md) | Portfolio construction and optimization capabilities. |
+| [PORTFOLIO_RISK_INTELLIGENCE](PORTFOLIO_RISK_INTELLIGENCE.md) | Tenant-scoped exposure limits, breach management, and approved-evidence covenant monitoring. |
 | [RELEASE_v1.0](RELEASE_v1.0.md) | v1.0.0 GA release notes and scope. |
 | [ROADMAP](ROADMAP.md) | Product roadmap and planned direction. |
 | [ROADMAP_v2](ROADMAP_v2.md) | Next-generation (v2) roadmap and vision. |

@@ -13,6 +13,7 @@ import {
   usePortfolio,
   type DistributionRow,
 } from "@/features/risk-intelligence";
+import { PortfolioRiskPanel } from "@/features/portfolio-risk/PortfolioRiskPanel";
 
 export const Route = createFileRoute("/portfolio-intelligence")({
   component: PortfolioPage,
@@ -118,6 +119,7 @@ function PortfolioPage() {
           </div>
         )}
       </StateWrap>
+      <PortfolioRiskPanel />
     </RiskLayout>
   );
 }

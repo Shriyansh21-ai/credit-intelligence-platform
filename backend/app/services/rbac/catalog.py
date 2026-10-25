@@ -36,6 +36,15 @@ PERMISSIONS: List[Tuple[str, str, str]] = [
     ("approvals.hold", "Approvals", "Place an approval on hold"),
     ("approvals.override", "Approvals", "Administrative override of the workflow"),
     ("approvals.configure", "Approvals", "Configure approval workflows / matrix"),
+    # Enterprise credit review and decision management
+    ("credit_reviews.view", "Credit Reviews", "View tenant credit review cases and history"),
+    ("credit_reviews.create", "Credit Reviews", "Create credit review cases"),
+    ("credit_reviews.assess", "Credit Reviews", "Draft and submit analyst assessments"),
+    ("credit_reviews.assign", "Credit Reviews", "Assign credit review analysts and reviewers"),
+    ("credit_reviews.submit", "Credit Reviews", "Submit credit reviews to the approval queue"),
+    ("credit_reviews.decide", "Credit Reviews", "Make authorized credit review decisions"),
+    ("credit_reviews.conditions", "Credit Reviews", "Manage approved decision conditions"),
+    ("credit_reviews.reopen", "Credit Reviews", "Reopen a finalized credit review"),
     # Documents
     ("documents.view", "Documents", "View uploaded documents"),
     ("documents.upload", "Documents", "Upload documents"),
@@ -49,6 +58,7 @@ PERMISSIONS: List[Tuple[str, str, str]] = [
     # Portfolio
     ("portfolio.view", "Portfolio", "View the portfolio"),
     ("portfolio.manage", "Portfolio", "Import and manage customer portfolio records"),
+    ("portfolio.limits.manage", "Portfolio", "Create and manage exposure limits and breaches"),
     # Covenants
     ("covenants.view", "Covenants", "View loan covenants"),
     ("covenants.manage", "Covenants", "Create and manage covenants"),
@@ -295,6 +305,8 @@ ROLE_PERMISSIONS: Dict[str, List[str]] = {
         "portfolio.view", "portfolio.manage",
         "mlops.view", "mlops.predict",
         "integrations.view", "collateral.view", "customer360.view",
+        "credit_reviews.view", "credit_reviews.create", "credit_reviews.assess",
+        "credit_reviews.submit",
     ],
     "senior_analyst": [
         "applications.view", "applications.edit", "applications.transition",
@@ -310,6 +322,9 @@ ROLE_PERMISSIONS: Dict[str, List[str]] = {
         "mlops.view", "mlops.train", "mlops.predict", "mlops.fraud",
         "integrations.view", "integrations.manage",
         "collateral.view", "collateral.manage", "customer360.view",
+        "credit_reviews.view", "credit_reviews.create", "credit_reviews.assess",
+        "credit_reviews.assign", "credit_reviews.submit", "credit_reviews.decide",
+        "credit_reviews.conditions",
     ],
     "risk_manager": [
         "applications.view", "applications.transition", "applications.rollback",
@@ -317,7 +332,7 @@ ROLE_PERMISSIONS: Dict[str, List[str]] = {
         "analysis.run", "ml.predict", "ml.explain", "stress.run", "models.configure",
         "approvals.view", "approvals.approve", "approvals.reject",
         "approvals.escalate", "approvals.hold", "approvals.configure",
-        "portfolio.view", "portfolio.manage",
+        "portfolio.view", "portfolio.manage", "portfolio.limits.manage",
         "covenants.view", "covenants.manage",
         "monitoring.view", "monitoring.manage",
         "tasks.view", "tasks.manage",
@@ -328,6 +343,9 @@ ROLE_PERMISSIONS: Dict[str, List[str]] = {
         "integrations.view", "integrations.manage", "integrations.sync",
         "collateral.view", "collateral.manage", "customer360.view",
         "apiplatform.view", "apiplatform.manage",
+        "credit_reviews.view", "credit_reviews.create", "credit_reviews.assess",
+        "credit_reviews.assign", "credit_reviews.submit", "credit_reviews.decide",
+        "credit_reviews.conditions", "credit_reviews.reopen",
     ],
     "auditor": [
         "applications.view", "approvals.view", "documents.view",
@@ -337,6 +355,7 @@ ROLE_PERMISSIONS: Dict[str, List[str]] = {
         "notifications.view", "search.use",
         "mlops.view",
         "integrations.view", "collateral.view", "customer360.view", "apiplatform.view",
+        "credit_reviews.view",
     ],
     "compliance_officer": [
         "applications.view", "approvals.view", "documents.view",
@@ -347,11 +366,13 @@ ROLE_PERMISSIONS: Dict[str, List[str]] = {
         "notifications.view", "search.use",
         "mlops.view",
         "integrations.view", "collateral.view", "customer360.view", "apiplatform.view",
+        "credit_reviews.view",
     ],
     "viewer": [
         "applications.view", "portfolio.view",
         "reports.view", "notifications.view", "search.use",
         "realtime.view",
+        "credit_reviews.view",
     ],
     # dedicated super-admin of the SaaS platform. Holds every platform
     # permission but not the credit-workflow permissions (separation of duties).
