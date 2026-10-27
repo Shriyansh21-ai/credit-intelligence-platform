@@ -16,8 +16,11 @@ from backend.app.schemas.portfolio_risk import (
     CompanyCovenantCreate,
     CompanyCovenantUpdate,
     CovenantEvaluationAcknowledge,
+    ExposureExceptionRequest,
+    ExposureExceptionReview,
     ExposureLimitCreate,
     ExposureLimitUpdate,
+    ExposureRemediationNote,
 )
 from backend.app.services import portfolio_risk
 from backend.app.services.rbac import has_permission, require_permission
@@ -100,14 +103,23 @@ def list_limits(
     tenant_id: int = Depends(get_current_tenant_id),
     actor: User = Depends(require_permission("portfolio.view")),
 ):
-    limits = (
+    serialized_limits = []
+    for row in (
         db.query(PortfolioExposureLimit)
         .filter(PortfolioExposureLimit.tenant_id == tenant_id)
         .order_by(PortfolioExposureLimit.id)
         .all()
-    )
+    ):
+        serialized = portfolio_risk.serialize_limit(db, tenant_id, row)
+        breach = serialized.get("breach")
+        if breach is not None:
+            breach["can_review_exception"] = (
+                has_permission(db, actor, "portfolio.limits.manage")
+                and breach["exception_requested_by"] != actor.id
+            )
+        serialized_limits.append(serialized)
     return {
-        "limits": [portfolio_risk.serialize_limit(db, tenant_id, row) for row in limits],
+        "limits": serialized_limits,
         "can_manage": has_permission(db, actor, "portfolio.limits.manage"),
     }
 
@@ -205,6 +217,66 @@ def acknowledge_breach(
         breach_id,
         actor.id,
         payload.reason,
+    )
+    return portfolio_risk.serialize_breach(breach)
+
+
+@router.post("/breaches/{breach_id}/exceptions")
+def request_breach_exception(
+    breach_id: int,
+    payload: ExposureExceptionRequest,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_current_tenant_id),
+    actor: User = Depends(require_permission("portfolio.limits.manage")),
+):
+    breach = _risk_call(
+        portfolio_risk.request_breach_exception,
+        db,
+        tenant_id,
+        breach_id,
+        actor.id,
+        justification=payload.justification,
+        expires_at=payload.expires_at,
+        review_date=payload.review_date,
+    )
+    return portfolio_risk.serialize_breach(breach)
+
+
+@router.post("/breaches/{breach_id}/exceptions/review")
+def review_breach_exception(
+    breach_id: int,
+    payload: ExposureExceptionReview,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_current_tenant_id),
+    actor: User = Depends(require_permission("portfolio.limits.manage")),
+):
+    breach = _risk_call(
+        portfolio_risk.review_breach_exception,
+        db,
+        tenant_id,
+        breach_id,
+        actor.id,
+        decision=payload.decision,
+        reason=payload.reason,
+    )
+    return portfolio_risk.serialize_breach(breach)
+
+
+@router.post("/breaches/{breach_id}/remediation")
+def record_breach_remediation_note(
+    breach_id: int,
+    payload: ExposureRemediationNote,
+    db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_current_tenant_id),
+    actor: User = Depends(require_permission("portfolio.limits.manage")),
+):
+    breach = _risk_call(
+        portfolio_risk.record_breach_remediation_note,
+        db,
+        tenant_id,
+        breach_id,
+        actor.id,
+        payload.note,
     )
     return portfolio_risk.serialize_breach(breach)
 

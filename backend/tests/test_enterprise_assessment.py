@@ -94,6 +94,36 @@ class RatioEngineTests(unittest.TestCase):
         self.assertAlmostEqual(r["current_ratio"], 8000000 / 2500000, places=2)
         self.assertGreater(r["gross_margin"], 0.3)
 
+    def test_zero_denominators_follow_ratio_engine_fallbacks(self):
+        ratios = compute_ratios(
+            {
+                "current_assets": 100,
+                "current_liabilities": 0,
+                "long_term_debt": 100,
+                "short_term_debt": 0,
+                "net_worth": 0,
+                "ebitda": 0,
+                "interest_expense": 0,
+                "existing_emi": 0,
+            }
+        )
+
+        self.assertEqual(ratios["current_ratio"], 0)
+        self.assertEqual(ratios["debt_to_equity"], 10)
+        self.assertEqual(ratios["debt_to_ebitda"], 12)
+        self.assertEqual(ratios["interest_coverage"], 0)
+        self.assertEqual(ratios["dscr"], 0)
+
+        positive_earnings = compute_ratios(
+            {
+                "ebitda": 100,
+                "interest_expense": 0,
+                "existing_emi": 0,
+            }
+        )
+        self.assertEqual(positive_earnings["interest_coverage"], 15)
+        self.assertEqual(positive_earnings["dscr"], 5)
+
     def test_working_capital_defaults_to_ca_minus_cl(self):
         r = compute_ratios(STRONG)
         self.assertEqual(r["working_capital"], 8000000 - 2500000)

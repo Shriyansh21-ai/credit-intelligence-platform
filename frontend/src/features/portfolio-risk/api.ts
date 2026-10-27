@@ -25,12 +25,38 @@ export interface ExposureLimit {
   remaining_headroom: number | null;
   status: "within_limit" | "approaching" | "breached" | "insufficient_data" | "inactive";
   company_count: number;
-  breach: {
-    id: number;
-    status: "open" | "acknowledged" | "resolved";
-    observed_exposure: number;
-    acknowledgement_reason: string | null;
-  } | null;
+  breach: ExposureBreach | null;
+}
+
+export interface ExposureBreach {
+  id: number;
+  limit_id: number;
+  status: "open" | "acknowledged" | "resolved";
+  observed_exposure: number;
+  acknowledgement_reason: string | null;
+  exception_status: "requested" | "approved" | "rejected" | "expired" | null;
+  exception_active: boolean;
+  exception_justification: string | null;
+  exception_requested_by: number | null;
+  exception_requested_at: string | null;
+  exception_expires_at: string | null;
+  exception_review_date: string | null;
+  exception_reviewed_by: number | null;
+  exception_reviewed_at: string | null;
+  exception_review_reason: string | null;
+  remediation_note: string | null;
+  can_review_exception?: boolean;
+}
+
+export interface ExposureLimitEvent {
+  id: number;
+  breach_id: number | null;
+  actor_id: number | null;
+  action: string;
+  reason: string | null;
+  previous_value: string | null;
+  new_value: string | null;
+  created_at: string;
 }
 
 export interface PortfolioRiskCompany {
@@ -105,6 +131,22 @@ export const evaluateExposureLimits = () =>
 
 export const acknowledgeExposureBreach = (id: number, reason: string) =>
   apiPost(`/api/portfolio-risk/breaches/${id}/acknowledge`, { reason });
+
+export const requestExposureException = (
+  id: number,
+  payload: { justification: string; expires_at?: string; review_date?: string },
+) => apiPost<ExposureBreach>(`/api/portfolio-risk/breaches/${id}/exceptions`, payload);
+
+export const reviewExposureException = (
+  id: number,
+  payload: { decision: "approved" | "rejected"; reason: string },
+) => apiPost<ExposureBreach>(`/api/portfolio-risk/breaches/${id}/exceptions/review`, payload);
+
+export const addExposureRemediationNote = (id: number, note: string) =>
+  apiPost<ExposureBreach>(`/api/portfolio-risk/breaches/${id}/remediation`, { note });
+
+export const getExposureLimitEvents = (id: number) =>
+  apiGet<{ events: ExposureLimitEvent[] }>(`/api/portfolio-risk/limits/${id}/events?limit=50`);
 
 export const getCompanyCovenants = (companyId: number) =>
   apiGet<{ covenants: CompanyCovenant[]; can_manage: boolean }>(

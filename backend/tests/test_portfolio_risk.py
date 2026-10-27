@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import date
+from datetime import UTC, date, datetime, timedelta
 
 import pytest
 from fastapi import FastAPI
@@ -54,6 +54,7 @@ def portfolio_risk_setup():
         return account.id
 
     manager_id = user("risk-manager@example.test", "risk_manager", tenant_a.id)
+    reviewer_id = user("risk-reviewer@example.test", "risk_manager", tenant_a.id)
     viewer_id = user("risk-viewer@example.test", "viewer", tenant_a.id)
     outsider_id = user("risk-outsider@example.test", "risk_manager", tenant_b.id)
     company_a = Company(
@@ -109,6 +110,7 @@ def portfolio_risk_setup():
         "session_factory": session_factory,
         "state": state,
         "manager_id": manager_id,
+        "reviewer_id": reviewer_id,
         "viewer_id": viewer_id,
         "outsider_id": outsider_id,
         "tenant_a": tenant_a_id,
@@ -134,6 +136,24 @@ def _add_exposure(setup, *, company_id=None, tenant_id=None, value=100, currency
         return row.id
     finally:
         db.close()
+
+
+def _create_breach(setup):
+    _add_exposure(setup, value=110)
+    client = setup["client"]
+    created = client.post(
+        "/api/portfolio-risk/limits",
+        json={
+            "scope": "company",
+            "company_id": setup["company_a"],
+            "currency": "USD",
+            "threshold": 100,
+        },
+    )
+    assert created.status_code == 201, created.text
+    evaluated = client.post("/api/portfolio-risk/limits/evaluate")
+    assert evaluated.status_code == 200, evaluated.text
+    return evaluated.json()["results"][0]["breach"]["id"]
 
 
 def test_exposure_limit_breach_lifecycle_is_auditable_and_idempotent(portfolio_risk_setup):
@@ -191,6 +211,188 @@ def test_exposure_limit_breach_lifecycle_is_auditable_and_idempotent(portfolio_r
     assert db.query(PortfolioExposureLimitEvent).filter_by(action="reopened").count() == 1
     db.close()
     assert client.get(f"/api/portfolio-risk/limits/{limit_id}/events").status_code == 200
+
+
+def test_exception_request_approval_preserves_breach_and_is_idempotent(portfolio_risk_setup):
+    setup = portfolio_risk_setup
+    breach_id = _create_breach(setup)
+    client = setup["client"]
+    request = {
+        "justification": "Temporary exposure is supported by committed collateral.",
+        "expires_at": (datetime.now(UTC) + timedelta(days=30)).isoformat(),
+        "review_date": (date.today() + timedelta(days=14)).isoformat(),
+    }
+    requested = client.post(
+        f"/api/portfolio-risk/breaches/{breach_id}/exceptions", json=request
+    )
+    assert requested.status_code == 200, requested.text
+    assert requested.json()["status"] == "open"
+    assert requested.json()["exception_status"] == "requested"
+    repeated = client.post(
+        f"/api/portfolio-risk/breaches/{breach_id}/exceptions", json=request
+    )
+    assert repeated.status_code == 200
+
+    db = setup["session_factory"]()
+    limit_id = (
+        db.query(PortfolioExposureBreach)
+        .filter_by(id=breach_id)
+        .one()
+        .limit_id
+    )
+    assert db.query(PortfolioExposureLimitEvent).filter_by(
+        action="exception_requested"
+    ).count() == 1
+    db.close()
+    events_url = f"/api/portfolio-risk/limits/{limit_id}/events"
+
+    self_approval = client.post(
+        f"/api/portfolio-risk/breaches/{breach_id}/exceptions/review",
+        json={"decision": "approved", "reason": "Reviewed."},
+    )
+    assert self_approval.status_code == 422
+
+    setup["state"]["user_id"] = setup["reviewer_id"]
+    approval_payload = {"decision": "approved", "reason": "Collateral confirmed."}
+    approved = client.post(
+        f"/api/portfolio-risk/breaches/{breach_id}/exceptions/review",
+        json=approval_payload,
+    )
+    repeated_approval = client.post(
+        f"/api/portfolio-risk/breaches/{breach_id}/exceptions/review",
+        json=approval_payload,
+    )
+    assert approved.status_code == repeated_approval.status_code == 200
+    assert approved.json()["exception_status"] == "approved"
+    assert approved.json()["exception_active"] is True
+    assert approved.json()["status"] == "open"
+    assert approved.json()["observed_exposure"] == 110
+
+    limits = client.get("/api/portfolio-risk/limits").json()["limits"]
+    assert limits[0]["status"] == "breached"
+    assert limits[0]["eligible_exposure"] == 110
+    assert limits[0]["breach"]["exception_status"] == "approved"
+
+    remediation_payload = {"note": "Borrower submitted a reduction plan."}
+    for _ in range(2):
+        response = client.post(
+            f"/api/portfolio-risk/breaches/{breach_id}/remediation",
+            json=remediation_payload,
+        )
+        assert response.status_code == 200
+    db = setup["session_factory"]()
+    assert db.query(PortfolioExposureLimitEvent).filter_by(
+        action="exception_approved"
+    ).count() == 1
+    assert db.query(PortfolioExposureLimitEvent).filter_by(
+        action="remediation_note"
+    ).count() == 1
+    breach = db.query(PortfolioExposureBreach).one()
+    assert breach.status == "open"
+    assert breach.observed_exposure == 110
+    assert breach.remediation_note == remediation_payload["note"]
+    db.close()
+    assert client.get(events_url).status_code == 200
+
+
+def test_exception_rejection_expiry_and_invalid_transitions(portfolio_risk_setup):
+    setup = portfolio_risk_setup
+    breach_id = _create_breach(setup)
+    client = setup["client"]
+    review_without_request = client.post(
+        f"/api/portfolio-risk/breaches/{breach_id}/exceptions/review",
+        json={"decision": "approved", "reason": "No request exists."},
+    )
+    assert review_without_request.status_code == 422
+
+    request = {
+        "justification": "Temporary exception request for review.",
+        "expires_at": (datetime.now(UTC) + timedelta(days=30)).isoformat(),
+    }
+    assert client.post(
+        f"/api/portfolio-risk/breaches/{breach_id}/exceptions", json=request
+    ).status_code == 200
+    setup["state"]["user_id"] = setup["reviewer_id"]
+    rejection = {"decision": "rejected", "reason": "Supporting evidence is insufficient."}
+    for _ in range(2):
+        response = client.post(
+            f"/api/portfolio-risk/breaches/{breach_id}/exceptions/review",
+            json=rejection,
+        )
+        assert response.status_code == 200
+        assert response.json()["exception_status"] == "rejected"
+        assert response.json()["exception_active"] is False
+    assert client.post(
+        f"/api/portfolio-risk/breaches/{breach_id}/exceptions/review",
+        json={"decision": "approved", "reason": "Conflicting transition."},
+    ).status_code == 422
+
+    setup["state"]["user_id"] = setup["manager_id"]
+    rejected_retry = client.post(
+        f"/api/portfolio-risk/breaches/{breach_id}/exceptions", json=request
+    )
+    assert rejected_retry.status_code == 200
+    assert rejected_retry.json()["exception_status"] == "rejected"
+    db = setup["session_factory"]()
+    assert db.query(PortfolioExposureLimitEvent).filter_by(
+        action="exception_requested"
+    ).count() == 1
+    db.close()
+
+    expired_request = {
+        "justification": "Request to test automatic expiry.",
+        "expires_at": (datetime.now(UTC) + timedelta(days=30)).isoformat(),
+    }
+    # A new request is allowed after the previous request was rejected.
+    assert client.post(
+        f"/api/portfolio-risk/breaches/{breach_id}/exceptions", json=expired_request
+    ).status_code == 200
+    db = setup["session_factory"]()
+    breach = db.query(PortfolioExposureBreach).one()
+    breach.exception_expires_at = datetime.now(UTC).replace(tzinfo=None) - timedelta(seconds=1)
+    db.commit()
+    db.close()
+
+    evaluation = client.post("/api/portfolio-risk/limits/evaluate")
+    assert evaluation.status_code == 200
+    breach_state = evaluation.json()["results"][0]["breach"]
+    assert breach_state["exception_status"] == "expired"
+    assert breach_state["exception_active"] is False
+    assert breach_state["status"] == "open"
+    assert breach_state["observed_exposure"] == 110
+    db = setup["session_factory"]()
+    assert db.query(PortfolioExposureLimitEvent).filter_by(
+        action="exception_rejected"
+    ).count() == 1
+    assert db.query(PortfolioExposureLimitEvent).filter_by(
+        action="exception_expired"
+    ).count() == 1
+    db.close()
+
+
+def test_exception_endpoints_enforce_permission_and_tenant_isolation(portfolio_risk_setup):
+    setup = portfolio_risk_setup
+    breach_id = _create_breach(setup)
+    client = setup["client"]
+    request = {"justification": "Valid request for tenant A."}
+
+    setup["state"].update(user_id=setup["outsider_id"], tenant_id=setup["tenant_b"])
+    assert client.post(
+        f"/api/portfolio-risk/breaches/{breach_id}/exceptions", json=request
+    ).status_code == 404
+
+    setup["state"].update(user_id=setup["viewer_id"], tenant_id=setup["tenant_a"])
+    assert client.post(
+        f"/api/portfolio-risk/breaches/{breach_id}/exceptions", json=request
+    ).status_code == 403
+    assert client.post(
+        f"/api/portfolio-risk/breaches/{breach_id}/remediation",
+        json={"note": "Unauthorized note."},
+    ).status_code == 403
+    assert client.post(
+        f"/api/portfolio-risk/breaches/{breach_id}/exceptions/review",
+        json={"decision": "approved", "reason": "Unauthorized review."},
+    ).status_code == 403
 
 
 def test_mixed_currency_or_missing_exposure_is_not_reported_as_zero(portfolio_risk_setup):
@@ -497,3 +699,296 @@ def test_company_financials_with_unapproved_document_do_not_create_false_breach(
     )
     assert evaluation.json()["evaluation"]["status"] == "insufficient_data"
     assert evaluation.json()["evaluation"]["evidence_status"] == "missing_approved_financials"
+
+
+def test_portfolio_exposure_aggregates_and_observes_strict_threshold_boundary(
+    portfolio_risk_setup,
+):
+    setup = portfolio_risk_setup
+    db = setup["session_factory"]()
+    company = Company(
+        tenant_id=setup["tenant_a"],
+        external_id="risk-company-c",
+        name="Borrower C",
+        industry="Services",
+        sector="Industry",
+        currency="USD",
+        is_demo=False,
+        data_source="test",
+    )
+    db.add(company)
+    db.commit()
+    company_id = company.id
+    db.close()
+
+    _add_exposure(setup, company_id=setup["company_a"], value=400.25)
+    exposure_id = _add_exposure(setup, company_id=company_id, value=599.74)
+    client = setup["client"]
+    created = client.post(
+        "/api/portfolio-risk/limits",
+        json={"scope": "portfolio", "currency": "USD", "threshold": 1000},
+    )
+    assert created.status_code == 201, created.text
+    limit_id = created.json()["id"]
+    assert created.json()["eligible_exposure"] == 999.99
+    assert created.json()["utilization"] == 0.99999
+    assert created.json()["remaining_headroom"] == 0.01
+    assert created.json()["status"] == "within_limit"
+
+    db = setup["session_factory"]()
+    db.query(PortfolioExposure).filter_by(id=exposure_id).one().exposure = 599.75
+    db.commit()
+    db.close()
+    exact = client.post("/api/portfolio-risk/limits/evaluate").json()["results"][0]
+    assert exact["limit_id"] == limit_id
+    assert exact["eligible_exposure"] == 1000
+    assert exact["utilization"] == 1
+    assert exact["remaining_headroom"] == 0
+    assert exact["status"] == "within_limit"
+    assert exact["breach"] is None
+
+    db = setup["session_factory"]()
+    db.query(PortfolioExposure).filter_by(id=exposure_id).one().exposure = 599.76
+    db.commit()
+    db.close()
+    above = client.post("/api/portfolio-risk/limits/evaluate").json()["results"][0]
+    assert above["eligible_exposure"] == 1000.01
+    assert above["status"] == "breached"
+    assert above["breach"]["observed_exposure"] == 1000.01
+    assert sorted(above["supporting_company_ids"]) == sorted(
+        [setup["company_a"], company_id]
+    )
+
+
+def test_invalid_exposure_does_not_resolve_breach_but_zero_exposure_does(
+    portfolio_risk_setup,
+):
+    setup = portfolio_risk_setup
+    _add_exposure(setup, value=110)
+    client = setup["client"]
+    created = client.post(
+        "/api/portfolio-risk/limits",
+        json={
+            "scope": "company",
+            "company_id": setup["company_a"],
+            "currency": "USD",
+            "threshold": 100,
+        },
+    )
+    assert created.status_code == 201, created.text
+    breach_id = client.post("/api/portfolio-risk/limits/evaluate").json()["results"][0][
+        "breach"
+    ]["id"]
+
+    db = setup["session_factory"]()
+    exposure = db.query(PortfolioExposure).one()
+    exposure.exposure = None
+    db.commit()
+    db.close()
+    missing = client.post("/api/portfolio-risk/limits/evaluate").json()["results"][0]
+    assert missing["calculation_status"] == "insufficient_data"
+    db = setup["session_factory"]()
+    breach = db.query(PortfolioExposureBreach).filter_by(id=breach_id).one()
+    assert breach.status == "open"
+    assert breach.observed_exposure == 110
+    db.close()
+
+    db = setup["session_factory"]()
+    db.query(PortfolioExposure).one().exposure = -1
+    db.commit()
+    db.close()
+    negative = client.post("/api/portfolio-risk/limits/evaluate").json()["results"][0]
+    assert negative["calculation_status"] == "insufficient_data"
+    db = setup["session_factory"]()
+    assert db.query(PortfolioExposureBreach).filter_by(id=breach_id).one().status == "open"
+    db.close()
+
+    db = setup["session_factory"]()
+    db.query(PortfolioExposure).one().exposure = 0
+    db.commit()
+    db.close()
+    zero = client.post("/api/portfolio-risk/limits/evaluate").json()["results"][0]
+    assert zero["calculation_status"] == "calculated"
+    assert zero["eligible_exposure"] == 0
+    assert zero["utilization"] == 0
+    assert zero["status"] == "within_limit"
+    assert zero["breach"]["status"] == "resolved"
+    assert zero["breach"]["observed_exposure"] == 0
+
+
+def test_approved_exception_expires_without_resolving_underlying_breach(
+    portfolio_risk_setup,
+):
+    setup = portfolio_risk_setup
+    breach_id = _create_breach(setup)
+    client = setup["client"]
+    request = {
+        "justification": "Temporary exception with confirmed expiry.",
+        "expires_at": (datetime.now(UTC) + timedelta(days=30)).isoformat(),
+    }
+    requested = client.post(
+        f"/api/portfolio-risk/breaches/{breach_id}/exceptions", json=request
+    )
+    assert requested.status_code == 200, requested.text
+    setup["state"]["user_id"] = setup["reviewer_id"]
+    approved = client.post(
+        f"/api/portfolio-risk/breaches/{breach_id}/exceptions/review",
+        json={"decision": "approved", "reason": "Evidence reviewed."},
+    )
+    assert approved.status_code == 200, approved.text
+
+    db = setup["session_factory"]()
+    breach = db.query(PortfolioExposureBreach).filter_by(id=breach_id).one()
+    breach.exception_expires_at = datetime.now(UTC).replace(tzinfo=None) - timedelta(
+        seconds=1
+    )
+    db.commit()
+    db.close()
+    evaluation = client.post("/api/portfolio-risk/limits/evaluate").json()["results"][0]
+    assert evaluation["eligible_exposure"] == 110
+    assert evaluation["status"] == "breached"
+    assert evaluation["breach"]["status"] == "open"
+    assert evaluation["breach"]["observed_exposure"] == 110
+    assert evaluation["breach"]["exception_status"] == "expired"
+    assert evaluation["breach"]["exception_active"] is False
+
+
+def test_company_covenants_use_documented_ratios_and_strict_thresholds(
+    portfolio_risk_setup,
+):
+    setup = portfolio_risk_setup
+    db = setup["session_factory"]()
+    doc = Document(
+        tenant_id=setup["tenant_a"],
+        user_id=setup["manager_id"],
+        company_id=setup["company_a"],
+        fiscal_year=2025,
+        document_type="financial_statement",
+        original_filename="covenant-boundaries.pdf",
+        mime_type="application/pdf",
+        size_bytes=1,
+        storage_uri="private://covenant-boundaries",
+        content_hash="f" * 64,
+        status="approved",
+    )
+    db.add(doc)
+    db.flush()
+    financial = CompanyFinancials(
+        tenant_id=setup["tenant_a"],
+        company_id=setup["company_a"],
+        fiscal_year=2025,
+        current_assets=150.01,
+        current_liabilities=100,
+        debt=119.99,
+        equity=60,
+        ebitda=30.01,
+        source_document_id=doc.id,
+    )
+    db.add(financial)
+    db.commit()
+    financial_id = financial.id
+    db.close()
+
+    client = setup["client"]
+    covenant_specs = (
+        ("current_ratio_min", 1.5, 1.5001),
+        ("debt_to_equity_max", 2, round(119.99 / 60, 8)),
+        ("debt_to_ebitda_max", 4, round(119.99 / 30.01, 8)),
+    )
+    covenant_ids = []
+    for metric_key, threshold, expected_value in covenant_specs:
+        response = client.post(
+            f"/api/portfolio-risk/companies/{setup['company_a']}/covenants",
+            json={"metric_key": metric_key, "name": metric_key, "threshold": threshold},
+        )
+        assert response.status_code == 201, response.text
+        covenant_id = response.json()["covenant"]["id"]
+        covenant_ids.append(covenant_id)
+        evaluation = client.post(
+            f"/api/portfolio-risk/covenants/{covenant_id}/evaluate"
+        ).json()["evaluation"]
+        assert evaluation["calculated_value"] == round(expected_value, 8)
+        assert evaluation["status"] == "compliant"
+
+    db = setup["session_factory"]()
+    financial = db.query(CompanyFinancials).filter_by(id=financial_id).one()
+    financial.current_assets = 150
+    financial.debt = 120
+    financial.ebitda = 30
+    db.commit()
+    db.close()
+    for covenant_id, (_metric_key, threshold, _expected_value) in zip(
+        covenant_ids, covenant_specs
+    ):
+        evaluation = client.post(
+            f"/api/portfolio-risk/covenants/{covenant_id}/evaluate"
+        ).json()["evaluation"]
+        assert evaluation["calculated_value"] == threshold
+        assert evaluation["status"] == "compliant"
+
+    db = setup["session_factory"]()
+    financial = db.query(CompanyFinancials).filter_by(id=financial_id).one()
+    financial.current_assets = 149.99
+    financial.debt = 120.01
+    financial.ebitda = 29.99
+    db.commit()
+    db.close()
+    for covenant_id in covenant_ids:
+        evaluation = client.post(
+            f"/api/portfolio-risk/covenants/{covenant_id}/evaluate"
+        ).json()["evaluation"]
+        assert evaluation["status"] == "breached"
+
+
+def test_all_supported_company_covenants_reject_zero_denominators(
+    portfolio_risk_setup,
+):
+    setup = portfolio_risk_setup
+    db = setup["session_factory"]()
+    doc = Document(
+        tenant_id=setup["tenant_a"],
+        user_id=setup["manager_id"],
+        company_id=setup["company_a"],
+        fiscal_year=2025,
+        document_type="financial_statement",
+        original_filename="zero-covenant-denominators.pdf",
+        mime_type="application/pdf",
+        size_bytes=1,
+        storage_uri="private://zero-covenant-denominators",
+        content_hash="a" * 64,
+        status="approved",
+    )
+    db.add(doc)
+    db.flush()
+    db.add(
+        CompanyFinancials(
+            tenant_id=setup["tenant_a"],
+            company_id=setup["company_a"],
+            fiscal_year=2025,
+            current_assets=50,
+            current_liabilities=0,
+            debt=100,
+            equity=0,
+            ebitda=0,
+            source_document_id=doc.id,
+        )
+    )
+    db.commit()
+    db.close()
+
+    client = setup["client"]
+    for metric_key in (
+        "current_ratio_min",
+        "debt_to_equity_max",
+        "debt_to_ebitda_max",
+    ):
+        created = client.post(
+            f"/api/portfolio-risk/companies/{setup['company_a']}/covenants",
+            json={"metric_key": metric_key, "name": metric_key, "threshold": 1},
+        )
+        assert created.status_code == 201, created.text
+        evaluation = client.post(
+            f"/api/portfolio-risk/covenants/{created.json()['covenant']['id']}/evaluate"
+        ).json()["evaluation"]
+        assert evaluation["status"] == "insufficient_data"
+        assert evaluation["calculated_value"] is None

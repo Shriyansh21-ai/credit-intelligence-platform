@@ -42,6 +42,14 @@ def _now() -> datetime:
     return datetime.now(UTC).replace(tzinfo=None)
 
 
+def _normalize_datetime(value: datetime | None) -> datetime | None:
+    if value is None:
+        return None
+    if value.tzinfo is not None:
+        return value.astimezone(UTC).replace(tzinfo=None)
+    return value
+
+
 def _scope_key(
     db: Session,
     tenant_id: int,
@@ -247,6 +255,7 @@ def serialize_limit(
 
 
 def serialize_breach(breach: PortfolioExposureBreach) -> dict[str, Any]:
+    exception_expires_at = _normalize_datetime(breach.exception_expires_at)
     return {
         "id": breach.id,
         "limit_id": breach.limit_id,
@@ -262,6 +271,37 @@ def serialize_breach(breach: PortfolioExposureBreach) -> dict[str, Any]:
         ),
         "acknowledgement_reason": breach.acknowledgement_reason,
         "resolved_at": breach.resolved_at.isoformat() if breach.resolved_at else None,
+        "exception_status": breach.exception_status,
+        "exception_active": (
+            breach.exception_status == "approved"
+            and breach.status != "resolved"
+            and (exception_expires_at is None or exception_expires_at > _now())
+        ),
+        "exception_justification": breach.exception_justification,
+        "exception_requested_by": breach.exception_requested_by,
+        "exception_requested_at": (
+            breach.exception_requested_at.isoformat()
+            if breach.exception_requested_at
+            else None
+        ),
+        "exception_expires_at": (
+            exception_expires_at.isoformat()
+            if exception_expires_at
+            else None
+        ),
+        "exception_review_date": (
+            breach.exception_review_date.isoformat()
+            if breach.exception_review_date
+            else None
+        ),
+        "exception_reviewed_by": breach.exception_reviewed_by,
+        "exception_reviewed_at": (
+            breach.exception_reviewed_at.isoformat()
+            if breach.exception_reviewed_at
+            else None
+        ),
+        "exception_review_reason": breach.exception_review_reason,
+        "remediation_note": breach.remediation_note,
     }
 
 
@@ -395,10 +435,7 @@ def _event(
 def evaluate_limits(db: Session, tenant_id: int, actor_id: int) -> list[dict[str, Any]]:
     limits = (
         db.query(PortfolioExposureLimit)
-        .filter(
-            PortfolioExposureLimit.tenant_id == tenant_id,
-            PortfolioExposureLimit.is_active.is_(True),
-        )
+        .filter(PortfolioExposureLimit.tenant_id == tenant_id)
         .order_by(PortfolioExposureLimit.id)
         .all()
     )
@@ -406,15 +443,19 @@ def evaluate_limits(db: Session, tenant_id: int, actor_id: int) -> list[dict[str
     results = []
     try:
         for limit in limits:
-            calculation = limit_utilization(db, tenant_id, limit)
-            if calculation["calculation_status"] != "calculated":
-                results.append({"limit_id": limit.id, **calculation})
-                continue
             current = (
                 db.query(PortfolioExposureBreach)
                 .filter(PortfolioExposureBreach.limit_id == limit.id)
                 .first()
             )
+            if current is not None:
+                _expire_exception(db, current, actor_id, now)
+            if not limit.is_active:
+                continue
+            calculation = limit_utilization(db, tenant_id, limit)
+            if calculation["calculation_status"] != "calculated":
+                results.append({"limit_id": limit.id, **calculation})
+                continue
             over = calculation["status"] == "breached"
             if over:
                 if current is None:
@@ -523,6 +564,201 @@ def acknowledge_breach(
     db.commit()
     db.refresh(row)
     return row
+
+
+def _breach_for_tenant(
+    db: Session, tenant_id: int, breach_id: int
+) -> PortfolioExposureBreach:
+    row = (
+        db.query(PortfolioExposureBreach)
+        .join(
+            PortfolioExposureLimit,
+            PortfolioExposureLimit.id == PortfolioExposureBreach.limit_id,
+        )
+        .filter(
+            PortfolioExposureBreach.id == breach_id,
+            PortfolioExposureLimit.tenant_id == tenant_id,
+        )
+        .with_for_update()
+        .first()
+    )
+    if row is None:
+        raise PortfolioRiskNotFound("Exposure breach not found.")
+    return row
+
+
+def _expire_exception(
+    db: Session, breach: PortfolioExposureBreach, actor_id: int, now: datetime
+) -> bool:
+    expires_at = _normalize_datetime(breach.exception_expires_at)
+    if (
+        breach.exception_status not in {"requested", "approved"}
+        or expires_at is None
+        or expires_at > now
+    ):
+        return False
+    previous = breach.exception_status
+    breach.exception_status = "expired"
+    _event(
+        db,
+        limit_id=breach.limit_id,
+        breach_id=breach.id,
+        actor_id=actor_id,
+        action="exception_expired",
+        reason="Exception expiry date reached.",
+        previous=previous,
+        current="expired",
+    )
+    return True
+
+
+def request_breach_exception(
+    db: Session,
+    tenant_id: int,
+    breach_id: int,
+    actor_id: int,
+    *,
+    justification: str,
+    expires_at: datetime | None,
+    review_date: date | None,
+) -> PortfolioExposureBreach:
+    breach = _breach_for_tenant(db, tenant_id, breach_id)
+    now = _now()
+    justification = justification.strip()
+    if not justification:
+        raise PortfolioRiskError("Exception justification is required.")
+    expires_at = _normalize_datetime(expires_at)
+    if breach.status == "resolved":
+        raise PortfolioRiskError("Resolved breaches cannot receive exceptions.")
+
+    _expire_exception(db, breach, actor_id, now)
+    same_request = (
+        breach.exception_requested_by == actor_id
+        and breach.exception_justification == justification
+        and _normalize_datetime(breach.exception_expires_at) == expires_at
+        and breach.exception_review_date == review_date
+    )
+    if same_request:
+        db.commit()
+        db.refresh(breach)
+        return breach
+    if breach.exception_status in {"requested", "approved"}:
+        raise PortfolioRiskError("This breach already has an active exception request.")
+    if expires_at is not None and expires_at <= now:
+        raise PortfolioRiskError("Exception expiry must be in the future.")
+    if review_date is not None and review_date < now.date():
+        raise PortfolioRiskError("Exception review date cannot be in the past.")
+
+    previous = breach.exception_status
+    breach.exception_status = "requested"
+    breach.exception_justification = justification
+    breach.exception_requested_by = actor_id
+    breach.exception_requested_at = now
+    breach.exception_expires_at = expires_at
+    breach.exception_review_date = review_date
+    breach.exception_reviewed_by = None
+    breach.exception_reviewed_at = None
+    breach.exception_review_reason = None
+    _event(
+        db,
+        breach.limit_id,
+        breach.id,
+        actor_id,
+        "exception_requested",
+        reason=justification,
+        previous=previous,
+        current=(
+            f"requested;expires_at={expires_at};review_date={review_date}"
+        ),
+    )
+    db.commit()
+    db.refresh(breach)
+    return breach
+
+
+def review_breach_exception(
+    db: Session,
+    tenant_id: int,
+    breach_id: int,
+    actor_id: int,
+    *,
+    decision: str,
+    reason: str,
+) -> PortfolioExposureBreach:
+    breach = _breach_for_tenant(db, tenant_id, breach_id)
+    now = _now()
+    reason = reason.strip()
+    if not reason:
+        raise PortfolioRiskError("Exception review reason is required.")
+    if _expire_exception(db, breach, actor_id, now):
+        db.commit()
+        raise PortfolioRiskError("Expired exception requests cannot be reviewed.")
+    if breach.exception_status == decision:
+        if breach.exception_reviewed_by == actor_id and breach.exception_review_reason == reason:
+            return breach
+        raise PortfolioRiskError("The exception has already been reviewed.")
+    if breach.exception_status != "requested":
+        raise PortfolioRiskError("Only requested exceptions can be reviewed.")
+    if breach.exception_requested_by == actor_id:
+        raise PortfolioRiskError("The exception requester cannot review their own request.")
+
+    breach.exception_status = decision
+    breach.exception_reviewed_by = actor_id
+    breach.exception_reviewed_at = now
+    breach.exception_review_reason = reason
+    _event(
+        db,
+        breach.limit_id,
+        breach.id,
+        actor_id,
+        f"exception_{decision}",
+        reason=reason,
+        previous="requested",
+        current=decision,
+    )
+    db.commit()
+    db.refresh(breach)
+    return breach
+
+
+def record_breach_remediation_note(
+    db: Session,
+    tenant_id: int,
+    breach_id: int,
+    actor_id: int,
+    note: str,
+) -> PortfolioExposureBreach:
+    breach = _breach_for_tenant(db, tenant_id, breach_id)
+    note = note.strip()
+    if not note:
+        raise PortfolioRiskError("Remediation note is required.")
+    duplicate = (
+        db.query(PortfolioExposureLimitEvent)
+        .filter(
+            PortfolioExposureLimitEvent.breach_id == breach.id,
+            PortfolioExposureLimitEvent.action == "remediation_note",
+            PortfolioExposureLimitEvent.actor_id == actor_id,
+            PortfolioExposureLimitEvent.reason == note,
+        )
+        .first()
+    )
+    if duplicate is not None:
+        return breach
+    previous = breach.remediation_note
+    breach.remediation_note = note
+    _event(
+        db,
+        breach.limit_id,
+        breach.id,
+        actor_id,
+        "remediation_note",
+        reason=note,
+        previous=previous,
+        current=note,
+    )
+    db.commit()
+    db.refresh(breach)
+    return breach
 
 
 def limit_events(db: Session, tenant_id: int, limit_id: int, limit: int = 100):

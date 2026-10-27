@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState, type FormEvent } from "react";
 
 import {
+  addExposureRemediationNote,
   acknowledgeCovenantEvaluation,
   acknowledgeExposureBreach,
   createCompanyCovenant,
@@ -10,9 +11,13 @@ import {
   evaluateExposureLimits,
   getCompanyCovenants,
   getExposureLimits,
+  getExposureLimitEvents,
   getPortfolioRiskCompanies,
   getPortfolioRiskOverview,
+  requestExposureException,
+  reviewExposureException,
   updateExposureLimit,
+  type ExposureBreach,
   type ExposureLimit,
 } from "./api";
 
@@ -113,6 +118,221 @@ function LimitEditor({ limit, onSaved }: { limit: ExposureLimit; onSaved: () => 
   );
 }
 
+function BreachWorkflow({
+  breach,
+  limit,
+  canManage,
+  onSaved,
+}: {
+  breach: ExposureBreach;
+  limit: ExposureLimit;
+  canManage: boolean;
+  onSaved: () => void;
+}) {
+  const [justification, setJustification] = useState("");
+  const [expiresAt, setExpiresAt] = useState("");
+  const [reviewDate, setReviewDate] = useState("");
+  const [reviewReason, setReviewReason] = useState("");
+  const [remediationNote, setRemediationNote] = useState("");
+  const events = useQuery({
+    queryKey: ["portfolio-risk", "events", limit.id],
+    queryFn: () => getExposureLimitEvents(limit.id),
+  });
+  const requestException = useMutation({
+    mutationFn: () =>
+      requestExposureException(breach.id, {
+        justification,
+        ...(expiresAt ? { expires_at: new Date(`${expiresAt}T23:59:59.999Z`).toISOString() } : {}),
+        ...(reviewDate ? { review_date: reviewDate } : {}),
+      }),
+    onSuccess: () => {
+      setJustification("");
+      setExpiresAt("");
+      setReviewDate("");
+      onSaved();
+    },
+  });
+  const reviewException = useMutation({
+    mutationFn: (decision: "approved" | "rejected") =>
+      reviewExposureException(breach.id, { decision, reason: reviewReason }),
+    onSuccess: () => {
+      setReviewReason("");
+      onSaved();
+    },
+  });
+  const saveRemediation = useMutation({
+    mutationFn: () => addExposureRemediationNote(breach.id, remediationNote),
+    onSuccess: () => {
+      setRemediationNote("");
+      onSaved();
+    },
+  });
+  const canRequest =
+    canManage &&
+    breach.status !== "resolved" &&
+    (breach.exception_status === null ||
+      breach.exception_status === "rejected" ||
+      breach.exception_status === "expired");
+
+  return (
+    <div className="mt-3 space-y-3 border-t border-border pt-3 text-xs">
+      <p className="text-muted-foreground">
+        Underlying breach: {breach.status}. Measured exposure is{" "}
+        {showAmount(breach.observed_exposure, limit.currency)} against the{" "}
+        {showAmount(limit.threshold, limit.currency)} threshold. An exception never changes these
+        values or resolves the breach.
+      </p>
+      {breach.exception_status && (
+        <div className="rounded-md border border-border p-3">
+          <p className="font-medium text-foreground">
+            Exception {breach.exception_status}
+            {breach.exception_status === "approved" &&
+              (breach.exception_active
+                ? " · active"
+                : breach.status === "resolved"
+                  ? " · inactive because the breach is resolved"
+                  : " · expiry elapsed; evaluation pending")}
+            {breach.exception_expires_at &&
+              ` · expires ${new Date(breach.exception_expires_at).toLocaleString()}`}
+            {breach.exception_review_date && ` · review date ${breach.exception_review_date}`}
+          </p>
+          {breach.exception_justification && (
+            <p className="mt-1 text-muted-foreground">Request: {breach.exception_justification}</p>
+          )}
+          {breach.exception_review_reason && (
+            <p className="mt-1 text-muted-foreground">Review: {breach.exception_review_reason}</p>
+          )}
+        </div>
+      )}
+
+      {canRequest && (
+        <form
+          className="grid gap-2 sm:grid-cols-2"
+          onSubmit={(event) => {
+            event.preventDefault();
+            requestException.mutate();
+          }}
+        >
+          <label className="space-y-1 text-muted-foreground">
+            <span>Exception justification</span>
+            <input
+              className={`${inputClass} w-full`}
+              required
+              value={justification}
+              onChange={(event) => setJustification(event.target.value)}
+            />
+          </label>
+          <label className="space-y-1 text-muted-foreground">
+            <span>Optional expiry date</span>
+            <input
+              className={`${inputClass} w-full`}
+              type="date"
+              value={expiresAt}
+              onChange={(event) => setExpiresAt(event.target.value)}
+            />
+          </label>
+          <label className="space-y-1 text-muted-foreground">
+            <span>Optional review date</span>
+            <input
+              className={`${inputClass} w-full`}
+              type="date"
+              value={reviewDate}
+              onChange={(event) => setReviewDate(event.target.value)}
+            />
+          </label>
+          <button
+            className="self-end rounded-md border border-input px-3 py-2"
+            disabled={!justification.trim() || requestException.isPending}
+          >
+            {requestException.isPending ? "Submitting…" : "Request exception"}
+          </button>
+        </form>
+      )}
+
+      {canManage && breach.exception_status === "requested" && breach.can_review_exception && (
+        <div className="flex flex-wrap gap-2">
+          <input
+            className={`${inputClass} min-w-56 flex-1`}
+            aria-label="Exception review reason"
+            placeholder="Required reason for approval or rejection"
+            value={reviewReason}
+            onChange={(event) => setReviewReason(event.target.value)}
+          />
+          <button
+            type="button"
+            className="rounded-md border border-input px-3 py-2"
+            disabled={!reviewReason.trim() || reviewException.isPending}
+            onClick={() => reviewException.mutate("approved")}
+          >
+            Approve exception
+          </button>
+          <button
+            type="button"
+            className="rounded-md border border-destructive px-3 py-2 text-destructive"
+            disabled={!reviewReason.trim() || reviewException.isPending}
+            onClick={() => reviewException.mutate("rejected")}
+          >
+            Reject exception
+          </button>
+        </div>
+      )}
+
+      {canManage && (
+        <form
+          className="flex flex-wrap gap-2"
+          onSubmit={(event) => {
+            event.preventDefault();
+            saveRemediation.mutate();
+          }}
+        >
+          <input
+            className={`${inputClass} min-w-56 flex-1`}
+            aria-label="Remediation note"
+            placeholder="Record a remediation or resolution note"
+            value={remediationNote}
+            onChange={(event) => setRemediationNote(event.target.value)}
+          />
+          <button
+            className="rounded-md border border-input px-3 py-2"
+            disabled={!remediationNote.trim() || saveRemediation.isPending}
+          >
+            Add remediation note
+          </button>
+        </form>
+      )}
+      {breach.remediation_note && (
+        <p className="text-muted-foreground">Latest remediation note: {breach.remediation_note}</p>
+      )}
+
+      {(requestException.error || reviewException.error || saveRemediation.error) && (
+        <p role="alert" className="text-destructive">
+          {(requestException.error || reviewException.error || saveRemediation.error)?.message}
+        </p>
+      )}
+      <details>
+        <summary className="cursor-pointer text-primary">Breach and exception history</summary>
+        {events.isLoading && <p className="mt-2 text-muted-foreground">Loading history…</p>}
+        {events.isError && (
+          <p role="alert" className="mt-2 text-destructive">
+            {(events.error as Error).message}
+          </p>
+        )}
+        <ul className="mt-2 space-y-1">
+          {events.data?.events
+            .filter((event) => event.breach_id === breach.id)
+            .map((event) => (
+              <li key={event.id} className="text-muted-foreground">
+                {new Date(event.created_at).toLocaleString()} · {event.action}
+                {event.actor_id !== null && ` · actor ${event.actor_id}`}
+                {event.reason && ` · ${event.reason}`}
+              </li>
+            ))}
+        </ul>
+      </details>
+    </div>
+  );
+}
+
 export function PortfolioRiskPanel() {
   const queryClient = useQueryClient();
   const [scope, setScope] = useState<"portfolio" | "company" | "sector">("portfolio");
@@ -150,6 +370,7 @@ export function PortfolioRiskPanel() {
       queryClient.invalidateQueries({ queryKey: ["portfolio-risk", "overview"] }),
       queryClient.invalidateQueries({ queryKey: ["portfolio-risk", "limits"] }),
       queryClient.invalidateQueries({ queryKey: ["portfolio-risk", "covenants"] }),
+      queryClient.invalidateQueries({ queryKey: ["portfolio-risk", "events"] }),
     ]);
   const createLimit = useMutation({
     mutationFn: () =>
@@ -344,6 +565,14 @@ export function PortfolioRiskPanel() {
                     </button>
                   </div>
                 )}
+              {limit.breach && (
+                <BreachWorkflow
+                  breach={limit.breach}
+                  limit={limit}
+                  canManage={canManageLimits}
+                  onSaved={() => void refresh()}
+                />
+              )}
             </article>
           ))}
         </div>

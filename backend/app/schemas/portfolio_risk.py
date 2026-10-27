@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import date
+from datetime import date, datetime
 from typing import Literal
 
 from pydantic import BaseModel, Field
@@ -27,6 +27,21 @@ class ExposureLimitUpdate(BaseModel):
 
 class BreachAcknowledge(BaseModel):
     reason: str = Field(min_length=1, max_length=1000)
+
+
+class ExposureExceptionRequest(BaseModel):
+    justification: str = Field(min_length=1, max_length=1000)
+    expires_at: datetime | None = None
+    review_date: date | None = None
+
+
+class ExposureExceptionReview(BaseModel):
+    decision: Literal["approved", "rejected"]
+    reason: str = Field(min_length=1, max_length=1000)
+
+
+class ExposureRemediationNote(BaseModel):
+    note: str = Field(min_length=1, max_length=1000)
 
 
 class CovenantEvaluationAcknowledge(BaseModel):

@@ -24,6 +24,7 @@ from sqlalchemy import (
     Boolean,
     Column,
     DateTime,
+    Date,
     CheckConstraint,
     Float,
     ForeignKey,
@@ -259,6 +260,11 @@ class PortfolioExposureBreach(Base):
     __tablename__ = "portfolio_exposure_breaches"
     __table_args__ = (
         UniqueConstraint("limit_id", name="uq_exposure_breach_limit"),
+        CheckConstraint(
+            "exception_status IS NULL OR exception_status IN "
+            "('requested', 'approved', 'rejected', 'expired')",
+            name="ck_exposure_breach_exception_status",
+        ),
     )
 
     id = Column(Integer, primary_key=True, index=True)
@@ -278,6 +284,24 @@ class PortfolioExposureBreach(Base):
     acknowledged_at = Column(DateTime, nullable=True)
     acknowledgement_reason = Column(String(1000), nullable=True)
     resolved_at = Column(DateTime, nullable=True)
+    exception_status = Column(String(16), nullable=True, index=True)
+    exception_justification = Column(String(1000), nullable=True)
+    exception_requested_by = Column(
+        Integer,
+        ForeignKey("users.id", name="fk_exposure_breach_exception_requested_by_users"),
+        nullable=True,
+    )
+    exception_requested_at = Column(DateTime, nullable=True)
+    exception_expires_at = Column(DateTime, nullable=True)
+    exception_review_date = Column(Date, nullable=True)
+    exception_reviewed_by = Column(
+        Integer,
+        ForeignKey("users.id", name="fk_exposure_breach_exception_reviewed_by_users"),
+        nullable=True,
+    )
+    exception_reviewed_at = Column(DateTime, nullable=True)
+    exception_review_reason = Column(String(1000), nullable=True)
+    remediation_note = Column(String(1000), nullable=True)
 
 
 class PortfolioExposureLimitEvent(Base):
