@@ -30,6 +30,7 @@ from backend.app.services import (
 )
 from backend.app.services.approvals.workflow import ensure_default_workflow
 from backend.app.services.lifecycle.state_machine import ApplicationStatus
+from backend.tests.tenant_test_utils import ensure_test_membership
 
 
 class _Actor:
@@ -47,6 +48,9 @@ class Phase5IntegrationTest(unittest.TestCase):
         self.Session = sessionmaker(bind=self.engine)
         db = self.Session()
         ensure_default_workflow(db)
+        self.tenant_id = ensure_test_membership(db, 1, "rm@x.com")
+        ensure_test_membership(db, 2, "analyst@x.com", self.tenant_id)
+        ensure_test_membership(db, 3, "sa@x.com", self.tenant_id)
         db.close()
 
     def test_full_journey(self):
@@ -55,7 +59,10 @@ class Phase5IntegrationTest(unittest.TestCase):
         analyst = _Actor(2, "analyst@x.com")
 
         # 1) Create application owned by the RM, assigned to the analyst.
-        app = lifecycle.create_application(db, actor=rm, company_name="Acme Ltd", assigned_to=2)
+        app = lifecycle.create_application(
+            db, actor=rm, tenant_id=self.tenant_id,
+            company_name="Acme Ltd", assigned_to=2,
+        )
         self.assertEqual(app.status, ApplicationStatus.DRAFT)
 
         # 2) Walk the lifecycle forward. Each transition notifies the assignee (2).
@@ -79,8 +86,17 @@ class Phase5IntegrationTest(unittest.TestCase):
 
         # 4) Covenant breach -> notifies the owner/assignee.
         before = notifications.unread_count(db, 2)
-        cov = covenants.create_covenant(db, application_id=app.id, metric_key="dscr", threshold=1.25)
-        covenants.record_measurement(db, cov, value=0.9, period="Q1", actor=rm)
+        cov = covenants.create_covenant(
+            db,
+            application_id=app.id,
+            tenant_id=self.tenant_id,
+            metric_key="dscr",
+            threshold=1.25,
+            actor=rm,
+        )
+        covenants.record_measurement(
+            db, cov, tenant_id=self.tenant_id, value=0.9, period="Q1", actor=rm
+        )
         self.assertGreater(notifications.unread_count(db, 2), before)
 
         # 5) Monitoring deterioration -> notifies the owner/assignee.
@@ -101,12 +117,14 @@ class Phase5IntegrationTest(unittest.TestCase):
     def test_rollback_after_journey(self):
         db = self.Session()
         rm = _Actor(1, "rm@x.com")
-        app = lifecycle.create_application(db, actor=rm, company_name="Beta")
+        app = lifecycle.create_application(
+            db, actor=rm, tenant_id=self.tenant_id, company_name="Beta"
+        )
         lifecycle.transition(db, app, ApplicationStatus.SUBMITTED, actor=rm)
         lifecycle.rollback(db, app, actor=rm, reason="mistake")
         self.assertEqual(app.status, ApplicationStatus.DRAFT)
         # History has create, submit, rollback.
-        self.assertEqual(len(lifecycle.get_timeline(db, app)), 3)
+        self.assertEqual(len(lifecycle.get_timeline(db, app, tenant_id=self.tenant_id)), 3)
         db.close()
 
 

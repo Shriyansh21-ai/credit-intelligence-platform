@@ -14,7 +14,6 @@ from sqlalchemy.orm import Session
 from backend.app.models.application import Application
 from backend.app.models.approval import ApprovalDecision
 from backend.app.models.audit import AuditLog
-from backend.app.models.covenant import CovenantAlert
 from backend.app.models.monitoring import MonitoringAlert
 from backend.app.models.notification import Notification
 from backend.app.models.rbac import Role
@@ -22,6 +21,7 @@ from backend.app.models.system_config import SystemConfig
 from backend.app.models.task import Task
 from backend.app.models.user import User
 from backend.app.services.audit.query import audit_stats
+from backend.app.services import covenants
 from backend.app.services.lifecycle.service import serialize as serialize_application
 
 # Statuses that represent applications actively awaiting a human decision.
@@ -60,7 +60,7 @@ def _total_exposure(db: Session) -> float:
     return float(db.query(func.coalesce(func.sum(Application.requested_amount), 0.0)).scalar() or 0.0)
 
 
-def operations_dashboard(db: Session) -> Dict[str, Any]:
+def operations_dashboard(db: Session, *, tenant_id: int) -> Dict[str, Any]:
     total_apps = db.query(func.count(Application.id)).scalar() or 0
     pending = (
         db.query(func.count(Application.id))
@@ -71,7 +71,7 @@ def operations_dashboard(db: Session) -> Dict[str, Any]:
     open_tasks = (
         db.query(func.count(Task.id)).filter(Task.status.in_(_OPEN_TASK_STATUSES)).scalar() or 0
     )
-    open_cov = db.query(func.count(CovenantAlert.id)).filter(CovenantAlert.status == "open").scalar() or 0
+    open_cov = covenants.count_alerts(db, tenant_id=tenant_id, status="open")
     open_mon = db.query(func.count(MonitoringAlert.id)).filter(MonitoringAlert.status == "open").scalar() or 0
     return {
         "totals": {
@@ -191,8 +191,8 @@ def portfolio_dashboard(db: Session) -> Dict[str, Any]:
     }
 
 
-def compliance_dashboard(db: Session) -> Dict[str, Any]:
-    open_cov = db.query(func.count(CovenantAlert.id)).filter(CovenantAlert.status == "open").scalar() or 0
+def compliance_dashboard(db: Session, *, tenant_id: int) -> Dict[str, Any]:
+    open_cov = covenants.count_alerts(db, tenant_id=tenant_id, status="open")
     open_mon = db.query(func.count(MonitoringAlert.id)).filter(MonitoringAlert.status == "open").scalar() or 0
     recent_audit = (
         db.query(AuditLog).order_by(AuditLog.timestamp.desc()).limit(15).all()

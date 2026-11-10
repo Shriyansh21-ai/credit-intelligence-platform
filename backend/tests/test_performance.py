@@ -13,6 +13,8 @@ from backend.app.core.dependencies import get_current_user
 from backend.app.db.database import Base, get_db
 from backend.app.models import audit as audit_model  # noqa: F401
 from backend.app.models import covenant as covenant_model  # noqa: F401
+from backend.app.models import company as company_model  # noqa: F401
+from backend.app.models import document as document_model  # noqa: F401
 from backend.app.models import monitoring as monitoring_model  # noqa: F401
 from backend.app.models import notification as notification_model  # noqa: F401
 from backend.app.models import task as task_model  # noqa: F401
@@ -24,6 +26,7 @@ from backend.app.routes import jobs as job_routes
 from backend.app.services import covenants, jobs
 from backend.app.services.rbac import sync_rbac
 from backend.app.services.rbac.seeding import assign_role
+from backend.tests.tenant_test_utils import ensure_test_membership
 
 
 class TTLCacheTest(unittest.TestCase):
@@ -83,10 +86,33 @@ class BatchAndJobsApiTest(unittest.TestCase):
         self.Session = sessionmaker(bind=self.engine)
         db = self.Session()
         sync_rbac(db)
+        self.tenant_id = ensure_test_membership(db, 100, "covenant-owner@x.com")
+        application = Application(
+            user_id=100,
+            tenant_id=self.tenant_id,
+            company_name="Batch test application",
+        )
+        db.add(application)
+        db.commit()
+        self.application_id = application.id
         # Two covenants to batch-measure.
-        self.c1 = covenants.create_covenant(db, application_id=1, metric_key="dscr", threshold=1.25).id
-        self.c2 = covenants.create_covenant(db, application_id=1, metric_key="current_ratio", threshold=1.5).id
+        self.c1 = covenants.create_covenant(
+            db, application_id=self.application_id, tenant_id=self.tenant_id,
+            metric_key="dscr", threshold=1.25, actor=self._owner_actor(),
+        ).id
+        self.c2 = covenants.create_covenant(
+            db, application_id=self.application_id, tenant_id=self.tenant_id,
+            metric_key="current_ratio", threshold=1.5, actor=self._owner_actor(),
+        ).id
         db.close()
+
+    @staticmethod
+    def _owner_actor():
+        class Owner:
+            id = 100
+            email = "covenant-owner@x.com"
+
+        return Owner()
 
     def _user(self, role):
         db = self.Session()
@@ -96,6 +122,7 @@ class BatchAndJobsApiTest(unittest.TestCase):
             db.commit()
             db.refresh(u)
             assign_role(db, u, role)
+            ensure_test_membership(db, u.id, u.email, self.tenant_id)
             return u.id
         finally:
             db.close()

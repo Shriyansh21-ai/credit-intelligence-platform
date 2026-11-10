@@ -11,6 +11,7 @@ from typing import Optional
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 
+from backend.app.core.dependencies import get_current_tenant_id
 from backend.app.db.database import get_db
 from backend.app.models.user import User
 from backend.app.services import search
@@ -48,10 +49,12 @@ def enterprise_search(
     page: int = Query(1, ge=1),
     page_size: int = Query(25, ge=1, le=200),
     db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_current_tenant_id),
     _user: User = Depends(require_permission("search.use")),
 ):
     return search.search_applications(
         db,
+        tenant_id=tenant_id,
         q=q,
         company=company,
         gstin=gstin,

@@ -13,7 +13,7 @@ from typing import Any, Dict, List, Optional
 
 from sqlalchemy.orm import Session
 
-from backend.app.models.application import ApplicationStatusHistory
+from backend.app.models.application import Application, ApplicationStatusHistory
 from backend.app.models.approval import ApprovalDecision
 from backend.app.models.collaboration import Note, NoteAttachment, NoteMention
 from backend.app.models.task import Task
@@ -185,13 +185,27 @@ def threaded_notes(db: Session, application_id: int) -> List[Dict[str, Any]]:
     return [serialize_note(r, threaded_children=by_parent.get(r.id, [])) for r in roots]
 
 
-def activity_feed(db: Session, application_id: int, limit: int = 100) -> List[Dict[str, Any]]:
+def activity_feed(
+    db: Session, application_id: int, *, tenant_id: int, limit: int = 100
+) -> List[Dict[str, Any]]:
     """Unified chronological feed across status history, approvals, notes, tasks."""
+    owned_application = (
+        db.query(Application.id)
+        .filter(Application.id == application_id, Application.tenant_id == tenant_id)
+        .first()
+    )
+    if owned_application is None:
+        return []
+
     events: List[Dict[str, Any]] = []
 
     for h in (
         db.query(ApplicationStatusHistory)
-        .filter(ApplicationStatusHistory.application_id == application_id)
+        .join(Application, Application.id == ApplicationStatusHistory.application_id)
+        .filter(
+            ApplicationStatusHistory.application_id == application_id,
+            Application.tenant_id == tenant_id,
+        )
         .all()
     ):
         events.append(
@@ -206,7 +220,11 @@ def activity_feed(db: Session, application_id: int, limit: int = 100) -> List[Di
 
     for d in (
         db.query(ApprovalDecision)
-        .filter(ApprovalDecision.application_id == application_id)
+        .join(Application, Application.id == ApprovalDecision.application_id)
+        .filter(
+            ApprovalDecision.application_id == application_id,
+            Application.tenant_id == tenant_id,
+        )
         .all()
     ):
         events.append(
@@ -230,7 +248,15 @@ def activity_feed(db: Session, application_id: int, limit: int = 100) -> List[Di
             }
         )
 
-    for t in db.query(Task).filter(Task.application_id == application_id).all():
+    for t in (
+        db.query(Task)
+        .join(Application, Application.id == Task.application_id)
+        .filter(
+            Task.application_id == application_id,
+            Application.tenant_id == tenant_id,
+        )
+        .all()
+    ):
         events.append(
             {
                 "kind": "task",

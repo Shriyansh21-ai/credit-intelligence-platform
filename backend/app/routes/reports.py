@@ -15,7 +15,9 @@ from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, Response, status as http_status
 from sqlalchemy.orm import Session
 
+from backend.app.core.dependencies import get_current_tenant_id
 from backend.app.db.database import get_db
+from backend.app.models.application import Application
 from backend.app.models.user import User
 from backend.app.services import audit, reports
 from backend.app.services.reports.renderers import available_formats
@@ -43,6 +45,7 @@ def generate(
     entity_type: Optional[str] = None,
     entity_id: Optional[int] = None,
     db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_current_tenant_id),
     user: User = Depends(get_current_user),
 ):
     # Viewing needs reports.view; exporting to a file needs reports.export.
@@ -53,12 +56,28 @@ def generate(
             detail=f"Missing required permission: {needed}",
         )
 
+    if application_id is not None:
+        app = (
+            db.query(Application)
+            .filter(
+                Application.id == application_id,
+                Application.tenant_id == tenant_id,
+            )
+            .first()
+        )
+        if app is None:
+            raise HTTPException(
+                status_code=http_status.HTTP_404_NOT_FOUND,
+                detail="Application not found",
+            )
+
     try:
         result = reports.generate_report(
             db,
             report_type=report_type,
             fmt=format,
             application_id=application_id,
+            tenant_id=tenant_id,
             entity_type=entity_type,
             entity_id=entity_id,
         )

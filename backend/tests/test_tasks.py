@@ -19,8 +19,10 @@ from backend.app.models.task import Task  # noqa: F401
 from backend.app.models.user import User
 from backend.app.routes import tasks as task_routes
 from backend.app.services import notifications, tasks
+from backend.app.services import lifecycle
 from backend.app.services.rbac import sync_rbac
 from backend.app.services.rbac.seeding import assign_role
+from backend.tests.tenant_test_utils import ensure_test_membership
 
 
 class _Actor:
@@ -147,6 +149,42 @@ class TaskApiTest(unittest.TestCase):
 
         mine = client.get("/api/tasks?mine=true").json()["tasks"]
         self.assertEqual(len(mine), 1)
+
+    def test_application_tasks_are_tenant_scoped(self):
+        owner_id = self._user("owner@x.com", "credit_analyst")
+        db = self.Session()
+        tenant_id = ensure_test_membership(db, owner_id, "owner@x.com")
+        application = lifecycle.create_application(
+            db,
+            actor=_Actor(owner_id, "owner@x.com"),
+            tenant_id=tenant_id,
+            company_name="Task isolation",
+        )
+        application_id = application.id
+        db.close()
+
+        owner = self._client(owner_id)
+        created = owner.post(
+            "/api/tasks",
+            json={"title": "Private task", "application_id": application_id},
+        )
+        self.assertEqual(created.status_code, 201, created.text)
+        task_id = created.json()["id"]
+        self.assertEqual(
+            owner.get(f"/api/tasks?application_id={application_id}").status_code,
+            200,
+        )
+
+        other = self._client(self._user("other@x.com", "credit_analyst"))
+        self.assertEqual(
+            other.get(f"/api/tasks?application_id={application_id}").status_code,
+            404,
+        )
+        self.assertEqual(other.get(f"/api/tasks/{task_id}").status_code, 404)
+        self.assertEqual(
+            other.patch(f"/api/tasks/{task_id}", json={"status": "completed"}).status_code,
+            404,
+        )
 
 
 if __name__ == "__main__":

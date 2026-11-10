@@ -13,6 +13,8 @@ from backend.app.db.database import Base, get_db
 from backend.app.models import audit as audit_model  # noqa: F401
 from backend.app.models import approval as approval_model  # noqa: F401
 from backend.app.models import covenant as covenant_model  # noqa: F401
+from backend.app.models import company as company_model  # noqa: F401
+from backend.app.models import document as document_model  # noqa: F401
 from backend.app.models import monitoring as monitoring_model  # noqa: F401
 from backend.app.models import notification as notification_model  # noqa: F401
 from backend.app.models import task as task_model  # noqa: F401
@@ -24,6 +26,7 @@ from backend.app.routes import dashboards as dashboard_routes
 from backend.app.services import config as config_service, lifecycle
 from backend.app.services.rbac import sync_rbac
 from backend.app.services.rbac.seeding import assign_role
+from backend.tests.tenant_test_utils import ensure_test_membership
 
 
 class _Actor:
@@ -42,9 +45,12 @@ class DashboardApiTest(unittest.TestCase):
         db = self.Session()
         sync_rbac(db)
         config_service.sync_config(db)
+        tenant_id = ensure_test_membership(db, 1, "a@x.com")
         # Seed a few applications in various states.
         for name, status in [("Acme", "submitted"), ("Beta", "analyst_review"), ("Gamma", "approved")]:
-            app = lifecycle.create_application(db, actor=_Actor(), company_name=name)
+            app = lifecycle.create_application(
+                db, actor=_Actor(), tenant_id=tenant_id, company_name=name
+            )
             app.status = status
             db.commit()
         db.close()

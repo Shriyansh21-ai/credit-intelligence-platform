@@ -23,6 +23,7 @@ from backend.app.routes import collaboration as collaboration_routes
 from backend.app.services import collaboration, lifecycle, notifications
 from backend.app.services.rbac import sync_rbac
 from backend.app.services.rbac.seeding import assign_role
+from backend.tests.tenant_test_utils import ensure_test_membership
 
 
 class _Actor:
@@ -40,7 +41,10 @@ class CollaborationServiceTest(unittest.TestCase):
         self.Session = sessionmaker(bind=self.engine)
 
     def _app(self, db):
-        return lifecycle.create_application(db, actor=_Actor(), company_name="Acme")
+        tenant_id = ensure_test_membership(db, 1, "a@x.com")
+        return lifecycle.create_application(
+            db, actor=_Actor(), tenant_id=tenant_id, company_name="Acme"
+        )
 
     def test_note_and_reply_thread(self):
         db = self.Session()
@@ -93,7 +97,7 @@ class CollaborationServiceTest(unittest.TestCase):
         app = self._app(db)
         lifecycle.transition(db, app, "submitted", actor=_Actor())
         collaboration.create_note(db, application_id=app.id, actor=_Actor(), body="note")
-        feed = collaboration.activity_feed(db, app.id)
+        feed = collaboration.activity_feed(db, app.id, tenant_id=app.tenant_id)
         kinds = {e["kind"] for e in feed}
         self.assertIn("status", kinds)
         self.assertIn("note", kinds)
@@ -109,7 +113,10 @@ class CollaborationApiTest(unittest.TestCase):
         self.Session = sessionmaker(bind=self.engine)
         db = self.Session()
         sync_rbac(db)
-        self.app_id = lifecycle.create_application(db, actor=_Actor(), company_name="Acme").id
+        self.tenant_id = ensure_test_membership(db, 1, "a@x.com")
+        self.app_id = lifecycle.create_application(
+            db, actor=_Actor(), tenant_id=self.tenant_id, company_name="Acme"
+        ).id
         db.close()
 
     def _user(self, email, role):
@@ -120,6 +127,7 @@ class CollaborationApiTest(unittest.TestCase):
             db.commit()
             db.refresh(u)
             assign_role(db, u, role)
+            ensure_test_membership(db, u.id, email, self.tenant_id)
             return u.id
         finally:
             db.close()

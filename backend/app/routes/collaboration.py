@@ -14,15 +14,25 @@ from __future__ import annotations
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status as http_status
 from sqlalchemy.orm import Session
 
+from backend.app.core.dependencies import get_current_tenant_id
 from backend.app.db.database import get_db
 from backend.app.models.collaboration import Note
 from backend.app.models.user import User
 from backend.app.schemas.collaboration import NoteCreate, NoteEdit, PinUpdate
 from backend.app.services import collaboration
 from backend.app.services.collaboration.service import threaded_notes
+from backend.app.services.lifecycle.service import find_application_for_tenant
 from backend.app.services.rbac import require_permission
 
 router = APIRouter(prefix="/api/collaboration", tags=["Collaboration"])
+
+
+def _require_application(db: Session, application_id: int, tenant_id: int) -> None:
+    if find_application_for_tenant(db, application_id, tenant_id) is None:
+        raise HTTPException(
+            status_code=http_status.HTTP_404_NOT_FOUND,
+            detail="Application not found",
+        )
 
 
 def _get_note(db: Session, note_id: int) -> Note:
@@ -36,8 +46,10 @@ def _get_note(db: Session, note_id: int) -> Note:
 def list_notes(
     application_id: int,
     db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_current_tenant_id),
     _user: User = Depends(require_permission("collaboration.view")),
 ):
+    _require_application(db, application_id, tenant_id)
     return {"notes": threaded_notes(db, application_id)}
 
 
@@ -46,8 +58,10 @@ def add_note(
     application_id: int,
     payload: NoteCreate,
     db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_current_tenant_id),
     actor: User = Depends(require_permission("collaboration.participate")),
 ):
+    _require_application(db, application_id, tenant_id)
     note = collaboration.create_note(
         db,
         application_id=application_id,
@@ -124,6 +138,12 @@ def activity(
     application_id: int,
     limit: int = 100,
     db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_current_tenant_id),
     _user: User = Depends(require_permission("collaboration.view")),
 ):
-    return {"activity": collaboration.activity_feed(db, application_id, limit=limit)}
+    _require_application(db, application_id, tenant_id)
+    return {
+        "activity": collaboration.activity_feed(
+            db, application_id, tenant_id=tenant_id, limit=limit
+        )
+    }

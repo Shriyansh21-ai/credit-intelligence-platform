@@ -19,6 +19,7 @@ from backend.app.routes import search as search_routes
 from backend.app.services import lifecycle, search
 from backend.app.services.rbac import sync_rbac
 from backend.app.services.rbac.seeding import assign_role
+from backend.tests.tenant_test_utils import ensure_test_membership
 
 
 class _Actor:
@@ -43,9 +44,11 @@ class SearchServiceTest(unittest.TestCase):
             ("Beta Retail", "Retail", "29BBBBB1111B2Z6", "BB", "approved"),
             ("Gamma Textiles", "Manufacturing", "27CCCCC2222C3Z7", "A", "approved"),
         ]
+        self.tenant_id = ensure_test_membership(db, 1, "a@x.com")
         for name, industry, gstin, rating, status in specs:
             app = lifecycle.create_application(
-                db, actor=_Actor(), company_name=name, industry=industry, gstin=gstin
+                db, actor=_Actor(), tenant_id=self.tenant_id, company_name=name,
+                industry=industry, gstin=gstin,
             )
             app.risk_rating = rating
             app.status = status
@@ -54,13 +57,15 @@ class SearchServiceTest(unittest.TestCase):
 
     def test_free_text(self):
         db = self.Session()
-        res = search.search_applications(db, q="Acme")
+        res = search.search_applications(db, tenant_id=self.tenant_id, q="Acme")
         self.assertEqual(res["total"], 1)
         db.close()
 
     def test_filter_by_industry_and_facets(self):
         db = self.Session()
-        res = search.search_applications(db, industry="Manufacturing")
+        res = search.search_applications(
+            db, tenant_id=self.tenant_id, industry="Manufacturing"
+        )
         self.assertEqual(res["total"], 2)
         statuses = {f["value"] for f in res["facets"]["status"]}
         self.assertTrue(statuses)
@@ -68,14 +73,19 @@ class SearchServiceTest(unittest.TestCase):
 
     def test_filter_by_gstin_exact(self):
         db = self.Session()
-        res = search.search_applications(db, gstin="29BBBBB1111B2Z6")
+        res = search.search_applications(
+            db, tenant_id=self.tenant_id, gstin="29BBBBB1111B2Z6"
+        )
         self.assertEqual(res["total"], 1)
         self.assertEqual(res["items"][0]["company_name"], "Beta Retail")
         db.close()
 
     def test_sort_and_paginate(self):
         db = self.Session()
-        res = search.search_applications(db, sort_by="company_name", sort_dir="asc", page_size=2)
+        res = search.search_applications(
+            db, tenant_id=self.tenant_id,
+            sort_by="company_name", sort_dir="asc", page_size=2,
+        )
         self.assertEqual(len(res["items"]), 2)
         self.assertEqual(res["items"][0]["company_name"], "Acme Manufacturing")
         self.assertEqual(res["pages"], 2)
@@ -83,7 +93,7 @@ class SearchServiceTest(unittest.TestCase):
 
     def test_rating_filter(self):
         db = self.Session()
-        res = search.search_applications(db, rating="A")
+        res = search.search_applications(db, tenant_id=self.tenant_id, rating="A")
         self.assertEqual(res["total"], 2)
         db.close()
 
@@ -97,7 +107,11 @@ class SearchApiTest(unittest.TestCase):
         self.Session = sessionmaker(bind=self.engine)
         db = self.Session()
         sync_rbac(db)
-        lifecycle.create_application(db, actor=_Actor(), company_name="Acme Ltd", industry="Retail")
+        self.tenant_id = ensure_test_membership(db, 1, "a@x.com")
+        lifecycle.create_application(
+            db, actor=_Actor(), tenant_id=self.tenant_id,
+            company_name="Acme Ltd", industry="Retail",
+        )
         db.close()
 
     def _user(self, email, role):
@@ -108,6 +122,7 @@ class SearchApiTest(unittest.TestCase):
             db.commit()
             db.refresh(u)
             assign_role(db, u, role)
+            ensure_test_membership(db, u.id, email, self.tenant_id)
             return u.id
         finally:
             db.close()

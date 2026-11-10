@@ -33,8 +33,14 @@ from backend.app.services.lifecycle.service import get_timeline
 # Context loading
 # --------------------------------------------------------------------------
 
-def _application(db: Session, application_id: int) -> Optional[Application]:
-    return db.query(Application).filter(Application.id == application_id).first()
+def _application(
+    db: Session, application_id: int, tenant_id: int
+) -> Optional[Application]:
+    return (
+        db.query(Application)
+        .filter(Application.id == application_id, Application.tenant_id == tenant_id)
+        .first()
+    )
 
 
 def _assessment_for(db: Session, app: Application) -> Optional[EnterpriseAssessment]:
@@ -129,14 +135,24 @@ def _financial_section(fin: Optional[FinancialAnalysis]) -> Dict[str, Any]:
 # Report type builders
 # --------------------------------------------------------------------------
 
-def build_credit_memo(db: Session, application_id: int) -> Dict[str, Any]:
-    app = _application(db, application_id)
+def build_credit_memo(
+    db: Session, application_id: int, tenant_id: int
+) -> Dict[str, Any]:
+    app = _application(db, application_id, tenant_id)
     if app is None:
         return _doc("credit_memo", "Credit Memo", "Not found",
                     [_missing("Error", f"Application {application_id} not found.")])
     assessment = _assessment_for(db, app)
     fin = _financials_for(db, app.assessment_id)
-    covenants = db.query(Covenant).filter(Covenant.application_id == app.id).all()
+    covenants = (
+        db.query(Covenant)
+        .join(Application, Application.id == Covenant.application_id)
+        .filter(
+            Covenant.application_id == app.id,
+            Application.tenant_id == tenant_id,
+        )
+        .all()
+    )
 
     sections = [
         _overview_section(app),
@@ -150,8 +166,8 @@ def build_credit_memo(db: Session, application_id: int) -> Dict[str, Any]:
             "columns": ["Covenant", "Operator", "Threshold", "Current", "Status"],
             "rows": [
                 [c.name, c.operator, c.threshold,
-                 serialize_covenant(db, c)["current_value"],
-                 serialize_covenant(db, c)["current_status"]]
+                 serialize_covenant(db, c, tenant_id=tenant_id)["current_value"],
+                 serialize_covenant(db, c, tenant_id=tenant_id)["current_status"]]
                 for c in covenants
             ],
         })
@@ -169,8 +185,10 @@ def build_credit_memo(db: Session, application_id: int) -> Dict[str, Any]:
                 f"Reference {app.reference}", sections, meta={"application_id": app.id})
 
 
-def build_executive_summary(db: Session, application_id: int) -> Dict[str, Any]:
-    app = _application(db, application_id)
+def build_executive_summary(
+    db: Session, application_id: int, tenant_id: int
+) -> Dict[str, Any]:
+    app = _application(db, application_id, tenant_id)
     if app is None:
         return _doc("executive_summary", "Executive Summary", "Not found",
                     [_missing("Error", f"Application {application_id} not found.")])
@@ -180,8 +198,10 @@ def build_executive_summary(db: Session, application_id: int) -> Dict[str, Any]:
                 f"Reference {app.reference}", sections, meta={"application_id": app.id})
 
 
-def build_financial_report(db: Session, application_id: int) -> Dict[str, Any]:
-    app = _application(db, application_id)
+def build_financial_report(
+    db: Session, application_id: int, tenant_id: int
+) -> Dict[str, Any]:
+    app = _application(db, application_id, tenant_id)
     if app is None:
         return _doc("financial_report", "Financial Report", "Not found",
                     [_missing("Error", f"Application {application_id} not found.")])
@@ -199,8 +219,10 @@ def build_financial_report(db: Session, application_id: int) -> Dict[str, Any]:
                 f"Reference {app.reference}", sections, meta={"application_id": app.id})
 
 
-def build_risk_report(db: Session, application_id: int) -> Dict[str, Any]:
-    app = _application(db, application_id)
+def build_risk_report(
+    db: Session, application_id: int, tenant_id: int
+) -> Dict[str, Any]:
+    app = _application(db, application_id, tenant_id)
     if app is None:
         return _doc("risk_report", "Risk Report", "Not found",
                     [_missing("Error", f"Application {application_id} not found.")])
@@ -218,11 +240,13 @@ def build_risk_report(db: Session, application_id: int) -> Dict[str, Any]:
                 f"Reference {app.reference}", sections, meta={"application_id": app.id})
 
 
-def build_committee_pack(db: Session, application_id: int) -> Dict[str, Any]:
-    memo = build_credit_memo(db, application_id)
-    risk = build_risk_report(db, application_id)
+def build_committee_pack(
+    db: Session, application_id: int, tenant_id: int
+) -> Dict[str, Any]:
+    memo = build_credit_memo(db, application_id, tenant_id)
+    risk = build_risk_report(db, application_id, tenant_id)
     sections = memo["sections"] + [s for s in risk["sections"] if s["heading"] != "Application Overview"]
-    app = _application(db, application_id)
+    app = _application(db, application_id, tenant_id)
     name = app.company_name if app else str(application_id)
     return _doc("committee_pack", f"Credit Committee Pack — {name}",
                 "For committee review", sections, meta={"application_id": application_id})

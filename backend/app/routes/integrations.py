@@ -25,7 +25,7 @@ from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 
-from backend.app.core.dependencies import get_current_user
+from backend.app.core.dependencies import get_current_tenant_id, get_current_user
 from backend.app.db.database import get_db
 from backend.app.models.user import User
 from backend.app.schemas.integrations import (
@@ -48,6 +48,7 @@ from backend.app.services.integrations.customer360 import build_profile
 from backend.app.services.integrations.factory import register_all
 from backend.app.services.integrations.logging import recent_calls
 from backend.app.services.integrations.sync import service as sync_svc
+from backend.app.services.lifecycle.service import find_application_for_tenant
 from backend.app.services.rbac import require_permission
 
 _SNAPSHOT_CONNECTORS = {"gst", "mca", "bureau", "erp", "payments"}
@@ -55,6 +56,13 @@ _SNAPSHOT_CONNECTORS = {"gst", "mca", "bureau", "erp", "payments"}
 
 def _actor(user: Optional[User]) -> Optional[str]:
     return getattr(user, "email", None) if user else None
+
+
+def _require_application(db: Session, application_id: Optional[int], tenant_id: int) -> None:
+    if application_id is not None and find_application_for_tenant(
+        db, application_id, tenant_id
+    ) is None:
+        raise HTTPException(status_code=404, detail="Application not found")
 
 
 # ===========================================================================
@@ -157,8 +165,10 @@ def _require_snapshot_connector(connector_key: str) -> None:
 
 @data_router.post("/{connector_key}/import")
 def import_data(connector_key: str, body: ImportRequest, db: Session = Depends(get_db),
+                tenant_id: int = Depends(get_current_tenant_id),
                 user=Depends(require_permission("integrations.manage"))):
     _require_snapshot_connector(connector_key)
+    _require_application(db, body.application_id, tenant_id)
     if body.operations:
         return import_svc.import_bundle(
             db, connector_key=connector_key, entity_ref=body.entity_ref,
@@ -203,7 +213,9 @@ aa_router = APIRouter(prefix="/api/integrations/aa", tags=["Integrations: Accoun
 
 @aa_router.post("/consents")
 def create_consent(body: ConsentCreate, db: Session = Depends(get_db),
+                   tenant_id: int = Depends(get_current_tenant_id),
                    _user=Depends(require_permission("integrations.manage"))):
+    _require_application(db, body.application_id, tenant_id)
     c = aa_svc.create_consent(db, entity_ref=body.entity_ref, purpose=body.purpose,
                               months=body.months, application_id=body.application_id, fi_types=body.fi_types)
     return aa_svc.consent_to_dict(c)
@@ -238,7 +250,9 @@ def discover_accounts(consent_id: int, db: Session = Depends(get_db),
 
 @aa_router.post("/statements/import")
 def import_statement(body: StatementImport, db: Session = Depends(get_db),
+                     tenant_id: int = Depends(get_current_tenant_id),
                      _user=Depends(require_permission("integrations.manage"))):
+    _require_application(db, body.application_id, tenant_id)
     try:
         stmt = aa_svc.import_statement(
             db, entity_ref=body.entity_ref, account_ref=body.account_ref, months=body.months,
@@ -345,7 +359,9 @@ def collateral_types(_user=Depends(require_permission("collateral.view"))):
 
 @collateral_router.post("")
 def create_collateral(body: CollateralCreate, db: Session = Depends(get_db),
+                      tenant_id: int = Depends(get_current_tenant_id),
                       _user=Depends(require_permission("collateral.manage"))):
+    _require_application(db, body.application_id, tenant_id)
     try:
         item = coll_svc.create_collateral(
             db, collateral_type=body.collateral_type, description=body.description,
@@ -394,7 +410,9 @@ def inspect_collateral(collateral_id: int, body: CollateralInspect, db: Session 
 
 @collateral_router.get("/applications/{application_id}")
 def application_collateral(application_id: int, db: Session = Depends(get_db),
+                           tenant_id: int = Depends(get_current_tenant_id),
                            _user=Depends(require_permission("collateral.view"))):
+    _require_application(db, application_id, tenant_id)
     items = coll_svc.list_for_application(db, application_id)
     return {"summary": coll_svc.coverage_summary(db, application_id=application_id),
             "items": [coll_svc.to_dict(i) for i in items]}
@@ -416,7 +434,9 @@ customer360_router = APIRouter(prefix="/api/customer360", tags=["Customer 360"])
 
 @customer360_router.get("/applications/{application_id}")
 def customer360_application(application_id: int, db: Session = Depends(get_db),
+                            tenant_id: int = Depends(get_current_tenant_id),
                             _user=Depends(require_permission("customer360.view"))):
+    _require_application(db, application_id, tenant_id)
     return build_profile(db, application_id=application_id)
 
 

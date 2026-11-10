@@ -13,9 +13,11 @@ from backend.app.db.database import get_db
 from backend.app.models.user import User
 from backend.app.routes.integrations import ROUTERS
 from backend.app.services.integrations.config import sync_connector_configs
+from backend.app.services import lifecycle
 from backend.app.services.rbac import sync_rbac
 from backend.app.services.rbac.seeding import assign_role
 from backend.tests._integrations_helpers import fresh_session
+from backend.tests.tenant_test_utils import ensure_test_membership
 
 GSTIN = "27ABCDE1234F1Z5"
 
@@ -92,6 +94,37 @@ class IntegrationsApiTest(unittest.TestCase):
                       json={"entity_ref": "AAAAA1111A", "operations": ["get_business_score", "get_dpd_history"]})
         self.assertEqual(resp.status_code, 200, resp.text)
         self.assertEqual(len(resp.json()["imported"]), 2)
+
+    def test_application_linked_import_is_tenant_scoped(self):
+        owner_id = self._user("application-owner@x", "risk_manager")
+        db = self.Session()
+        tenant_id = ensure_test_membership(db, owner_id, "application-owner@x")
+
+        class Actor:
+            id = owner_id
+            email = "application-owner@x"
+
+        application = lifecycle.create_application(
+            db, actor=Actor(), tenant_id=tenant_id, company_name="Import isolation"
+        )
+        application_id = application.id
+        db.close()
+
+        payload = {
+            "entity_ref": GSTIN,
+            "operation": "get_profile",
+            "application_id": application_id,
+        }
+        owner_response = self._client(owner_id).post(
+            "/api/integrations/data/gst/import", json=payload
+        )
+        self.assertEqual(owner_response.status_code, 200, owner_response.text)
+
+        other_id = self._user("application-other@x", "risk_manager")
+        other_response = self._client(other_id).post(
+            "/api/integrations/data/gst/import", json=payload
+        )
+        self.assertEqual(other_response.status_code, 404)
 
     def test_unknown_snapshot_connector_404(self):
         c = self._client(self._user("rm@x", "risk_manager"))

@@ -14,13 +14,14 @@ from __future__ import annotations
 from fastapi import APIRouter, Depends, HTTPException, Request, status as http_status
 from sqlalchemy.orm import Session
 
-from backend.app.core.dependencies import get_current_user
+from backend.app.core.dependencies import get_current_tenant_id, get_current_user
 from backend.app.db.database import get_db
 from backend.app.models.application import Application
 from backend.app.models.user import User
 from backend.app.schemas.application import DecisionRequest, WorkflowUpdate
 from backend.app.services import approvals, audit
 from backend.app.services.approvals.service import ApprovalError, get_approval_timeline
+from backend.app.services.lifecycle.service import find_application_for_tenant
 from backend.app.services.approvals.workflow import get_default_workflow, serialize_workflow
 from backend.app.services.rbac import has_permission, require_permission
 
@@ -72,8 +73,8 @@ def update_workflow(
     return serialize_workflow(wf)
 
 
-def _get_app(db: Session, application_id: int) -> Application:
-    app = db.query(Application).filter(Application.id == application_id).first()
+def _get_app(db: Session, application_id: int, tenant_id: int) -> Application:
+    app = find_application_for_tenant(db, application_id, tenant_id)
     if app is None:
         raise HTTPException(status_code=http_status.HTTP_404_NOT_FOUND, detail="Application not found")
     return app
@@ -83,9 +84,10 @@ def _get_app(db: Session, application_id: int) -> Application:
 def list_decisions(
     application_id: int,
     db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_current_tenant_id),
     _user: User = Depends(require_permission("approvals.view")),
 ):
-    app = _get_app(db, application_id)
+    app = _get_app(db, application_id, tenant_id)
     return {"application_id": app.id, "timeline": get_approval_timeline(db, app)}
 
 
@@ -95,6 +97,7 @@ def submit_decision(
     payload: DecisionRequest,
     request: Request,
     db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_current_tenant_id),
     actor: User = Depends(get_current_user),
 ):
     required = _ACTION_PERMISSION.get(payload.action)
@@ -106,7 +109,7 @@ def submit_decision(
             detail=f"Missing required permission: {required}",
         )
 
-    app = _get_app(db, application_id)
+    app = _get_app(db, application_id, tenant_id)
     try:
         result = approvals.submit_decision(
             db, app,

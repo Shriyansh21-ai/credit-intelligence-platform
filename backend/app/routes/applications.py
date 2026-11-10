@@ -19,6 +19,7 @@ from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, Query, Request, status as http_status
 from sqlalchemy.orm import Session
 
+from backend.app.core.dependencies import get_current_tenant_id
 from backend.app.db.database import get_db
 from backend.app.models.application import Application
 from backend.app.models.user import User
@@ -29,7 +30,11 @@ from backend.app.schemas.application import (
     TransitionRequest,
 )
 from backend.app.services import lifecycle
-from backend.app.services.lifecycle.service import get_timeline, serialize
+from backend.app.services.lifecycle.service import (
+    find_application_for_tenant,
+    get_timeline,
+    serialize,
+)
 from backend.app.services.lifecycle.state_machine import (
     ALLOWED_TRANSITIONS,
     ApplicationStatus,
@@ -43,8 +48,8 @@ from backend.app.services.rbac import require_permission
 router = APIRouter(prefix="/api/applications", tags=["Applications"])
 
 
-def _get_app(db: Session, application_id: int) -> Application:
-    app = db.query(Application).filter(Application.id == application_id).first()
+def _get_app(db: Session, application_id: int, tenant_id: int) -> Application:
+    app = find_application_for_tenant(db, application_id, tenant_id)
     if app is None:
         raise HTTPException(status_code=http_status.HTTP_404_NOT_FOUND, detail="Application not found")
     return app
@@ -55,11 +60,13 @@ def create_application(
     payload: ApplicationCreate,
     request: Request,
     db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_current_tenant_id),
     actor: User = Depends(require_permission("applications.create")),
 ):
     app = lifecycle.create_application(
         db,
         actor=actor,
+        tenant_id=tenant_id,
         company_name=payload.company_name,
         industry=payload.industry,
         gstin=payload.gstin,
@@ -82,9 +89,10 @@ def list_applications(
     page: int = Query(1, ge=1),
     page_size: int = Query(25, ge=1, le=200),
     db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_current_tenant_id),
     _user: User = Depends(require_permission("applications.view")),
 ):
-    query = db.query(Application)
+    query = db.query(Application).filter(Application.tenant_id == tenant_id)
     if status:
         query = query.filter(Application.status == status)
     if industry:
@@ -133,11 +141,12 @@ def list_statuses(
 def get_application(
     application_id: int,
     db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_current_tenant_id),
     _user: User = Depends(require_permission("applications.view")),
 ):
-    app = _get_app(db, application_id)
+    app = _get_app(db, application_id, tenant_id)
     data = serialize(app)
-    data["timeline"] = get_timeline(db, app)
+    data["timeline"] = get_timeline(db, app, tenant_id=tenant_id)
     return data
 
 
@@ -146,9 +155,10 @@ def update_application(
     application_id: int,
     payload: ApplicationUpdate,
     db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_current_tenant_id),
     _user: User = Depends(require_permission("applications.edit")),
 ):
-    app = _get_app(db, application_id)
+    app = _get_app(db, application_id, tenant_id)
     updates = payload.model_dump(exclude_unset=True)
     for field, value in updates.items():
         setattr(app, field, value)
@@ -162,9 +172,10 @@ def submit_application(
     application_id: int,
     request: Request,
     db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_current_tenant_id),
     actor: User = Depends(require_permission("applications.submit")),
 ):
-    app = _get_app(db, application_id)
+    app = _get_app(db, application_id, tenant_id)
     try:
         lifecycle.transition(
             db, app, ApplicationStatus.SUBMITTED, actor=actor,
@@ -181,9 +192,10 @@ def transition_application(
     payload: TransitionRequest,
     request: Request,
     db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_current_tenant_id),
     actor: User = Depends(require_permission("applications.transition")),
 ):
-    app = _get_app(db, application_id)
+    app = _get_app(db, application_id, tenant_id)
     try:
         lifecycle.transition(
             db, app, payload.to_status, actor=actor,
@@ -200,9 +212,10 @@ def rollback_application(
     payload: RollbackRequest,
     request: Request,
     db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_current_tenant_id),
     actor: User = Depends(require_permission("applications.rollback")),
 ):
-    app = _get_app(db, application_id)
+    app = _get_app(db, application_id, tenant_id)
     try:
         lifecycle.rollback(db, app, actor=actor, reason=payload.reason, request=request)
     except InvalidTransition as exc:
@@ -216,9 +229,10 @@ def cancel_application(
     payload: RollbackRequest,
     request: Request,
     db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_current_tenant_id),
     actor: User = Depends(require_permission("applications.cancel")),
 ):
-    app = _get_app(db, application_id)
+    app = _get_app(db, application_id, tenant_id)
     try:
         lifecycle.transition(
             db, app, ApplicationStatus.CANCELLED, actor=actor,
@@ -233,7 +247,11 @@ def cancel_application(
 def application_history(
     application_id: int,
     db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_current_tenant_id),
     _user: User = Depends(require_permission("applications.view")),
 ):
-    app = _get_app(db, application_id)
-    return {"application_id": app.id, "timeline": get_timeline(db, app)}
+    app = _get_app(db, application_id, tenant_id)
+    return {
+        "application_id": app.id,
+        "timeline": get_timeline(db, app, tenant_id=tenant_id),
+    }

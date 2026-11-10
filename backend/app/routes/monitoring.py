@@ -16,15 +16,23 @@ from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, status as http_status
 from sqlalchemy.orm import Session
 
+from backend.app.core.dependencies import get_current_tenant_id
 from backend.app.db.database import get_db
+from backend.app.models.application import Application
 from backend.app.models.monitoring import MonitoringAlert
 from backend.app.models.user import User
 from backend.app.schemas.monitoring import MonitoringAlertUpdate, MonitoringRecordCreate
 from backend.app.services import monitoring
+from backend.app.services.lifecycle.service import find_application_for_tenant
 from backend.app.services.monitoring.service import records_for, serialize_alert
 from backend.app.services.rbac import require_permission
 
 router = APIRouter(prefix="/api/monitoring", tags=["Monitoring"])
+
+
+def _require_application(db: Session, application_id: int, tenant_id: int) -> None:
+    if find_application_for_tenant(db, application_id, tenant_id) is None:
+        raise HTTPException(status_code=http_status.HTTP_404_NOT_FOUND, detail="Application not found")
 
 
 @router.get("/record-types")
@@ -36,8 +44,10 @@ def record_types(_user: User = Depends(require_permission("monitoring.view"))):
 def list_records(
     application_id: int,
     db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_current_tenant_id),
     _user: User = Depends(require_permission("monitoring.view")),
 ):
+    _require_application(db, application_id, tenant_id)
     rows = records_for(db, application_id)
     return {"records": [monitoring.serialize_record(r) for r in rows]}
 
@@ -47,8 +57,10 @@ def add_record(
     application_id: int,
     payload: MonitoringRecordCreate,
     db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_current_tenant_id),
     actor: User = Depends(require_permission("monitoring.manage")),
 ):
+    _require_application(db, application_id, tenant_id)
     return monitoring.add_record(
         db,
         application_id=application_id,
@@ -67,8 +79,10 @@ def add_record(
 def health(
     application_id: int,
     db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_current_tenant_id),
     _user: User = Depends(require_permission("monitoring.view")),
 ):
+    _require_application(db, application_id, tenant_id)
     return {"application_id": application_id, "timeline": monitoring.health_timeline(db, application_id)}
 
 
@@ -77,8 +91,10 @@ def trend(
     application_id: int,
     window: int = 6,
     db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_current_tenant_id),
     _user: User = Depends(require_permission("monitoring.view")),
 ):
+    _require_application(db, application_id, tenant_id)
     return monitoring.risk_trend(db, application_id, window=window)
 
 
@@ -87,8 +103,10 @@ def alerts(
     application_id: int,
     status: Optional[str] = None,
     db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_current_tenant_id),
     _user: User = Depends(require_permission("monitoring.view")),
 ):
+    _require_application(db, application_id, tenant_id)
     return {"alerts": monitoring.deterioration_alerts(db, application_id, status=status)}
 
 
@@ -97,9 +115,18 @@ def update_alert(
     alert_id: int,
     payload: MonitoringAlertUpdate,
     db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_current_tenant_id),
     _user: User = Depends(require_permission("monitoring.manage")),
 ):
-    alert = db.query(MonitoringAlert).filter(MonitoringAlert.id == alert_id).first()
+    alert = (
+        db.query(MonitoringAlert)
+        .join(Application, Application.id == MonitoringAlert.application_id)
+        .filter(
+            MonitoringAlert.id == alert_id,
+            Application.tenant_id == tenant_id,
+        )
+        .first()
+    )
     if alert is None:
         raise HTTPException(status_code=http_status.HTTP_404_NOT_FOUND, detail="Alert not found")
     alert.status = payload.status

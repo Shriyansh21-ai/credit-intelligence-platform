@@ -31,6 +31,7 @@ _WANTED_PREFIXES = (
 _WANTED_EXACT = {
     "users", "roles", "permissions", "role_permissions", "user_roles",
     "applications", "application_status_history", "enterprise_assessments",
+    "organizations", "tenants", "tenant_memberships",
 }
 
 

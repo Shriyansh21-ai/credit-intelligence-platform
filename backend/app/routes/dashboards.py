@@ -16,7 +16,7 @@ from __future__ import annotations
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
-from backend.app.core.dependencies import get_current_user
+from backend.app.core.dependencies import get_current_tenant_id, get_current_user
 from backend.app.db.database import get_db
 from backend.app.models.user import User
 from backend.app.services import dashboards
@@ -28,9 +28,10 @@ router = APIRouter(prefix="/api/dashboards", tags=["Dashboards"])
 @router.get("/operations")
 def operations(
     db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_current_tenant_id),
     _user: User = Depends(require_permission("applications.view")),
 ):
-    return dashboards.operations_dashboard(db)
+    return dashboards.operations_dashboard(db, tenant_id=tenant_id)
 
 
 @router.get("/admin")
@@ -68,9 +69,10 @@ def portfolio(
 @router.get("/compliance")
 def compliance(
     db: Session = Depends(get_db),
+    tenant_id: int = Depends(get_current_tenant_id),
     _user: User = Depends(require_permission("audit.view")),
 ):
-    return dashboards.compliance_dashboard(db)
+    return dashboards.compliance_dashboard(db, tenant_id=tenant_id)
 
 
 @router.get("/monitoring")

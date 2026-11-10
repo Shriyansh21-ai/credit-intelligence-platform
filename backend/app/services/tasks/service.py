@@ -12,8 +12,10 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 
+from sqlalchemy import or_
 from sqlalchemy.orm import Session
 
+from backend.app.models.application import Application
 from backend.app.models.task import Task, TaskComment
 from backend.app.services import audit, notifications
 
@@ -140,11 +142,16 @@ def add_comment(db: Session, task: Task, *, actor: Any, body: str) -> TaskCommen
 def list_tasks(
     db: Session,
     *,
+    tenant_id: int,
     application_id: Optional[int] = None,
     owner_id: Optional[int] = None,
     status: Optional[str] = None,
 ) -> List[Task]:
-    query = db.query(Task)
+    query = (
+        db.query(Task)
+        .outerjoin(Application, Application.id == Task.application_id)
+        .filter(or_(Task.application_id.is_(None), Application.tenant_id == tenant_id))
+    )
     if application_id is not None:
         query = query.filter(Task.application_id == application_id)
     if owner_id is not None:

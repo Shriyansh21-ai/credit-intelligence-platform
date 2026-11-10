@@ -22,6 +22,7 @@ from backend.app.services.approvals.workflow import ensure_default_workflow
 from backend.app.services.lifecycle.state_machine import ApplicationStatus
 from backend.app.services.rbac import sync_rbac
 from backend.app.services.rbac.seeding import assign_role
+from backend.tests.tenant_test_utils import ensure_test_membership
 
 
 class ApprovalTestBase(unittest.TestCase):
@@ -34,16 +35,23 @@ class ApprovalTestBase(unittest.TestCase):
         db = self.Session()
         sync_rbac(db)
         ensure_default_workflow(db)
+        self.seed_tenant_id = None
         db.close()
 
     def _user(self, email, role):
         db = self.Session()
         try:
             u = User(email=email, password="x")
-            db.add(u)
-            db.commit()
+            existing = db.query(User).filter(User.email == email).first()
+            if existing is None:
+                db.add(u)
+                db.commit()
+            else:
+                u = existing
             db.refresh(u)
             assign_role(db, u, role)
+            if self.seed_tenant_id is not None:
+                ensure_test_membership(db, u.id, email, self.seed_tenant_id)
             return u.id
         finally:
             db.close()
@@ -75,10 +83,14 @@ class ApprovalTestBase(unittest.TestCase):
         """Create an application and push it to a given lifecycle status."""
         db = self.Session()
         try:
+            self.seed_tenant_id = ensure_test_membership(db, 1, "seed@x.com")
+            ensure_test_membership(db, 9, "sa@x.com", self.seed_tenant_id)
             class A:
                 id = 1
                 email = "seed@x.com"
-            app = lifecycle.create_application(db, actor=A(), company_name="Acme")
+            app = lifecycle.create_application(
+                db, actor=A(), tenant_id=self.seed_tenant_id, company_name="Acme"
+            )
             # Walk it forward through legal transitions to reach `status`.
             path = {
                 ApplicationStatus.ANALYST_REVIEW: [

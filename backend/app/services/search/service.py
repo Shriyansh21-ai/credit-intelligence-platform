@@ -49,6 +49,7 @@ def _facets(query) -> Dict[str, List[Dict[str, Any]]]:
 def search_applications(
     db: Session,
     *,
+    tenant_id: int,
     q: Optional[str] = None,
     company: Optional[str] = None,
     gstin: Optional[str] = None,
@@ -68,7 +69,7 @@ def search_applications(
     page_size: int = 25,
     with_facets: bool = True,
 ) -> Dict[str, Any]:
-    query = db.query(Application)
+    query = db.query(Application).filter(Application.tenant_id == tenant_id)
 
     if q:
         like = f"%{q}%"

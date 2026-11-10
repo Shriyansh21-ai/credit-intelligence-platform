@@ -11,6 +11,7 @@ from sqlalchemy import Column, DateTime, Float, ForeignKey, Integer, String, Tex
 from sqlalchemy.orm import relationship
 
 from backend.app.db.database import Base
+from backend.app.models.tenancy import Tenant
 
 # NB: the lifecycle default is stored as a literal to avoid importing the
 # lifecycle service package (which imports this model) at module load time.
@@ -29,6 +30,10 @@ class Application(Base):
     # Creator / relationship owner and the currently assigned handler.
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
     assigned_to = Column(Integer, ForeignKey("users.id"), nullable=True, index=True)
+
+    # Nullable for historical applications whose tenant cannot be established.
+    tenant_id = Column(Integer, ForeignKey("tenants.id", ondelete="RESTRICT"), nullable=True, index=True)
+    tenant = relationship(Tenant)
 
     # Optional link to the enterprise assessment that scored this application.
     assessment_id = Column(

@@ -13,6 +13,8 @@ from backend.app.db.database import Base, get_db
 from backend.app.models import audit as audit_model  # noqa: F401
 from backend.app.models import approval as approval_model  # noqa: F401
 from backend.app.models import covenant as covenant_model  # noqa: F401
+from backend.app.models import company as company_model  # noqa: F401
+from backend.app.models import document as document_model  # noqa: F401
 from backend.app.models import monitoring as monitoring_model  # noqa: F401
 from backend.app.models import financial_analysis as financial_model  # noqa: F401
 from backend.app.models import rbac as rbac_model  # noqa: F401
@@ -23,6 +25,7 @@ from backend.app.routes import reports as report_routes
 from backend.app.services import lifecycle, reports
 from backend.app.services.rbac import sync_rbac
 from backend.app.services.rbac.seeding import assign_role
+from backend.tests.tenant_test_utils import ensure_test_membership
 
 
 class _Actor:
@@ -40,12 +43,18 @@ class ReportServiceTest(unittest.TestCase):
         self.Session = sessionmaker(bind=self.engine)
 
     def _app(self, db):
-        return lifecycle.create_application(db, actor=_Actor(), company_name="Acme Ltd")
+        tenant_id = ensure_test_membership(db, 1, "a@x.com")
+        return lifecycle.create_application(
+            db, actor=_Actor(), tenant_id=tenant_id, company_name="Acme Ltd"
+        )
 
     def test_credit_memo_json(self):
         db = self.Session()
         app = self._app(db)
-        result = reports.generate_report(db, report_type="credit_memo", fmt="json", application_id=app.id)
+        result = reports.generate_report(
+            db, report_type="credit_memo", fmt="json",
+            application_id=app.id, tenant_id=app.tenant_id,
+        )
         self.assertEqual(result["format"], "json")
         self.assertTrue(len(result["document"]["sections"]) >= 1)
         db.close()
@@ -53,7 +62,10 @@ class ReportServiceTest(unittest.TestCase):
     def test_pdf_render(self):
         db = self.Session()
         app = self._app(db)
-        result = reports.generate_report(db, report_type="credit_memo", fmt="pdf", application_id=app.id)
+        result = reports.generate_report(
+            db, report_type="credit_memo", fmt="pdf",
+            application_id=app.id, tenant_id=app.tenant_id,
+        )
         # reportlab is installed -> real PDF bytes.
         self.assertEqual(result["content_type"], "application/pdf")
         self.assertTrue(result["content"].startswith(b"%PDF"))
@@ -62,9 +74,15 @@ class ReportServiceTest(unittest.TestCase):
     def test_csv_and_rtf(self):
         db = self.Session()
         app = self._app(db)
-        csv_r = reports.generate_report(db, report_type="executive_summary", fmt="csv", application_id=app.id)
+        csv_r = reports.generate_report(
+            db, report_type="executive_summary", fmt="csv",
+            application_id=app.id, tenant_id=app.tenant_id,
+        )
         self.assertEqual(csv_r["content_type"], "text/csv")
-        rtf_r = reports.generate_report(db, report_type="executive_summary", fmt="rtf", application_id=app.id)
+        rtf_r = reports.generate_report(
+            db, report_type="executive_summary", fmt="rtf",
+            application_id=app.id, tenant_id=app.tenant_id,
+        )
         self.assertTrue(rtf_r["content"].startswith(b"{\\rtf"))
         db.close()
 
@@ -93,7 +111,10 @@ class ReportApiTest(unittest.TestCase):
         self.Session = sessionmaker(bind=self.engine)
         db = self.Session()
         sync_rbac(db)
-        self.app_id = lifecycle.create_application(db, actor=_Actor(), company_name="Acme").id
+        self.tenant_id = ensure_test_membership(db, 1, "a@x.com")
+        self.app_id = lifecycle.create_application(
+            db, actor=_Actor(), tenant_id=self.tenant_id, company_name="Acme"
+        ).id
         db.close()
 
     def _user(self, email, role):
@@ -104,6 +125,7 @@ class ReportApiTest(unittest.TestCase):
             db.commit()
             db.refresh(u)
             assign_role(db, u, role)
+            ensure_test_membership(db, u.id, email, self.tenant_id)
             return u.id
         finally:
             db.close()

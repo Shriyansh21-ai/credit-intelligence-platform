@@ -12,6 +12,7 @@ from typing import Any, Dict, List, Optional
 from sqlalchemy.orm import Session
 
 from backend.app.models.application import Application, ApplicationStatusHistory
+from backend.app.models.tenancy import Tenant, TenantMembership
 from backend.app.services import audit, notifications
 from backend.app.services.lifecycle.state_machine import (
     ApplicationStatus,
@@ -30,10 +31,51 @@ def _actor_ids(actor: Any):
     return getattr(actor, "id", None), getattr(actor, "email", None)
 
 
+class ApplicationOwnershipError(PermissionError):
+    """Raised when an actor has no active membership in an application's tenant."""
+
+
+def find_application_for_tenant(
+    db: Session, application_id: int, tenant_id: int
+) -> Optional[Application]:
+    if tenant_id is None:
+        return None
+    return (
+        db.query(Application)
+        .filter(
+            Application.id == application_id,
+            Application.tenant_id == tenant_id,
+        )
+        .first()
+    )
+
+
+def _require_tenant_membership(db: Session, actor: Any, tenant_id: Optional[int]) -> int:
+    actor_id = getattr(actor, "id", None)
+    if actor_id is None or tenant_id is None:
+        raise ApplicationOwnershipError("An active tenant membership is required.")
+
+    membership = (
+        db.query(TenantMembership.id)
+        .join(Tenant, Tenant.id == TenantMembership.tenant_id)
+        .filter(
+            TenantMembership.user_id == actor_id,
+            TenantMembership.tenant_id == tenant_id,
+            TenantMembership.status == "active",
+            Tenant.status == "active",
+        )
+        .first()
+    )
+    if membership is None:
+        raise ApplicationOwnershipError("An active tenant membership is required.")
+    return tenant_id
+
+
 def create_application(
     db: Session,
     *,
     actor: Any,
+    tenant_id: int,
     company_name: str,
     industry: Optional[str] = None,
     gstin: Optional[str] = None,
@@ -46,9 +88,11 @@ def create_application(
     request: Any = None,
 ) -> Application:
     """Create a Draft application and record the opening history entry."""
+    tenant_id = _require_tenant_membership(db, actor, tenant_id)
     actor_id, actor_email = _actor_ids(actor)
     app = Application(
         user_id=actor_id,
+        tenant_id=tenant_id,
         assigned_to=assigned_to,
         assessment_id=assessment_id,
         company_name=company_name,
@@ -103,6 +147,7 @@ def transition(
     kind: str = "transition",
 ) -> Application:
     """Validate and apply a status change. Raises :class:`InvalidTransition`."""
+    _require_tenant_membership(db, actor, application.tenant_id)
     from_status = application.status
     validate_transition(from_status, to_status)
 
@@ -170,6 +215,7 @@ def rollback(
     Rollback bypasses the forward state machine on purpose (an undo may not be a
     legal forward move) but is still fully audited and appended to history.
     """
+    _require_tenant_membership(db, actor, application.tenant_id)
     entries: List[ApplicationStatusHistory] = (
         db.query(ApplicationStatusHistory)
         .filter(ApplicationStatusHistory.application_id == application.id)
@@ -217,10 +263,18 @@ def rollback(
     return application
 
 
-def get_timeline(db: Session, application: Application) -> List[Dict[str, Any]]:
+def get_timeline(
+    db: Session, application: Application, *, tenant_id: int
+) -> List[Dict[str, Any]]:
+    if application.tenant_id != tenant_id:
+        raise ApplicationOwnershipError("Application not found.")
     entries = (
         db.query(ApplicationStatusHistory)
-        .filter(ApplicationStatusHistory.application_id == application.id)
+        .join(Application, Application.id == ApplicationStatusHistory.application_id)
+        .filter(
+            Application.id == application.id,
+            Application.tenant_id == tenant_id,
+        )
         .order_by(ApplicationStatusHistory.created_at, ApplicationStatusHistory.id)
         .all()
     )

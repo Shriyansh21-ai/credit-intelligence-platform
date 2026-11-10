@@ -18,8 +18,10 @@ from backend.app.models.monitoring import MonitoringAlert
 from backend.app.models.user import User
 from backend.app.routes import monitoring as monitoring_routes
 from backend.app.services import monitoring
+from backend.app.services import lifecycle
 from backend.app.services.rbac import sync_rbac
 from backend.app.services.rbac.seeding import assign_role
+from backend.tests.tenant_test_utils import ensure_test_membership
 
 
 class MonitoringServiceTest(unittest.TestCase):
@@ -129,25 +131,66 @@ class MonitoringApiTest(unittest.TestCase):
 
     def test_full_flow(self):
         uid = self._user("rm@x.com", "risk_manager")
+        db = self.Session()
+        tenant_id = ensure_test_membership(db, uid, "rm@x.com")
+
+        class Actor:
+            id = uid
+            email = "rm@x.com"
+
+        application = lifecycle.create_application(
+            db, actor=Actor(), tenant_id=tenant_id, company_name="Monitoring test"
+        )
+        application_id = application.id
+        db.close()
         client = self._client(uid)
         client.post(
-            "/api/monitoring/applications/1/records",
+            f"/api/monitoring/applications/{application_id}/records",
             json={"record_type": "quarterly_statement", "health_score": 80, "period": "Q1"},
         )
         second = client.post(
-            "/api/monitoring/applications/1/records",
+            f"/api/monitoring/applications/{application_id}/records",
             json={"record_type": "quarterly_statement", "health_score": 55, "period": "Q2"},
         )
         self.assertTrue(len(second.json()["alerts"]) >= 1)
 
-        health = client.get("/api/monitoring/applications/1/health").json()
+        health = client.get(f"/api/monitoring/applications/{application_id}/health").json()
         self.assertEqual(len(health["timeline"]), 2)
 
-        trend = client.get("/api/monitoring/applications/1/trend").json()
+        trend = client.get(f"/api/monitoring/applications/{application_id}/trend").json()
         self.assertEqual(trend["direction"], "deteriorating")
 
-        alerts = client.get("/api/monitoring/applications/1/alerts").json()["alerts"]
+        alerts = client.get(f"/api/monitoring/applications/{application_id}/alerts").json()["alerts"]
         self.assertTrue(len(alerts) >= 1)
+
+    def test_cross_tenant_application_is_hidden(self):
+        owner_id = self._user("owner@x.com", "risk_manager")
+        db = self.Session()
+        owner_tenant = ensure_test_membership(db, owner_id, "owner@x.com")
+
+        class Owner:
+            id = owner_id
+            email = "owner@x.com"
+
+        application = lifecycle.create_application(
+            db, actor=Owner(), tenant_id=owner_tenant, company_name="Private monitoring"
+        )
+        application_id = application.id
+        db.close()
+
+        other_id = self._user("other@x.com", "risk_manager")
+        client = self._client(other_id)
+        self.assertEqual(
+            client.get(f"/api/monitoring/applications/{application_id}/health").status_code,
+            404,
+        )
+        self.assertEqual(
+            client.post(
+                f"/api/monitoring/applications/{application_id}/records",
+                json={"record_type": "gst"},
+            ).status_code,
+            404,
+        )
 
 
 if __name__ == "__main__":

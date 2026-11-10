@@ -38,12 +38,15 @@ class ReportError(ValueError):
 
 
 def _build(db: Session, report_type: str, *, application_id: Optional[int],
-           entity_type: Optional[str], entity_id: Optional[int]) -> Dict[str, Any]:
+           tenant_id: Optional[int], entity_type: Optional[str],
+           entity_id: Optional[int]) -> Dict[str, Any]:
     if report_type in _APP_SCOPED:
         if application_id is None:
             raise ReportError(f"{report_type} requires application_id")
+        if tenant_id is None:
+            raise ReportError(f"{report_type} requires tenant_id")
         builder = getattr(builders, f"build_{report_type}")
-        return builder(db, application_id)
+        return builder(db, application_id, tenant_id)
     if report_type == "portfolio_report":
         return builders.build_portfolio_report(db)
     if report_type == "compliance_report":
@@ -59,6 +62,7 @@ def generate_report(
     report_type: str,
     fmt: str = "json",
     application_id: Optional[int] = None,
+    tenant_id: Optional[int] = None,
     entity_type: Optional[str] = None,
     entity_id: Optional[int] = None,
 ) -> Dict[str, Any]:
@@ -74,7 +78,8 @@ def generate_report(
 
     document = _build(
         db, report_type,
-        application_id=application_id, entity_type=entity_type, entity_id=entity_id,
+        application_id=application_id, tenant_id=tenant_id,
+        entity_type=entity_type, entity_id=entity_id,
     )
 
     if fmt == "json":
